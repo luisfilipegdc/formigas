@@ -677,6 +677,27 @@ function buildLegs() {
   }
 }
 
+// pontos das articulações de uma perna que alcança o pé F: [coxa, trocânter, joelho, tornozelo, pé]
+function legPoints(leg, F) {
+  const { C, L } = leg;
+  const h = new V3(F.x - C.x, 0, F.z - C.z);
+  if (h.lengthSq() < 1e-6) h.set(leg.s * 0.01, 0, leg.s);
+  h.normalize();
+  const t = C.clone().addScaledVector(h, 0.33); t.y -= 0.12;
+  const rt = Math.sqrt(Math.max(0.01, L.ta * L.ta - 0.37 * 0.37));
+  const a = F.clone().addScaledVector(h, -rt); a.y = F.y + 0.37;
+  const d = new V3().subVectors(a, t);
+  let dist = d.length();
+  const maxD = (L.f + L.t) * 0.999;
+  if (dist > maxD) { d.multiplyScalar(maxD / dist); a.copy(t).add(d); dist = maxD; }
+  d.normalize();
+  const along = (L.f * L.f - L.t * L.t + dist * dist) / (2 * dist);
+  const up = Math.sqrt(Math.max(0, L.f * L.f - along * along));
+  const b = UP.clone().addScaledVector(d, -UP.dot(d)).normalize();
+  const k = t.clone().addScaledVector(d, along).addScaledVector(b, up);
+  return [C.clone(), t, k, a, F.clone()];
+}
+
 // posiciona uma perna para alcançar o pé F (em coordenadas da formiga)
 const _h = new V3(), _a = new V3(), _k = new V3(), _t = new V3(), _d = new V3(), _b = new V3();
 function solveLeg(leg, F) {
@@ -1311,40 +1332,104 @@ function leafTextureDry() {
   return t;
 }
 
-// junta várias geometrias simples numa só (formiguinhas do formigueiro)
-function mergeGeoms(parts) {
-  const pos = [], nor = [];
-  parts.forEach(([geo, m]) => {
+// ---- formiguinha do formigueiro: a mesma operária esculpida, em versão leve ----
+// O corpo é esculpido com malha mais grossa; pernas e antenas viram tubinhos simples.
+// Fazemos 4 poses da passada (marcha em tripé) e trocamos entre elas para as patas mexerem.
+const NEST_ANT_LEN = 2.3;                      // comprimento da formiguinha no formigueiro
+function nestAntPoses() {
+  const saveCA = CA;
+  CA = CASTES.operaria;
+  const k = NEST_ANT_LEN / 11.6;
+  const parts = [];                            // [geometria, matriz, cor | null]
+  const S1 = new THREE.Matrix4().makeScale(k, k, k);
+  const add = (geo, m, col) => parts.push([geo, new THREE.Matrix4().multiplyMatrices(S1, m), col]);
+  // corpo
+  const cHead = new THREE.Color(CA.cor.cabeca), cTor = new THREE.Color(CA.cor.torax), cGas = new THREE.Color(CA.cor.gaster);
+  const body = sdfMesh(sdfWorker, new V3(...CA.min), new V3(...CA.max), 0.24, (x, y, z, n, c) => {
+    c.copy(cGas).lerp(cTor, smooth(x, CA.gasterX - 0.2, CA.gasterX + 0.2)).lerp(cHead, smooth(x, CA.cabecaX - 0.3, CA.cabecaX + 0.3));
+    const ao = clamp(sdfWorker(x + n.x * 0.25, y + n.y * 0.25, z + n.z * 0.25) / 0.25, 0, 1);
+    c.multiplyScalar(0.5 + 0.5 * ao);
+  }, mBody);
+  add(body.geometry, new THREE.Matrix4(), null);
+  // mandíbulas (fechadas), olhos
+  const J = CA.mandibula;
+  const jaw = sdfMesh(sdfJaw, new V3(-0.15, -0.38, -0.25), new V3(1.45, 0.22, 1.12), 0.07, (x, y, z, n, c) => c.set(COR.mandibulaFio).lerp(new THREE.Color(COR.mandibula), 0.5), mJaw);
+  jaw.geometry.translate(0, 0, -0.18);
+  for (const s of [1, -1]) {
+    const m = new THREE.Matrix4().compose(new V3(J.pos[0], J.pos[1], J.pos[2] * s), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -s * 0.04, J.incl)), new V3(J.escala, J.escala, -J.escala * s));
+    add(jaw.geometry, m, null);
+    add(new THREE.SphereGeometry(0.3, 6, 4), new THREE.Matrix4().compose(new V3(CA.olho.x, CA.olho.y, s * 1.05), new THREE.Quaternion(), new V3(1, 0.85, 0.6)), new THREE.Color('#120c08'));
+  }
+  // tubinho afunilado entre dois pontos
+  const cLeg = new THREE.Color(CA.cor.pernas), cJoint = new THREE.Color(COR.juntas);
+  const tube = (a, b, r0, r1, out, col) => {
+    const len = a.distanceTo(b);
+    const g = new THREE.CylinderGeometry(r1, r0, len, 5, 1, true);
+    g.translate(0, len / 2, 0);
+    const m = new THREE.Matrix4().compose(a, new THREE.Quaternion().setFromUnitVectors(UP, new V3().subVectors(b, a).normalize()), new V3(1, 1, 1));
+    out.push([g, new THREE.Matrix4().multiplyMatrices(S1, m), col || cLeg]);
+    if (r1 > 0.1) {                             // juntas só nas pernas
+      const j = new THREE.SphereGeometry(r1 * 1.1, 5, 3);
+      out.push([j, new THREE.Matrix4().multiplyMatrices(S1, new THREE.Matrix4().makeTranslation(b.x, b.y, b.z)), cJoint]);
+    }
+  };
+  // antenas
+  const A = CA.antena, F = A.fun;
+  for (const s of [1, -1]) {
+    const base = new V3(A.base[0], A.base[1], A.base[2] * s);
+    const elbow = base.clone().add(new V3(A.cotovelo[0], A.cotovelo[1], A.cotovelo[2] * s));
+    tube(base, elbow, 0.1, 0.12, parts);
+    let p = elbow;
+    for (let q = 1; q <= 4; q++) {
+      const t = q / 4, nx = elbow.clone().add(new V3(F[0] * t, F[1] * Math.sin(Math.PI * t * 0.9) - F[2] * t * t, s * F[3] * t));
+      tube(p, nx, 0.09 + 0.03 * (t - 0.25), 0.09 + 0.05 * t, parts);
+      p = nx;
+    }
+  }
+  // pernas em 4 poses
+  const legs4 = [];
+  CA.pernas.forEach((L, i) => { for (const s of [1, -1]) {
+    const ang = L.ang * Math.PI / 180, dir = new V3(Math.cos(ang), 0, s * Math.sin(ang));
+    const C = COXA_END(i); C.z *= s;
+    const reach = 0.32 + L.f * 0.84 + L.t * 0.64 + L.ta * 0.9;
+    legs4.push({ s, L, C, neutral: new V3(C.x + dir.x * reach, 0.05, C.z + dir.z * reach), group: ((s === 1) === (i % 2 === 0)) ? 0 : 1 });
+  } });
+  const STEP = 1.1;
+  const poses = [];
+  for (let pose = 0; pose < 4; pose++) {
+    const out = parts.slice();
+    for (const lg of legs4) {
+      // fase do pé: 0 = na frente, 1 = no meio levantado, 2 = atrás, 3 = no meio no chão
+      const ph = (pose + lg.group * 2) % 4;
+      const F = lg.neutral.clone();
+      F.x += [STEP, 0, -STEP, 0][ph];
+      F.y = ph === 1 ? 0.8 : 0.05;
+      const pts = legPoints(lg, F);
+      tube(pts[0], pts[1], 0.17, 0.15, out);
+      tube(pts[1], pts[2], 0.15, 0.13, out);
+      tube(pts[2], pts[3], 0.11, 0.1, out);
+      tube(pts[3], pts[4], 0.08, 0.05, out);
+    }
+    poses.push(mergeColored(out));
+  }
+  CA = saveCA;
+  return poses;
+}
+function mergeColored(parts) {
+  const pos = [], nor = [], col = [];
+  parts.forEach(([geo, m, c]) => {
     const g = geo.index ? geo.toNonIndexed() : geo.clone();
     g.applyMatrix4(m);
     pos.push(...g.attributes.position.array);
     nor.push(...g.attributes.normal.array);
+    const n = g.attributes.position.count, ca = g.attributes.color;
+    for (let i = 0; i < n; i++) ca && !c ? col.push(ca.getX(i), ca.getY(i), ca.getZ(i)) : col.push(c.r, c.g, c.b);
   });
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   out.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  out.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   return out;
-}
-function tinyAntGeometry() {
-  const M = (x, y, z, sx, sy, sz, rz) => new THREE.Matrix4().compose(new V3(x, y, z),
-    new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, rz || 0)), new V3(sx, sy, sz));
-  const sph = new THREE.SphereGeometry(1, 8, 6), cyl = new THREE.CylinderGeometry(1, 1, 1, 4, 1, true);
-  const parts = [
-    [sph, M(0.55, 0.42, 0, 0.24, 0.17, 0.25)],      // cabeça
-    [sph, M(0.12, 0.4, 0, 0.26, 0.12, 0.12)],       // tórax
-    [sph, M(-0.45, 0.42, 0, 0.3, 0.22, 0.24)],      // gáster
-    [cyl, M(0.75, 0.38, 0.08, 0.03, 0.2, 0.03, 1.2)], [cyl, M(0.75, 0.38, -0.08, 0.03, 0.2, 0.03, 1.2)] // mandíbulas
-  ];
-  for (const s of [1, -1]) {
-    for (const [x, a] of [[0.25, 0.6], [0.1, 0], [-0.05, -0.6]]) {
-      const leg = new THREE.Matrix4().compose(new V3(x + Math.sin(a) * 0.22, 0.22, s * 0.28),
-        new THREE.Quaternion().setFromEuler(new THREE.Euler(s * 1.0, a, 0)), new V3(0.025, 0.55, 0.025));
-      parts.push([cyl, leg]);
-    }
-    parts.push([cyl, new THREE.Matrix4().compose(new V3(0.78, 0.62, s * 0.12),
-      new THREE.Quaternion().setFromEuler(new THREE.Euler(-s * 0.5, 0, -0.7)), new V3(0.02, 0.45, 0.02))]);
-  }
-  return mergeGeoms(parts);
 }
 
 function buildNest() {
@@ -1529,26 +1614,38 @@ function buildNest() {
   }
   trail.push(new V3(-22, 0, -2.5));
   trail.forEach((p) => { p.y = (Math.abs(p.x) < NEST.halfX ? onTop(p.x, p.z) : 0) + 0.15; });
-  paths.push({ curve: new THREE.CatmullRomCurve3(trail), n: 34, leafy: true, surface: true });
+  paths.push({ curve: new THREE.CatmullRomCurve3(trail), n: 16, leafy: true, surface: true });
   NEST.tunnels.forEach((t, i) => {
-    const pts = t.map(([x, y]) => new V3(x, y - TUN_R + 0.35, NEST.faceZ - 0.3));
+    const pts = t.map(([x, y]) => new V3(x, y - TUN_R + 0.12, NEST.faceZ - 0.3));
     if (pts.length === 2) pts.splice(1, 0, pts[0].clone().lerp(pts[1], 0.5));
     paths.push({ curve: new THREE.CatmullRomCurve3(pts), n: i < 3 ? 6 : 3, leafy: i < 3 });
   });
-  const antGeo = tinyAntGeometry();
   const total = paths.reduce((a, p) => a + p.n, 0) + 30;
-  nest.ants = new THREE.InstancedMesh(antGeo, new THREE.MeshStandardMaterial({ color: '#7a2a10', roughness: 0.5 }), total);
-  nest.ants.castShadow = true;
-  nest.leaves = new THREE.InstancedMesh(new THREE.CircleGeometry(0.75, 10, 0, Math.PI), new THREE.MeshStandardMaterial({ color: '#4f9a2e', side: THREE.DoubleSide, roughness: 0.6 }), total);
-  nest.leaves.castShadow = true;
-  S.add(nest.ants, nest.leaves);
+  const mAnt = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.45, envMapIntensity: 0.55 });
+  addCuticle(mAnt, 0.05, 1.0);
+  nest.poses = nestAntPoses().map((geo) => {
+    const m = new THREE.InstancedMesh(geo, mAnt, total);
+    m.castShadow = true; m.receiveShadow = true;
+    S.add(m);
+    return m;
+  });
+  // folha realista da operária, em miniatura
+  const lf = built.operaria.leaf, kk = NEST_ANT_LEN / 11.6;
+  const rx = lf.rotation.x; lf.rotation.x = 0; lf.updateMatrix(); lf.rotation.x = rx;
+  nest.leafLocal = new THREE.Matrix4().multiplyMatrices(new THREE.Matrix4().makeScale(kk, kk, kk), lf.matrix);
+  nest.leaves = lf.children.map((mesh) => {
+    const m = new THREE.InstancedMesh(mesh.geometry, mesh.material, total);
+    m.castShadow = true;
+    S.add(m);
+    return m;
+  });
   nest.antData = [];
   paths.forEach((P) => { for (let i = 0; i < P.n; i++) {
     const dir = P.surface ? 1 : (Math.random() < 0.5 ? 1 : -1);
-    nest.antData.push({ P, u: Math.random(), dir, speed: rnd(0.04, 0.07) * (P.surface ? 0.35 : 1), leaf: P.leafy && (P.surface ? i % 3 !== 0 : dir === 1) });
+    nest.antData.push({ ph: Math.random() * 4, P, u: P.surface ? (i + rnd(0, 0.3)) / P.n : Math.random(), dir, speed: P.surface ? 0.018 : rnd(0.04, 0.07), leaf: P.leafy && (P.surface ? i % 3 !== 0 : dir === 1) });
   } });
-  NEST.chambers.filter((c) => c.kind !== 'lixo').forEach((C) => { for (let i = 0; i < (C.kind === 'rainha' ? 6 : 5); i++) {
-    nest.antData.push({ C, a: Math.random() * 6.3, r: C.kind === 'rainha' ? rnd(0.55, 0.8) : rnd(0.3, 0.6), speed: rnd(0.3, 0.6) * (Math.random() < 0.5 ? 1 : -1) });
+  NEST.chambers.filter((c) => c.kind !== 'lixo').forEach((C) => { for (let i = 0; i < (C.kind === 'rainha' ? 5 : 3); i++) {
+    nest.antData.push({ ph: Math.random() * 4, C, a: i * 2.1 + rnd(0, 0.6), r: C.kind === 'rainha' ? rnd(0.55, 0.8) : rnd(0.3, 0.6), speed: rnd(0.3, 0.6) * (Math.random() < 0.5 ? 1 : -1) });
   } });
 
   // ---- etiquetas tocáveis ----
@@ -1580,9 +1677,10 @@ function buildNest() {
 }
 
 const _np = new V3(), _lm = new THREE.Matrix4();
-const LEAF_LOCAL = new THREE.Matrix4().compose(new V3(0.95, 0.75, 0), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, -0.25)), new V3(1, 1, 1));
 function updateNest(dt, t) {
   const o = nest._o || (nest._o = new THREE.Object3D());
+  const cnt = [0, 0, 0, 0];
+  let nLeaf = 0;
   nest.antData.forEach((A, i) => {
     if (A.P) {
       A.u = (A.u + A.dir * A.speed * dt + 1) % 1;
@@ -1602,15 +1700,17 @@ function updateNest(dt, t) {
       const vx = -Math.sin(A.a) * C.rx * A.r * A.speed, vz = Math.cos(A.a) * 2.5 * A.speed;
       o.rotation.set(0, Math.atan2(-vz, vx), 0);
     }
-    o.position.y += Math.abs(Math.sin(t * 18 + i)) * 0.04;
-    o.scale.setScalar(1.2);
+    // passada: velocidade das patas proporcional à velocidade da formiga
+    const v = A.P ? A.speed * A.P.curve.getLength() : Math.abs(A.speed) * A.C.rx * A.r;
+    A.ph = (A.ph + dt * v * 2.2) % 4;
+    const pose = Math.floor(A.ph);
+    o.scale.setScalar(1);
     o.updateMatrix();
-    nest.ants.setMatrixAt(i, o.matrix);
-    const m = A.leaf ? _lm.multiplyMatrices(o.matrix, LEAF_LOCAL) : _lm.makeScale(0, 0, 0);
-    nest.leaves.setMatrixAt(i, m);
+    nest.poses[pose].setMatrixAt(cnt[pose]++, o.matrix);   // só desenha a pose atual de cada formiga
+    if (A.leaf) { _lm.multiplyMatrices(o.matrix, nest.leafLocal); nest.leaves.forEach((m) => m.setMatrixAt(nLeaf, _lm)); nLeaf++; }
   });
-  nest.ants.instanceMatrix.needsUpdate = true;
-  nest.leaves.instanceMatrix.needsUpdate = true;
+  nest.poses.forEach((m, k) => { m.count = cnt[k]; m.instanceMatrix.needsUpdate = true; });
+  nest.leaves.forEach((m) => { m.count = nLeaf; m.instanceMatrix.needsUpdate = true; });
   // etiquetas presas aos pontos 3D
   const w = window.innerWidth, h = window.innerHeight;
   nest.labels.forEach((el, i) => {
