@@ -70,6 +70,7 @@
   }
   .nlabel b { font-size: 26px; }
   .nlabel.on { background: #ffd23f; }
+  .nlabel.sub { font-size: 16px; background: #fff7df; border-color: #ffd23f; }
   #card {
     position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%);
     width: min(560px, calc(100vw - 160px)); background: #fff; border-radius: 26px; padding: 14px 22px 16px; color: #4a2a12;
@@ -1470,8 +1471,110 @@ function mergeColored(parts) {
   return out;
 }
 
+
+// ---- BERÇÁRIO: ovos, larvas e pupas, cada fase no seu cantinho (as formigas separam a cria) ----
+function larvaGeometry() {
+  // larva em "C": gomos gordinhos ao longo de um arco + cabecinha marrom numa ponta
+  const parts = [], cBody = new THREE.Color('#f6eedb'), cHead = new THREE.Color('#b9874e'), cJaw = new THREE.Color('#5a3a1c');
+  const N = 11, R = 0.36;
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1), a = -0.35 * Math.PI + t * 1.45 * Math.PI;
+    const r = 0.13 + 0.12 * Math.sin(Math.PI * Math.pow(t, 0.8));
+    const m = new THREE.Matrix4().compose(new V3(Math.cos(a) * R, Math.sin(a) * R, 0), new THREE.Quaternion(), new V3(r, r, r * 1.05));
+    parts.push([new THREE.SphereGeometry(1, 12, 8), m, cBody]);
+  }
+  const a0 = -0.35 * Math.PI - 0.12;
+  const hp = new V3(Math.cos(a0) * R, Math.sin(a0) * R, 0);
+  parts.push([new THREE.SphereGeometry(1, 10, 8), new THREE.Matrix4().compose(hp, new THREE.Quaternion(), new V3(0.1, 0.1, 0.1)), cHead]);
+  parts.push([new THREE.SphereGeometry(1, 6, 4), new THREE.Matrix4().compose(hp.clone().add(new V3(0.05, -0.07, 0)), new THREE.Quaternion(), new V3(0.04, 0.03, 0.06)), cJaw]);
+  const g = mergeColored(parts);
+  g.translate(0, R, 0);
+  return g;
+}
+function pupaGeometry() {
+  // pupa: já tem forma de formiga, branquinha, com patas e antenas dobradas junto ao corpo (deitada de costas)
+  const saveCA = CA;
+  CA = CASTES.operaria;
+  const cB = new THREE.Color('#f3ead4');
+  const body = sdfMesh(sdfWorker, new V3(...CA.min), new V3(...CA.max), 0.3, (x, y, z, n, c) => {
+    const ao = clamp(sdfWorker(x + n.x * 0.3, y + n.y * 0.3, z + n.z * 0.3) / 0.3, 0, 1);
+    c.copy(cB).multiplyScalar(0.72 + 0.28 * ao);
+  }, mBody);
+  const parts = [[body.geometry, new THREE.Matrix4(), null]];
+  const tube = (pts, r) => {
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], len = a.distanceTo(b);
+      const g = new THREE.CylinderGeometry(r * 0.9, r, len, 6, 1);
+      g.translate(0, len / 2, 0);
+      parts.push([g, new THREE.Matrix4().compose(a, new THREE.Quaternion().setFromUnitVectors(UP, new V3().subVectors(b, a).normalize()), new V3(1, 1, 1)), cB]);
+      parts.push([new THREE.SphereGeometry(r, 6, 4), new THREE.Matrix4().makeTranslation(b.x, b.y, b.z), cB]);
+    }
+  };
+  [[0.85, 1.6], [0.0, 1.0], [-0.8, 0.5]].forEach(([cx, fold], i) => { for (const s of [1, -1]) {
+    const c = new V3(cx, 1.78, 0.5 * s);                          // patas encolhidas, coladas na barriga
+    tube([c, new V3(cx + 0.35, 1.42, 0.78 * s), new V3(cx - fold, 1.3, 0.62 * s), new V3(cx - fold - 0.9, 1.38, 0.32 * s)], 0.2);
+  } });
+  for (const s of [1, -1]) tube([new V3(4.3, 2.55, 0.45 * s), new V3(4.75, 1.85, 0.72 * s), new V3(3.6, 1.55, 0.72 * s), new V3(1.7, 1.5, 0.48 * s)], 0.13);
+  for (const s of [1, -1]) parts.push([new THREE.SphereGeometry(0.3, 10, 6), new THREE.Matrix4().compose(new V3(3.95, 2.55, 1.05 * s), new THREE.Quaternion(), new V3(1, 0.85, 0.6)), new THREE.Color('#e6dcc4')]);
+  CA = saveCA;
+  const g = mergeColored(parts);
+  g.scale(1.9 / 11.6, 1.9 / 11.6, 1.9 / 11.6);
+  return g;
+}
+function buildBrood(C, inst, rnd) {
+  const S = nest.scene0;
+  const zA = NEST.faceZ - 3.0, zB = NEST.faceZ - 0.5;
+  const spot = (x0, x1) => { for (;;) { const x = rnd(x0, x1), z = rnd(zA, zB), y = C.fungusTop(x, z); if (y !== null) return new V3(x, y, z); } };
+  nest.brood = { C };
+  // ovos: montinhos de ovinhos ovais e brilhantes (lado esquerdo)
+  const mEgg = new THREE.MeshPhysicalMaterial({ roughness: 0.15, clearcoat: 1, clearcoatRoughness: 0.1, sheen: 0.5, sheenColor: new THREE.Color('#ffffff') });
+  const eggC = [spot(C.x - 7, C.x - 5), spot(C.x - 5, C.x - 3)];
+  inst(new THREE.SphereGeometry(1, 12, 8), mEgg, 70, (o, col, i) => {
+    const c = eggC[i % 2], a = rnd(0, 6.3), r = Math.sqrt(Math.random()) * 0.8;
+    const x = c.x + Math.cos(a) * r, z = clamp(c.z + Math.sin(a) * r * 0.7, zA, zB);
+    const fy = C.fungusTop(x, z), y = fy === null ? c.y : fy;
+    o.position.set(x, y + 0.08 + (r < 0.4 ? rnd(0, 0.12) : 0), z);
+    o.scale.set(0.09, 0.13, 0.09); o.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3));
+    col.setHSL(0.12, 0.35, rnd(0.9, 0.97));
+  }, true);
+  // larvas: deitadas de lado no meio, de vários tamanhos (crescem!)
+  const mLarva = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.3, clearcoat: 0.7, clearcoatRoughness: 0.25, sheen: 0.6, sheenColor: new THREE.Color('#fff6e0') });
+  const larvaGeo = larvaGeometry();
+  nest.larvae = [];
+  const L = inst(larvaGeo, mLarva, 22, (o, col, i) => {
+    const p = spot(C.x - 2.4, C.x + 2.6);
+    const sc = rnd(0.55, 1.15);
+    o.position.set(p.x, p.y + 0.02, p.z); o.rotation.set(Math.PI / 2 + rnd(-0.25, 0.25), 0, rnd(0, 6.3), 'YXZ');
+    o.scale.setScalar(sc);
+    col.setRGB(1, 1, 1);
+    nest.larvae.push({ p: o.position.clone(), r: o.rotation.clone(), s: sc, w: rnd(0, 6.3) });
+  }, true);
+  nest.larvaMesh = L;
+  // pupas: de costas, à direita; as mais velhas ficam amareladas
+  const pupaGeo = pupaGeometry();
+  inst(pupaGeo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.3 }), 12, (o, col, i) => {
+    const p = spot(C.x + 3.2, C.x + 7.2);
+    o.position.set(p.x, p.y + 0.6, p.z);
+    o.rotation.set(Math.PI + rnd(-0.25, 0.25), rnd(0, 6.3), 0, 'YXZ');      // barriga para cima
+    const old = i % 3 === 0;
+    col.set(old ? '#e2c58f' : '#ffffff');
+  }, true);
+  // uma operária carrega uma larva na boca
+  nest.carryLarva = new THREE.InstancedMesh(larvaGeo, mLarva, 1);
+  nest.carryLarva.castShadow = true;
+  nest.carryLocal = new THREE.Matrix4().compose(new V3(1.25, 0.18, 0), new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0.6)), new V3(0.7, 0.7, 0.7));
+  S.add(nest.carryLarva);
+  // etiquetas das fases (aparecem quando o berçário está escolhido)
+  nest.subStops = [
+    { em: '🥚', t: 'Ovos', p: eggC[1].clone().add(new V3(-1, 0.6, 0)), txt: 'A rainha bota ovos bem pequenininhos. É assim que toda formiga começa!' },
+    { em: '🐛', t: 'Larvas', p: new V3(C.x, C.fungusTop(C.x, NEST.faceZ - 1.6) + 0.9, NEST.faceZ - 1.6), txt: 'Do ovo nasce a larva: parece uma minhoquinha branca. As operárias dão comida para ela crescer.' },
+    { em: '🤍', t: 'Pupas', p: new V3(C.x + 5.2, C.fungusTop(C.x + 5.2, NEST.faceZ - 1.6) + 1.1, NEST.faceZ - 1.6), txt: 'A larva vira pupa: já tem forma de formiga, mas é branquinha e fica paradinha. Depois ela vira formiga!' }
+  ];
+}
+
 function buildNest() {
   const S = new THREE.Scene();
+  nest.scene0 = S;
   S.background = new THREE.Color('#d6d8c6');
   S.fog = new THREE.Fog('#d6d8c6', 180, 420);
   S.environment = scene.environment;
@@ -1635,15 +1738,7 @@ function buildNest() {
         o.position.set(...tufts[i]); o.scale.setScalar(rnd(0.06, 0.13)); col.setHSL(0.12, 0.15, rnd(0.88, 0.97));
       });
     }
-    if (C.kind === 'bercario') {
-      const mBrood = new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, color: '#fbf6ea' });
-      const top = (o) => { let x, z, y; do { x = C.x + rnd(-0.7, 0.7) * C.rx; z = rnd(NEST.faceZ - 3.2, NEST.faceZ - 0.3); y = C.fungusTop(x, z); } while (y === null); o.position.set(x, y + 0.08, z); };
-      inst(new THREE.SphereGeometry(1, 10, 8), mBrood, 60, (o, col) => { top(o); o.scale.set(0.16, 0.22, 0.16); o.rotation.z = rnd(0, 3); col.set('#fffdf5'); });   // ovos
-      inst(new THREE.TorusGeometry(0.32, 0.17, 8, 12, Math.PI * 1.3), mBrood, 26, (o, col) => { top(o); o.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3)); col.set('#fff8e8'); }); // larvas
-      inst(new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.22, 0.7, 4, 8) : new THREE.CylinderGeometry(0.22, 0.22, 1, 8), mBrood, 14, (o, col) => {
-        top(o); o.rotation.set(rnd(-0.3, 0.3), rnd(0, 6), Math.PI / 2 + rnd(-0.3, 0.3)); col.set('#f3e6c8');                                          // pupas
-      });
-    }
+    if (C.kind === 'bercario') buildBrood(C, inst, rnd);
     if (C.kind === 'lixo') {
       inst(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ roughness: 1 }), 380, (o, col) => {
         o.position.copy(inChamber(C, -0.1)); o.scale.setScalar(rnd(0.3, 0.9)); o.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3));
@@ -1735,7 +1830,7 @@ function buildNest() {
   } });
   nest.attend.forEach((at) => nest.antData.push({ ph: Math.random() * 4, at }));
   NEST.chambers.filter((c) => c.kind !== 'lixo' && c.kind !== 'rainha').forEach((C) => { for (let i = 0; i < 3; i++) {
-    nest.antData.push({ ph: Math.random() * 4, C, a: i * 2.1 + rnd(0, 0.6), r: C.kind === 'rainha' ? rnd(0.55, 0.8) : rnd(0.3, 0.6), speed: rnd(0.3, 0.6) * (Math.random() < 0.5 ? 1 : -1) });
+    nest.antData.push({ carry: C.kind === 'bercario' && i === 0, ph: Math.random() * 4, C, a: i * 2.1 + rnd(0, 0.6), r: C.kind === 'rainha' ? rnd(0.55, 0.8) : rnd(0.3, 0.6), speed: rnd(0.3, 0.6) * (Math.random() < 0.5 ? 1 : -1) });
   } });
 
   // ---- etiquetas tocáveis ----
@@ -1746,7 +1841,7 @@ function buildNest() {
     { em: '🍃', t: 'Trilha', p: new V3(-52, 2, -6), cam: new V3(-40, 16, 22), txt: 'As operárias fazem trilhas e carregam pedaços de folha até o formigueiro.' },
     { em: '🕳️', t: 'Túneis', lp: new V3(-25, -5, -1), p: new V3(-25, -8, -1), cam: new V3(-21, -3, 26), txt: 'Caminhos por baixo da terra que ligam todas as salas.' },
     { em: '🍄', t: 'Jardim de fungo', lp: new V3(-34, -11, -1), p: new V3(-34, -19, -1), cam: new V3(-31, -13, 27), txt: 'As saúvas não comem a folha! Elas usam a folha para criar um fungo, que é a comida delas.' },
-    { em: '🥚', t: 'Berçário', lp: new V3(2, -15, -1), p: new V3(2, -24, -1), cam: new V3(4, -19, 25), txt: 'Aqui ficam os ovos, as larvas e as pupas. As operárias cuidam dos bebês.' },
+    { em: '🥚', t: 'Berçário', lp: new V3(2, -15, -1), p: new V3(2, -24, -1), cam: new V3(4, -19, 25), txt: 'Aqui as operárias cuidam dos bebês: ovo → larva → pupa → formiga! Toque em cada um para ver.' },
     { em: '👑', t: 'Rainha', lp: new V3(2, -42, -1), p: new V3(1, -51.5, -2.5), cam: new V3(5, -45.5, 14), txt: 'A rainha é a mãe de todas as formigas. Ela bota muitos ovos e fica protegida lá no fundo.' },
     { em: '🗑️', t: 'Lixo', lp: new V3(52, -33, -1), p: new V3(50, -44, -1), cam: new V3(46, -38, 30), txt: 'As formigas são limpinhas: o lixo vai para uma sala só para isso.' }
   ];
@@ -1758,6 +1853,19 @@ function buildNest() {
     el.className = 'nlabel';
     el.innerHTML = '<b>' + st.em + '</b>' + st.t;
     el.addEventListener('click', () => goStop(i));
+    box.appendChild(el);
+    return el;
+  });
+  nest.subLabels = nest.subStops.map((st) => {
+    const el = document.createElement('button');
+    el.className = 'nlabel sub';
+    el.innerHTML = '<b>' + st.em + '</b>' + st.t;
+    el.addEventListener('click', () => {
+      document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
+      document.getElementById('cardP').textContent = st.txt;
+      document.getElementById('card').classList.add('on');
+      nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.p.clone().add(new V3(1.2, 3.2, 8.5)), t1: st.p.clone().add(new V3(0, -0.6, 0)) };
+    });
     box.appendChild(el);
     return el;
   });
@@ -1804,6 +1912,7 @@ function updateNest(dt, t) {
     o.scale.setScalar(1);
     o.updateMatrix();
     nest.poses[pose].setMatrixAt(cnt[pose]++, o.matrix);   // só desenha a pose atual de cada formiga
+    if (A.carry) { nest.carryLarva.setMatrixAt(0, _lm.multiplyMatrices(o.matrix, nest.carryLocal)); nest.carryLarva.instanceMatrix.needsUpdate = true; }
     if (A.leaf) { _lm.multiplyMatrices(o.matrix, nest.leafLocal); nest.leaves.forEach((m) => m.setMatrixAt(nLeaf, _lm)); nLeaf++; }
   });
   nest.poses.forEach((m, k) => { m.count = cnt[k]; m.instanceMatrix.needsUpdate = true; });
@@ -1812,8 +1921,25 @@ function updateNest(dt, t) {
     g.rotation.y = Math.sin(t * 1.1 + i * 2.3) * 0.12;
     g.rotation.z = Math.sin(t * 0.8 + i) * 0.08;
   });
+  // larvas se contorcendo de leve
+  if (nest.larvae) {
+    const o2 = nest._o2 || (nest._o2 = new THREE.Object3D());
+    nest.larvae.forEach((L, i) => {
+      o2.position.copy(L.p); o2.rotation.copy(L.r); o2.scale.setScalar(L.s);
+      o2.rotation.z += 0.12 * Math.sin(t * 1.6 + L.w);
+      o2.updateMatrix();
+      nest.larvaMesh.setMatrixAt(i, o2.matrix);
+    });
+    nest.larvaMesh.instanceMatrix.needsUpdate = true;
+  }
   // etiquetas presas aos pontos 3D
   const w = window.innerWidth, h = window.innerHeight;
+  const showSub = nest.stops[nest.stop] && nest.stops[nest.stop].t === 'Berçário';
+  (nest.subLabels || []).forEach((el, i) => {
+    _np.copy(nest.subStops[i].p).project(camera);
+    el.style.display = showSub && _np.z < 1 ? '' : 'none';
+    el.style.transform = 'translate(' + ((_np.x + 1) / 2 * w) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
+  });
   nest.labels.forEach((el, i) => {
     if (!el) return;
     _np.copy(nest.stops[i].lp || nest.stops[i].p).project(camera);
