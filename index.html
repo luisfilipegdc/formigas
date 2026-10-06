@@ -215,6 +215,17 @@ function cone(x, y, z, ax, ay, az, bx, by, bz, ra, rb) {
   const dx = pax - bax * h, dy = pay - bay * h, dz = paz - baz * h;
   return Math.sqrt(dx * dx + dy * dy + dz * dz) - (ra + (rb - ra) * h);
 }
+// ruído suave 3D (0..1) para formas e cores naturais
+function hash3(i, j, k) { const h = Math.sin(i * 127.1 + j * 311.7 + k * 74.7) * 43758.5453; return h - Math.floor(h); }
+function vnoise3(x, y, z) {
+  const i = Math.floor(x), j = Math.floor(y), k = Math.floor(z);
+  const fx = x - i, fy = y - j, fz = z - k;
+  const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy), w = fz * fz * (3 - 2 * fz);
+  const L = (a, b, t) => a + (b - a) * t;
+  return L(L(L(hash3(i, j, k), hash3(i + 1, j, k), u), L(hash3(i, j + 1, k), hash3(i + 1, j + 1, k), u), v),
+           L(L(hash3(i, j, k + 1), hash3(i + 1, j, k + 1), u), L(hash3(i, j + 1, k + 1), hash3(i + 1, j + 1, k + 1), u), v), w);
+}
+function fbm3(x, y, z) { return vnoise3(x, y, z) * 0.6 + vnoise3(x * 2.03, y * 2.03, z * 2.03) * 0.28 + vnoise3(x * 4.1, y * 4.1, z * 4.1) * 0.12; }
 function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
 function smax(a, b, k) { return -smin(-a, -b, k); }
 // distância 2D até um polígono (negativa dentro)
@@ -889,7 +900,7 @@ function buildWings() {
 
 // ---- FOLHA que a saúva carrega: pedaço cortado de uma folha de verdade ----
 let leaf = null;
-const LEAF_W = 7.0, LEAF_H = 6.6, LEAF_GRIP = [0.5, 0.03];   // tamanho (mm) e ponto que a formiga morde (uv)
+const LEAF_W = 7.0, LEAF_H = 6.6, LEAF_GRIP = [0.5, 0.0];   // tamanho (mm) e ponto que a formiga morde (uv)
 function leafOutline() {
   // contorno em uv (0..1): ponta embaixo (onde a formiga morde), dois cortes feitos pela
   // formiga subindo dos lados e, em cima, a borda original da folha com serrilhado fino
@@ -897,7 +908,7 @@ function leafOutline() {
   const lr = (() => { let s = 3; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })();
   for (let i = 0; i <= 24; i++) {                               // corte da esquerda (de baixo para cima)
     const t = i / 24;
-    P.push([0.5 - 0.46 * Math.pow(t, 1.35) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.06 * Math.sin(t * Math.PI)]);
+    P.push([0.45 - 0.41 * Math.pow(t, 1.35) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.06 * Math.sin(t * Math.PI)]);
   }
   for (let i = 1; i < 80; i++) {                                // borda original (da esquerda, por cima, até a direita)
     const t = i / 80, a = Math.PI - t * Math.PI;
@@ -906,7 +917,7 @@ function leafOutline() {
   }
   for (let i = 0; i <= 24; i++) {                               // corte da direita (de cima para baixo)
     const t = 1 - i / 24;
-    P.push([0.5 + 0.46 * Math.pow(t, 1.3) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.04 * Math.sin(t * Math.PI)]);
+    P.push([0.55 + 0.41 * Math.pow(t, 1.3) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.04 * Math.sin(t * Math.PI)]);
   }
   return P.map(([u, v]) => [clamp(u, 0.005, 0.995), clamp(v, 0.005, 0.995)]);
 }
@@ -983,7 +994,7 @@ function buildLeaf() {
   const p = geo.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i);
-    p.setZ(i, 0.045 * y * y - 0.35 * Math.cos(x / LEAF_W * Math.PI) + 0.12 * Math.sin(x * 1.3 + y * 0.9) * (y / LEAF_H));
+    p.setZ(i, 0.045 * y * y - 0.35 * Math.cos(x / LEAF_W * Math.PI) * smooth(y, 0, 1.5) + 0.12 * Math.sin(x * 1.3 + y * 0.9) * (y / LEAF_H));
   }
   geo.computeVertexNormals();
   const common = { map, bumpMap: bump, bumpScale: 0.22, alphaTest: 0.5, roughness: 0.55, clearcoat: 0.25, clearcoatRoughness: 0.5, envMapIntensity: 0.6 };
@@ -991,8 +1002,8 @@ function buildLeaf() {
   const under = shadowy(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial(Object.assign({ side: THREE.BackSide, color: '#bfe39a', emissive: '#14300a' }, common, { roughness: 0.75, clearcoat: 0 }))));
   leaf = new THREE.Group();
   leaf.add(top, under);
-  leaf.position.set(5.75, 2.05, 0);
-  leaf.rotation.set(0, 0.12, 0.42);    // em pé, presa pela ponta, inclinada para trás por cima da cabeça
+  leaf.position.set(5.45, 1.62, 0);       // a borda de baixo passa entre as pontas das mandíbulas
+  leaf.rotation.set(0, 0.06, 0.38);    // em pé, presa pela ponta, inclinada para trás por cima da cabeça
   leaf.visible = false;
   G.add(leaf);
   return leaf;
@@ -1544,7 +1555,7 @@ function buildNest() {
   // ---- conteúdo das câmaras ----
   const mFungus = new THREE.MeshStandardMaterial({ roughness: 1, envMapIntensity: 0.4 });
   mFungus.vertexColors = true;
-  addCuticle(mFungus, 0.06, 2.0);
+  addCuticle(mFungus, 0.12, 3.0);
   const inChamber = (C, k) => {   // ponto aleatório na parte de baixo da câmara
     for (;;) {
       const x = C.x + rnd(-1, 1) * C.rx, y = C.y + rnd(-1, k) * C.ry, z = rnd(-6.5, -0.3);
@@ -1558,24 +1569,43 @@ function buildNest() {
       return q > 0 ? C.y - C.ry * 0.3 + C.ry * 0.62 * Math.sqrt(q) : null;
     };
     if (C.kind === 'fungo' || C.kind === 'bercario') {         // jardim de fungo: parece uma esponja
-      // jardim de fungo: uma "esponja" cinza-clara cheia de furinhos (esculpida como o corpo das formigas)
-      const fz = NEST.faceZ - 1.6;
+      // jardim de fungo: massa esponjosa cinza-bege, irregular, cheia de cavidades,
+      // com pedacinhos de folha misturados e tufinhos brancos do fungo por cima
+      const fz = NEST.faceZ - 1.6, sd = C.x * 0.37 + C.y * 0.21;
       const sdfF = (x, y, z) => {
-        const dome = ell(x, y, z, C.x, C.y - C.ry * 0.3, fz, C.rx * 0.82, C.ry * 0.62, 3.4);
-        const wx = x + 0.7 * Math.sin(1.3 * y + 0.7 * z), wy = y + 0.7 * Math.sin(1.1 * z + 1.7 * x), wz = z + 0.6 * Math.sin(1.5 * x + 0.4);
-        const k = 1.9, gy = Math.sin(k * wx) * Math.cos(k * wy) + Math.sin(k * wy) * Math.cos(k * wz) + Math.sin(k * wz) * Math.cos(k * wx);
-        return Math.max(dome, Math.max(-z - 0.2 + NEST.faceZ - 5.2, (-gy - 0.55) * 0.35), z - NEST.faceZ + 0.1);
+        let d = ell(x, y, z, C.x, C.y - C.ry * 0.32, fz, C.rx * 0.84, C.ry * 0.6, 3.5);
+        d -= 0.55 * fbm3(x * 0.45 + sd, y * 0.45, z * 0.45) - 0.25;                     // calombos grandes
+        const big = vnoise3(x * 0.95 + sd, y * 0.95, z * 0.95) * 0.75 + vnoise3(x * 2.1, y * 2.1 + sd, z * 2.1) * 0.25;
+        const small = vnoise3(x * 2.8 + 11, y * 2.8, z * 2.8 + sd);
+        d = smax(d, (big - 0.6) * 2.2, 0.3);                                            // cavidades irregulares
+        d = smax(d, (small - 0.74) * 1.2, 0.12);                                        // furinhos
+        return Math.max(d, z - NEST.faceZ + 0.1);
       };
-      const cF1 = new THREE.Color('#d9d2c2'), cF2 = new THREE.Color('#9b917f');
-      const fungus = sdfMesh(sdfF, new V3(C.x - C.rx, C.y - C.ry * 1.05, fz - 4), new V3(C.x + C.rx, C.y + C.ry * 0.4, NEST.faceZ + 0.3), 0.22, (x, y, z, n, c) => {
-        const ao = clamp(sdfF(x + n.x * 0.5, y + n.y * 0.5, z + n.z * 0.5) / 0.5, 0, 1);
-        c.copy(cF2).lerp(cF1, ao * (0.85 + 0.15 * Math.sin(x * 3 + y * 5)));
+      const cA = new THREE.Color('#ddd5c4'), cB = new THREE.Color('#b8ad96'), cHole = new THREE.Color('#6f6556');
+      const cFresh = new THREE.Color('#6d7f34'), cOld = new THREE.Color('#7a5c35'), cTmp = new THREE.Color();
+      const fungus = sdfMesh(sdfF, new V3(C.x - C.rx, C.y - C.ry * 1.05, fz - 4.4), new V3(C.x + C.rx, C.y + C.ry * 0.45, NEST.faceZ + 0.3), 0.17, (x, y, z, n, c) => {
+        c.copy(cB).lerp(cA, fbm3(x * 1.3, y * 1.3 + sd, z * 1.3));
+        const leafN = fbm3(x * 1.6 + 7 + sd, y * 1.6, z * 1.6);                      // pedacinhos de folha na massa
+        if (leafN > 0.6) {
+          const top = smooth(y, C.y - C.ry * 0.6, C.y + C.ry * 0.1);                 // folhas novas em cima, velhas embaixo
+          c.lerp(cTmp.copy(cOld).lerp(cFresh, top), smooth(leafN, 0.6, 0.7) * 0.85);
+        }
+        const ao = clamp(sdfF(x + n.x * 0.45, y + n.y * 0.45, z + n.z * 0.45) / 0.45, 0, 1);
+        c.lerp(cHole, (1 - ao) * 0.8);
       }, mFungus);
       fungus.castShadow = false;
       S.add(fungus);
-      inst(new THREE.PlaneGeometry(0.7, 0.5), new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.7 }), 70, (o, col) => {
-        o.position.copy(inChamber(C, 0.3)); o.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3));
-        col.setHSL(rnd(0.18, 0.3), rnd(0.4, 0.6), rnd(0.25, 0.4));   // pedacinhos de folha
+      // tufinhos brancos (gongilídios: a "comida" que as formigas colhem)
+      const fp = fungus.geometry.attributes.position.array, fn = fungus.geometry.attributes.normal.array, nv = fp.length / 3;
+      const tufts = [];
+      for (let tries = 0; tufts.length < 260 && tries < 4000; tries++) {
+        const v = Math.floor(Math.random() * nv);
+        if (fn[v * 3 + 1] < 0.35 || fp[v * 3 + 2] > NEST.faceZ - 0.2) continue;
+        const cx = fp[v * 3], cy = fp[v * 3 + 1], cz = fp[v * 3 + 2];
+        for (let q = 0; q < 6; q++) tufts.push([cx + rnd(-0.25, 0.25), cy + rnd(0, 0.12), cz + rnd(-0.25, 0.25)]);
+      }
+      inst(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ roughness: 0.9, emissive: '#2a2a26' }), tufts.length, (o, col, i) => {
+        o.position.set(...tufts[i]); o.scale.setScalar(rnd(0.06, 0.13)); col.setHSL(0.12, 0.15, rnd(0.88, 0.97));
       });
     }
     if (C.kind === 'bercario') {
@@ -1731,6 +1761,16 @@ function updateNest(dt, t) {
   }
 }
 
+// a câmera nunca entra na terra: se encostar no bloco de solo, é empurrada para fora (para a frente ou para cima)
+function keepCameraOutOfSoil() {
+  const c = camera.position, M = 2.5;
+  const inside = c.z < M && c.z > NEST.back - M && Math.abs(c.x) < NEST.halfX + M && c.y < surfaceY(c.x, Math.min(c.z, 0)) + M && c.y > -NEST.depth - M;
+  if (!inside) return;
+  const toFront = M - c.z, toTop = surfaceY(c.x, Math.min(c.z, 0)) + M - c.y;
+  if (toFront < toTop) c.z = M; else c.y += toTop;
+  if (c.y < -NEST.depth + 2) c.y = -NEST.depth + 2;
+}
+
 function goStop(i) {
   const st = nest.stops[i];
   nest.stop = i;
@@ -1750,7 +1790,8 @@ function enterNest() {
     antView.p.copy(camera.position); antView.t.copy(controls.target);
     document.body.classList.add('nest');
     controls.autoRotate = false;
-    controls.maxDistance = 260; controls.minDistance = 5; controls.maxPolarAngle = Math.PI * 0.62;
+    controls.maxDistance = 220; controls.minDistance = 5; controls.maxPolarAngle = Math.PI * 0.62;
+    controls.minAzimuthAngle = -1.1; controls.maxAzimuthAngle = 1.1;   // sempre olhando o corte pela frente
     camera.far = 900; camera.updateProjectionMatrix();
     nest.stop = -1;
     camera.position.set(-30, 90, 190); controls.target.set(0, -10, -5);
@@ -1765,6 +1806,7 @@ function leaveNest() {
   document.body.classList.remove('nest');
   document.getElementById('card').classList.remove('on');
   controls.maxDistance = 80; controls.minDistance = 4; controls.maxPolarAngle = Math.PI * 0.47;
+  controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity;
   camera.far = 300; camera.updateProjectionMatrix();
   camera.position.copy(antView.p); controls.target.copy(antView.t);
   lastAnt.copy(ant.position);
@@ -1853,7 +1895,7 @@ setTimeout(() => { hint.style.opacity = 1; setTimeout(() => { hint.style.opacity
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-  if (mode === 'nest') { updateNest(dt, t); controls.update(); renderer.render(nest.scene, camera); return; }
+  if (mode === 'nest') { updateNest(dt, t); controls.update(); keepCameraOutOfSoil(); renderer.render(nest.scene, camera); return; }
   if (!G || !legs.length) { renderer.render(scene, camera); return; }
   updateWalk(dt);
   updateJawsAndAntennae(t, dt);
