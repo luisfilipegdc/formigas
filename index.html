@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Formigas 3D">
+<meta name="theme-color" content="#ffe9a8">
+<title>Museu das Formigas 3D</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-screen="home">
+
+<div id="stage"></div>
+
+<!-- TELA INICIAL -->
+<section id="home" class="screen on">
+  <h1><span>🐜</span> Museu das Formigas 3D</h1>
+  <div class="cards" id="cards"></div>
+  <button class="bigbtn" id="btnCompare" aria-label="Quem é maior?">
+    <img id="compareThumb" alt="" hidden>
+    <span class="ic" id="compareIcon">📏</span>
+    <span>Quem é maior?</span>
+  </button>
+</section>
+
+<!-- TELA DA FORMIGA -->
+<section id="ant" class="screen overlay">
+  <button class="round btn-home" data-home aria-label="Voltar para o início">🏠</button>
+  <div class="chip" id="antName">Formiga</div>
+  <div id="antLabels"></div>
+  <div class="side">
+    <div class="tool">
+      <button class="round btn-speak" id="btnSpeak" aria-label="Ouvir curiosidade">🔊</button>
+    </div>
+    <div class="tool">
+      <button class="round btn-parts" id="btnParts" aria-label="Conte as partes">🔢</button>
+      <span class="lb">Partes</span>
+    </div>
+    <div class="tool">
+      <button class="round btn-size" id="btnSize" aria-label="Tamanho real">📏</button>
+      <span class="lb">Tamanho</span>
+    </div>
+  </div>
+  <div class="bubble" id="bubble"><div class="tx" id="bubbleText"></div><div class="dots" id="bubbleDots"></div></div>
+</section>
+
+<!-- TELA QUEM É MAIOR? -->
+<section id="compare" class="screen overlay">
+  <button class="round btn-home" data-home aria-label="Voltar para o início">🏠</button>
+  <div class="chip">Quem é maior?</div>
+  <button class="round btn-speak-top" id="btnSpeakCompare" aria-label="Ouvir">🔊</button>
+  <div id="compareLabels"></div>
+  <div class="growbar" aria-hidden="true"><span class="s">🐜</span><span class="arrow">➜</span><span class="m">🐜</span><span class="arrow">➜</span><span class="l">🐜</span></div>
+</section>
+
+<div id="fail">🐜<br>Precisamos de internet para carregar as formigas 3D.<br>Verifique a conexão e toque para tentar de novo.</div>
+
+<!-- Three.js r147: última versão com scripts "clássicos" (sem módulos),
+     o que funciona até em iPads antigos (Safari 12+). -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<!-- Código do app, um arquivo por função (a ordem importa) -->
+<script src="js/species.js"></script>       <!-- DADOS: edite aqui as espécies -->
+<script src="js/three-utils.js"></script>   <!-- peças 3D básicas -->
+<script src="js/ant-builder.js"></script>   <!-- monta a formiga procedural -->
+<script src="js/glb.js"></script>           <!-- troca por modelo .glb -->
+<script src="js/speech.js"></script>        <!-- voz pt-BR -->
+<script src="js/stage.js"></script>         <!-- renderizador, câmera, rótulos -->
+<script src="js/screen-ant.js"></script>    <!-- tela da formiga -->
+<script src="js/screen-compare.js"></script><!-- tela "Quem é maior?" -->
+<script src="js/screen-home.js"></script>   <!-- tela inicial -->
+<script src="js/app.js"></script>           <!-- inicia tudo -->
+</body>
+</html>
