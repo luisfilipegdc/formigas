@@ -1,8 +1,14 @@
-# 🐜 Saúva 3D
+# 🐜🐝 Museu dos Insetos 3D
 
 Uma formiga saúva (a formiga vermelha de cabeção) em 3D realista, para girar e dar zoom com o dedo.
 O corpo é "esculpido" no próprio navegador ao abrir a página (leva 1–3 segundos no iPad).
 Fica tudo num único arquivo, `index.html`: não tem build, nem servidor, nem som.
+
+## Páginas
+- `index.html`: tela inicial, onde se escolhe o inseto.
+- `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
+- `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
+- `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar
 - **🐜 operária · 👑 rainha · 🪽 zangão:** troca a formiga (no tamanho real de cada uma: a rainha é quase o dobro da operária).
