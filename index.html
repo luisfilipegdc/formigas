@@ -598,42 +598,112 @@ function buildEyes() {
   }
 }
 
-// ---- FOLHA que a saúva carrega ----
+// ---- FOLHA que a saúva carrega: pedaço cortado de uma folha de verdade ----
 let leaf = null;
-function buildLeaf() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 256;
-  const g = c.getContext('2d');
-  const gr = g.createLinearGradient(0, 256, 256, 0);
-  gr.addColorStop(0, '#2c6e1f'); gr.addColorStop(1, '#4f9a2e');
-  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
-  g.strokeStyle = 'rgba(190,225,140,.6)'; g.lineWidth = 4;
-  g.beginPath(); g.moveTo(40, 250); g.lineTo(200, 10); g.stroke();       // nervura central
-  g.lineWidth = 2;
-  for (let k = 1; k < 9; k++) {
-    const x = 40 + k * 18, y = 250 - k * 27;
-    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 40, y + 5, x + 70, y - 25); g.stroke();
-    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x - 30, y - 15, x - 45, y - 50); g.stroke();
+const LEAF_W = 7.0, LEAF_H = 6.6, LEAF_GRIP = [0.5, 0.03];   // tamanho (mm) e ponto que a formiga morde (uv)
+function leafOutline() {
+  // contorno em uv (0..1): ponta embaixo (onde a formiga morde), dois cortes feitos pela
+  // formiga subindo dos lados e, em cima, a borda original da folha com serrilhado fino
+  const P = [];
+  const lr = (() => { let s = 3; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })();
+  for (let i = 0; i <= 24; i++) {                               // corte da esquerda (de baixo para cima)
+    const t = i / 24;
+    P.push([0.5 - 0.46 * Math.pow(t, 1.35) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.06 * Math.sin(t * Math.PI)]);
   }
-  const tex = new THREE.CanvasTexture(c);
-  tex.encoding = THREE.sRGBEncoding;
-  // pedaço em meia-lua, como as saúvas cortam
-  const sh = new THREE.Shape();
-  sh.moveTo(-0.4, 0);
-  sh.lineTo(0.4, 0);
-  sh.absarc(0, 0.2, 3.6, -0.06, Math.PI + 0.06, false);
-  const geo = new THREE.ShapeGeometry(sh, 24);
-  geo.translate(-3.0, 0, 0);                // ponto de mordida perto da borda da frente
-  const p = geo.attributes.position, uv = geo.attributes.uv;
+  for (let i = 1; i < 80; i++) {                                // borda original (da esquerda, por cima, até a direita)
+    const t = i / 80, a = Math.PI - t * Math.PI;
+    const r = 1 + 0.04 * Math.sin(t * 9.0) + ((i % 3 === 0) ? 0.03 : 0);   // ondinha + serrilhado
+    P.push([0.5 + Math.cos(a) * 0.46 * r, 0.52 + Math.sin(a) * 0.45 * r]);
+  }
+  for (let i = 0; i <= 24; i++) {                               // corte da direita (de cima para baixo)
+    const t = 1 - i / 24;
+    P.push([0.5 + 0.46 * Math.pow(t, 1.3) + (lr() - 0.5) * 0.006, 0.02 + 0.5 * t + 0.04 * Math.sin(t * Math.PI)]);
+  }
+  return P.map(([u, v]) => [clamp(u, 0.005, 0.995), clamp(v, 0.005, 0.995)]);
+}
+function drawVeins(g, S, light, dark, net, fine) {
+  // nervura principal no meio; secundárias saem dela curvando para a borda;
+  // terciárias ligam duas secundárias vizinhas do mesmo lado; rede bem fininha entre elas
+  const curve = (v, w) => { g.lineWidth = w; g.beginPath(); g.moveTo(v[0] * S, v[1] * S); g.quadraticCurveTo(v[2] * S, v[3] * S, v[4] * S, v[5] * S); g.stroke(); };
+  const q = (v, t) => { const u = 1 - t; return [u * u * v[0] + 2 * u * t * v[2] + t * t * v[4], u * u * v[1] + 2 * u * t * v[3] + t * t * v[5]]; };
+  const lr = (() => { let s = 11; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })();
+  const sides = { '-1': [], '1': [] };
+  for (const sd of [-1, 1]) for (let k = 0; k < 7; k++) {
+    const y0 = 0.05 + k * 0.14 + (sd > 0 ? 0.06 : 0);
+    sides[sd].push([0.5 + sd * 0.005, y0, 0.5 + sd * 0.2, y0 + 0.07, 0.5 + sd * (0.47 + lr() * 0.04), y0 + 0.22 + lr() * 0.04]);
+  }
+  const midrib = [0.5, 0, 0.515, 0.5, 0.5, 1.0];
+  g.strokeStyle = dark; curve(midrib, S * 0.026); sides[-1].concat(sides[1]).forEach((v) => curve(v, S * 0.014));
+  g.strokeStyle = light; curve(midrib, S * 0.016); sides[-1].concat(sides[1]).forEach((v) => curve(v, S * 0.0075));
+  g.strokeStyle = net(0.4); g.lineWidth = S * 0.003;
+  for (const sd of [-1, 1]) {
+    const L = sides[sd];
+    for (let k = 0; k < L.length - 1; k++) for (let j = 1; j <= 5; j++) {
+      const t = j / 6, a = q(L[k], t), b = q(L[k + 1], t * 0.92);
+      g.beginPath(); g.moveTo(a[0] * S, a[1] * S);
+      g.quadraticCurveTo(((a[0] + b[0]) / 2 + (lr() - 0.5) * 0.02) * S, ((a[1] + b[1]) / 2 + (lr() - 0.5) * 0.02) * S, b[0] * S, b[1] * S);
+      g.stroke();
+    }
+  }
+  if (!fine) return;
+  g.strokeStyle = net(0.07); g.lineWidth = S * 0.0014;
+  for (let i = 0; i < 600; i++) {
+    let x = lr() * S, y = lr() * S;
+    g.beginPath(); g.moveTo(x, y);
+    for (let k = 0; k < 3; k++) { x += (lr() - 0.5) * S * 0.025; y += (lr() - 0.5) * S * 0.025; g.lineTo(x, y); }
+    g.stroke();
+  }
+}
+function buildLeaf() {
+  const S = 1024;
+  const outline = leafOutline();
+  const path = (g) => { g.beginPath(); outline.forEach(([u, v], i) => (i ? g.lineTo : g.moveTo).call(g, u * S, v * S)); g.closePath(); };
+  // cor
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const g = c.getContext('2d');
+  const base = g.createLinearGradient(0, 0, S, S);
+  base.addColorStop(0, '#3d7b25'); base.addColorStop(0.5, '#47882b'); base.addColorStop(1, '#356f20');
+  g.fillStyle = base; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 260; i++) {                                 // manchinhas naturais
+    const x = Math.random() * S, y = Math.random() * S, r = S * (0.02 + Math.random() * 0.08);
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    const tone = Math.random() < 0.5 ? 'rgba(95,140,45,' : 'rgba(30,70,20,';
+    gr.addColorStop(0, tone + (0.08 + Math.random() * 0.1) + ')'); gr.addColorStop(1, tone + '0)');
+    g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  g.setTransform(1, 0, 0, -1, 0, S);                            // desenha com v para cima (igual às coordenadas uv)
+  drawVeins(g, S, 'rgba(170,205,105,.75)', 'rgba(25,60,15,.35)', (a) => 'rgba(150,190,95,' + a + ')', true);
+  g.globalCompositeOperation = 'destination-in';                // recorta o formato (alfa)
+  path(g); g.fillStyle = '#fff'; g.fill();
+  g.globalCompositeOperation = 'source-over';
+  g.strokeStyle = 'rgba(205,215,140,.55)'; g.lineWidth = S * 0.006; path(g); g.stroke();  // bordinha clara do corte
+  const map = new THREE.CanvasTexture(c);
+  map.encoding = THREE.sRGBEncoding;
+  map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  // relevo (nervuras saltadas)
+  const b = document.createElement('canvas'); b.width = b.height = S;
+  const bg = b.getContext('2d');
+  bg.fillStyle = '#808080'; bg.fillRect(0, 0, S, S);
+  bg.setTransform(1, 0, 0, -1, 0, S);
+  drawVeins(bg, S, 'rgba(235,235,235,1)', 'rgba(90,90,90,.5)', (a) => 'rgba(200,200,200,' + (a * 1.6) + ')');
+  const bump = new THREE.CanvasTexture(b);
+
+  // malha subdividida para poder curvar a folha
+  const geo = new THREE.PlaneGeometry(LEAF_W, LEAF_H, 40, 40);
+  geo.translate(-(LEAF_GRIP[0] - 0.5) * LEAF_W, -(LEAF_GRIP[1] - 0.5) * LEAF_H, 0);
+  const p = geo.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i);
-    p.setZ(i, 0.25 * Math.sin(x * 0.7) + 0.04 * y * y);                // folha levemente ondulada
-    uv.setXY(i, (x + 6.8) / 7.6, y / 3.9);
+    p.setZ(i, 0.045 * y * y - 0.35 * Math.cos(x / LEAF_W * Math.PI) + 0.12 * Math.sin(x * 1.3 + y * 0.9) * (y / LEAF_H));
   }
   geo.computeVertexNormals();
-  leaf = shadowy(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tex, side: THREE.DoubleSide, roughness: 0.6 })));
-  leaf.position.set(5.25, 2.0, 0);
-  leaf.rotation.set(0.08, 0, -0.78);        // em pé ao longo do corpo, subindo por cima das costas
+  const common = { map, bumpMap: bump, bumpScale: 0.22, alphaTest: 0.5, roughness: 0.55, clearcoat: 0.25, clearcoatRoughness: 0.5, envMapIntensity: 0.6 };
+  const top = shadowy(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial(Object.assign({ side: THREE.FrontSide, emissive: '#0d2006' }, common))));
+  const under = shadowy(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial(Object.assign({ side: THREE.BackSide, color: '#bfe39a', emissive: '#14300a' }, common, { roughness: 0.75, clearcoat: 0 }))));
+  leaf = new THREE.Group();
+  leaf.add(top, under);
+  leaf.position.set(5.75, 2.05, 0);
+  leaf.rotation.set(0, 0.12, 0.42);    // em pé, presa pela ponta, inclinada para trás por cima da cabeça
   leaf.visible = false;
   ant.add(leaf);
 }
@@ -722,6 +792,7 @@ function updateJawsAndAntennae(t, dt) {
   }
   jaws.forEach((j) => { j.yaw.rotation.y += (-j.s * open - j.yaw.rotation.y) * Math.min(1, dt * 18); });
   const walking = state.speed > 0.5, excited = state.biteT >= 0;
+  if (leaf) leaf.rotation.x = Math.sin(state.phase * Math.PI * 4) * (walking ? 0.05 : 0.01) + Math.sin(t * 0.9) * 0.02;
   antennae.forEach((g, i) => {
     const f = walking || excited ? 6 : 1.7, amp = walking || excited ? 0.16 : 0.08;
     g.rotation.y = Math.sin(t * f + i * Math.PI) * amp;
