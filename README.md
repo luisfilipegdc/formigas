@@ -5,10 +5,12 @@ O corpo é "esculpido" no próprio navegador ao abrir a página (leva 1–3 segu
 Fica tudo num único arquivo, `index.html`: não tem build, nem servidor, nem som.
 
 ## Como usar
-- **Girar:** arraste com um dedo.
-- **Zoom:** faça pinça com dois dedos (no computador, use a rodinha do mouse).
-- **Mover:** arraste com dois dedos (no computador, com o botão direito).
-- **⟲:** volta para a posição inicial.
+- **Toque no chão:** a formiga anda até lá, mexendo as 6 pernas como uma formiga de verdade.
+- **Toque na formiga** (ou no botão 🦷): ela abre e fecha as mandíbulas.
+- **🚶 passear:** ela passeia sozinha pelo chão. Toque em ✋ para parar.
+- **🍃 folha:** ela carrega um pedaço de folha, como as saúvas fazem.
+- **Girar:** arraste com um dedo. **Zoom:** pinça com dois dedos. **Mover a câmera:** arraste com dois dedos.
+- **⟲ câmera:** volta a câmera para perto dela.
 
 Precisa de internet, porque o Three.js é carregado de um CDN.
 
@@ -19,4 +21,4 @@ Precisa de internet, porque o Three.js é carregado de um CDN.
 4. Clique em **Deploy** e abra o link no Safari do iPad.
 
 ## Mudar as cores
-No `index.html`, procure o bloco `COR` e troque os códigos das cores.
+No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a velocidade e o tamanho da área por onde ela anda.
