@@ -6,6 +6,9 @@ Fica tudo num único arquivo, `index.html`: não tem build, nem servidor, nem so
 
 ## Como usar
 - **🐜 operária · 👑 rainha · 🪽 zangão:** troca a formiga (no tamanho real de cada uma: a rainha é quase o dobro da operária).
+- **🏠 formigueiro:** entra num formigueiro de saúva "cortado" ao meio. Toque nas etiquetas
+  (murundu, olheiros, trilha, túneis, jardim de fungo, berçário, rainha, lixo) ou no ⏭ para fazer o passeio.
+  As formiguinhas andam pela trilha carregando folhas e pelos túneis. 🐜 volta para a formiga.
 - **✈️ voar** (rainha e zangão): abre as 4 asas e faz o voo nupcial; toque de novo para pousar.
 - **Toque no chão:** a formiga anda até lá, mexendo as 6 pernas como uma formiga de verdade.
 - **Toque na formiga** (ou no botão 🦷): ela abre e fecha as mandíbulas.
