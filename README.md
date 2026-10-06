@@ -5,6 +5,8 @@ O corpo é "esculpido" no próprio navegador ao abrir a página (leva 1–3 segu
 Fica tudo num único arquivo, `index.html`: não tem build, nem servidor, nem som.
 
 ## Como usar
+- **🐜 operária · 👑 rainha · 🪽 zangão:** troca a formiga (no tamanho real de cada uma: a rainha é quase o dobro da operária).
+- **✈️ voar** (rainha e zangão): abre as 4 asas e faz o voo nupcial; toque de novo para pousar.
 - **Toque no chão:** a formiga anda até lá, mexendo as 6 pernas como uma formiga de verdade.
 - **Toque na formiga** (ou no botão 🦷): ela abre e fecha as mandíbulas.
 - **🚶 passear:** ela passeia sozinha pelo chão. Toque em ✋ para parar.

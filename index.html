@@ -31,6 +31,22 @@
   #bWalk { background: #4aa8ff; }
   #bLeaf { background: #7bd96a; }
   #bBite { background: #ff7a8a; }
+  #bFly { background: #b9a2ff; }
+  .castes {
+    position: fixed; left: max(16px, env(safe-area-inset-left)); top: max(16px, env(safe-area-inset-top));
+    display: flex; gap: 10px;
+  }
+  .castes button {
+    width: 92px; height: 92px; border-radius: 24px; border: 5px solid #fff; background: rgba(255,255,255,.75);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+    font-family: inherit; color: #4a2a12; cursor: pointer; touch-action: manipulation; transition: transform .12s;
+    box-shadow: 0 6px 0 rgba(74,42,18,.15), 0 10px 20px rgba(74,42,18,.15);
+  }
+  .castes button b { font-size: 40px; line-height: 1.1; }
+  .castes button span { font-size: 16px; font-weight: 800; }
+  .castes button:active { transform: scale(.92); }
+  .castes button.on { background: #ffd23f; box-shadow: 0 0 0 5px rgba(74,42,18,.25), 0 10px 20px rgba(74,42,18,.15); }
+  .tool.hide { display: none; }
   .msg {
     position: fixed; left: 50%; transform: translateX(-50%);
     background: rgba(255,255,255,.88); color: #4a2a12; border-radius: 999px;
@@ -44,9 +60,15 @@
 </style>
 </head>
 <body>
+<div class="castes">
+  <button data-caste="operaria" class="on" aria-label="Operária"><b>🐜</b><span>operária</span></button>
+  <button data-caste="rainha" aria-label="Rainha"><b>👑</b><span>rainha</span></button>
+  <button data-caste="zangao" aria-label="Zangão"><b>🪽</b><span>zangão</span></button>
+</div>
 <div class="tools">
+  <div class="tool hide" id="tFly"><button id="bFly" aria-label="Voar">✈️</button><span>voar</span></div>
   <div class="tool"><button id="bWalk" aria-label="Passear">🚶</button><span>passear</span></div>
-  <div class="tool"><button id="bLeaf" aria-label="Folha">🍃</button><span>folha</span></div>
+  <div class="tool" id="tLeaf"><button id="bLeaf" aria-label="Folha">🍃</button><span>folha</span></div>
   <div class="tool"><button id="bBite" aria-label="Morder">🦷</button><span>morder</span></div>
   <div class="tool"><button id="bHome" aria-label="Voltar a câmera">⟲</button><span>câmera</span></div>
 </div>
@@ -85,8 +107,47 @@ const COR = {
   pelos: '#b07a45',
   chao: '#9c7b55'
 };
-const VELOCIDADE = 9;      // mm por segundo
 const AREA = 38;           // raio (mm) por onde ela pode andar
+
+// As 3 castas da saúva. "escala" = tamanho real em relação à operária.
+const CASTES = {
+  operaria: {
+    nome: 'operária', escala: 1, velocidade: 9,
+    cor: { cabeca: '#6c1f0a', torax: '#681e0a', gaster: '#43140a', pernas: '#6e2410' },
+    sdf: sdfWorker, min: [-6.3, 1.15, -2.05], max: [5.35, 3.75, 2.05], cabecaX: 1.7, gasterX: -3.1, espinhoY: 3.15,
+    pelos: 1500, coxaX: [0.85, 0.0, -0.8], coxaY: 1.55, coxaZ: 0.72,
+    pernas: [{ ang: 34, f: 2.9, t: 2.6, ta: 2.3 }, { ang: 96, f: 3.1, t: 2.8, ta: 2.4 }, { ang: 146, f: 3.6, t: 3.3, ta: 2.9 }], pernaR: 1,
+    antena: { base: [4.4, 2.62, 0.42], cotovelo: [-1.25, 0.93, 1.33], fun: [3.1, 0.55, 0.75, 0.95], gomos: 11, r: 1, escapo: 1 },
+    mandibula: { pos: [4.55, 2.12, 0.6], escala: 0.95, incl: -0.32 },
+    olho: { x: 3.95, y: 2.55, r: 0.3, sai: 0.05 }, ocelos: null, asas: null, folha: true
+  },
+  rainha: {
+    nome: 'rainha', escala: 1.85, velocidade: 7,
+    cor: { cabeca: '#521809', torax: '#4f1709', gaster: '#361208', pernas: '#521c0e' },
+    sdf: sdfQueen, faixas: [-4.05, -4.95, -5.72], min: [-6.75, 1.15, -1.8], max: [4.85, 4.2, 1.8], cabecaX: 2.2, gasterX: -3.0, espinhoY: 9,
+    pelos: 1800, coxaX: [1.25, 0.45, -0.35], coxaY: 1.6, coxaZ: 0.9,
+    pernas: [{ ang: 40, f: 2.5, t: 2.2, ta: 2.0 }, { ang: 95, f: 2.6, t: 2.4, ta: 2.1 }, { ang: 145, f: 3.0, t: 2.8, ta: 2.4 }], pernaR: 1.25,
+    antena: { base: [4.05, 2.88, 0.36], cotovelo: [-1.05, 0.85, 1.2], fun: [2.8, 0.5, 0.7, 0.9], gomos: 11, r: 1.1, escapo: 1 },
+    mandibula: { pos: [4.2, 2.36, 0.5], escala: 0.82, incl: -0.3 },
+    olho: { x: 3.65, y: 2.78, r: 0.36, sai: 0.05 },
+    ocelos: [[3.55, 3.33, 0], [3.3, 3.29, 0.22], [3.3, 3.29, -0.22]], ocR: 0.06,
+    asas: { frente: { base: [1.05, 3.32, 0.9], comp: 8.0, larg: 2.4 }, tras: { base: [0.15, 3.24, 0.82], comp: 5.6, larg: 1.6 } },
+    folha: false
+  },
+  zangao: {
+    nome: 'zangão', escala: 1.45, velocidade: 8,
+    cor: { cabeca: '#3a170c', torax: '#3d190d', gaster: '#2e130a', pernas: '#4a2212' },
+    sdf: sdfMale, faixas: [-3.05, -3.93, -4.73, -5.42], min: [-6.5, 1.35, -1.4], max: [4.75, 3.95, 1.4], cabecaX: 3.0, gasterX: -2.2, espinhoY: 9,
+    pelos: 1500, coxaX: [1.6, 0.95, 0.25], coxaY: 1.75, coxaZ: 0.8,
+    pernas: [{ ang: 40, f: 2.5, t: 2.3, ta: 2.1 }, { ang: 95, f: 2.6, t: 2.4, ta: 2.2 }, { ang: 145, f: 2.9, t: 2.8, ta: 2.5 }], pernaR: 0.95,
+    antena: { base: [4.3, 3.05, 0.25], cotovelo: [0.2, 0.5, 0.3], fun: [4.0, 1.0, 0.9, 1.7], gomos: 13, r: 0.8, escapo: 0, fina: true },
+    mandibula: { pos: [4.48, 2.66, 0.22], escala: 0.38, incl: -0.45 },
+    olho: { x: 3.9, y: 2.98, r: 0.46, sai: -0.06, grande: true },
+    ocelos: [[3.78, 3.52, 0], [3.58, 3.47, 0.18], [3.58, 3.47, -0.18]], ocR: 0.08,
+    asas: { frente: { base: [1.45, 3.38, 0.75], comp: 7.2, larg: 2.1 }, tras: { base: [0.6, 3.32, 0.68], comp: 5.0, larg: 1.45 } },
+    folha: false
+  }
+};
 
 const V3 = THREE.Vector3, UP = new V3(0, 1, 0);
 const clamp = THREE.MathUtils.clamp, smooth = THREE.MathUtils.smoothstep;
@@ -132,11 +193,12 @@ function sdPoly(px, pz, P) {
   return s * Math.sqrt(d);
 }
 
-const COXA_X = [0.85, 0.0, -0.8];
-const COXA_END = (i) => new V3(COXA_X[i] + [0.15, 0, -0.15][i], 1.55, 0.72);
+let CA = null;                         // casta que está sendo montada/mostrada
+const COXA_END = (i) => new V3(CA.coxaX[i] + [0.15, 0, -0.15][i], CA.coxaY, CA.coxaZ);
 const G_COS = Math.cos(0.2), G_SIN = Math.sin(0.2);
 
-function sdfBody(x, y, z) {
+// ---------------- OPERÁRIA ----------------
+function sdfWorker(x, y, z) {
   const a = Math.abs(z);
   // ---- CABEÇA: larga, achatada, em forma de coração ----
   let h = ell(x, y, a, 3.0, 2.55, 0.78, 1.35, 0.9, 1.05);
@@ -158,7 +220,7 @@ function sdfBody(x, y, z) {
   m = smin(m, cone(x, y, a, -1.05, 2.65, 0.25, -1.75, 3.25, 0.48, 0.14, 0.03), 0.1);
   for (let i = 0; i < 3; i++) {
     const e = COXA_END(i);
-    m = smin(m, cone(x, y, a, COXA_X[i], 1.95, 0.32, e.x, e.y, e.z, 0.24, 0.2), 0.15);
+    m = smin(m, cone(x, y, a, CA.coxaX[i], 1.95, 0.32, e.x, e.y, e.z, 0.24, 0.2), 0.15);
   }
   // ---- PECÍOLO (cintura fina, 2 nós) ----
   let w = cone(x, y, a, -1.45, 2.15, 0, -1.95, 2.25, 0, 0.17, 0.15);
@@ -172,6 +234,73 @@ function sdfBody(x, y, z) {
 
   return smin(smin(smin(h, m, 0.22), w, 0.1), g, 0.12);
 }
+
+// gáster em gomos (tergitos) que se sobrepõem: dá os sulcos entre as faixas
+function gasterSegments(x, y, a, S) {
+  let g = Infinity;
+  for (const q of S) g = g === Infinity ? ell(x, y, a, q[0], q[1], 0, q[2], q[3], q[4]) : smin(g, ell(x, y, a, q[0], q[1], 0, q[2], q[3], q[4]), 0.45);
+  return g;
+}
+
+// ---------------- RAINHA (içá): tórax robusto, gáster enorme ----------------
+const Q_GASTER = [[-3.55, 2.78, 0.9, 1.38, 1.62], [-4.5, 2.74, 0.8, 1.36, 1.58], [-5.35, 2.68, 0.66, 1.18, 1.34], [-6.05, 2.62, 0.46, 0.86, 0.92]];
+function sdfQueen(x, y, z) {
+  const a = Math.abs(z);
+  let h = ell(x, y, a, 3.15, 2.78, 0.5, 0.95, 0.72, 0.78);           // cabeça
+  h = smin(h, ell(x, y, a, 3.75, 2.68, 0, 0.85, 0.68, 1.05), 0.45);
+  h = smin(h, ell(x, y, a, 4.35, 2.48, 0, 0.36, 0.3, 0.6), 0.25);    // clípeo
+  h = smin(h, ell(x, y, a, 4.15, 2.98, 0.38, 0.4, 0.13, 0.24), 0.12);
+  h = smax(h, -cone(x, y, a, 2.2, 1.8, 0, 2.2, 3.9, 0, 0.3, 0.3), 0.25);
+  h = smin(h, cone(x, y, a, 2.45, 3.08, 0.95, 2.15, 3.38, 1.15, 0.12, 0.02), 0.12);
+  h = smin(h, cone(x, y, a, 2.4, 2.55, 0, 1.75, 2.65, 0, 0.32, 0.32), 0.2); // pescoço
+  let m = ell(x, y, a, 1.55, 2.62, 0, 0.55, 0.62, 0.92);             // pronoto
+  m = smin(m, ell(x, y, a, 0.55, 2.98, 0, 1.25, 0.95, 1.02), 0.4);   // escudo (onde as asas se prendem)
+  m = smin(m, ell(x, y, a, -0.55, 3.08, 0, 0.45, 0.38, 0.55), 0.25); // escutelo
+  m = smin(m, ell(x, y, a, 0.4, 2.38, 0, 1.55, 0.75, 0.98), 0.4);
+  m = smin(m, ell(x, y, a, -1.0, 2.58, 0, 0.55, 0.6, 0.72), 0.3);    // propódeo
+  m = smin(m, cone(x, y, a, -1.15, 2.98, 0.35, -1.5, 3.32, 0.5, 0.11, 0.02), 0.08);
+  m = smin(m, ell(x, y, a, 1.05, 3.28, 0.95, 0.25, 0.15, 0.2), 0.1);  // base das asas
+  m = smin(m, ell(x, y, a, 0.15, 3.22, 0.86, 0.2, 0.12, 0.16), 0.1);
+  for (let i = 0; i < 3; i++) {
+    const e = COXA_END(i);
+    m = smin(m, cone(x, y, a, CA.coxaX[i], 2.05, 0.45, e.x, e.y, e.z, 0.3, 0.26), 0.15);
+  }
+  let w = cone(x, y, a, -1.45, 2.42, 0, -1.9, 2.47, 0, 0.22, 0.2);
+  w = smin(w, ell(x, y, a, -2.05, 2.72, 0, 0.3, 0.4, 0.38), 0.12);
+  w = smin(w, cone(x, y, a, -2.2, 2.57, 0, -2.5, 2.57, 0, 0.2, 0.2), 0.08);
+  w = smin(w, ell(x, y, a, -2.7, 2.67, 0, 0.38, 0.42, 0.6), 0.1);
+  const g = gasterSegments(x, y, a, Q_GASTER);
+  return smin(smin(smin(h, m, 0.22), w, 0.1), g, 0.12);
+}
+
+// ---------------- ZANGÃO (bitu): cabeça pequena, olhos enormes, gáster estreito ----------------
+const M_GASTER = [[-2.6, 2.72, 0.74, 0.92, 1.02], [-3.5, 2.7, 0.66, 0.94, 1.04], [-4.35, 2.66, 0.58, 0.86, 0.93], [-5.1, 2.62, 0.48, 0.71, 0.76], [-5.72, 2.58, 0.34, 0.5, 0.52]];
+function sdfMale(x, y, z) {
+  const a = Math.abs(z);
+  let h = ell(x, y, a, 3.75, 2.98, 0, 0.62, 0.56, 0.56);             // cabeça pequena
+  h = smin(h, ell(x, y, a, 4.12, 2.86, 0, 0.42, 0.44, 0.44), 0.3);
+  h = smin(h, ell(x, y, a, 4.45, 2.7, 0, 0.2, 0.2, 0.3), 0.15);
+  h = smin(h, cone(x, y, a, 3.25, 2.9, 0, 2.45, 2.8, 0, 0.25, 0.25), 0.2);  // pescoço
+  let m = ell(x, y, a, 2.05, 2.78, 0, 0.45, 0.55, 0.72);
+  m = smin(m, ell(x, y, a, 1.05, 3.08, 0, 1.12, 0.86, 0.86), 0.35);  // escudo
+  m = smin(m, ell(x, y, a, 0.05, 3.18, 0, 0.4, 0.33, 0.46), 0.25);
+  m = smin(m, ell(x, y, a, 0.95, 2.48, 0, 1.3, 0.66, 0.82), 0.35);
+  m = smin(m, ell(x, y, a, -0.45, 2.63, 0, 0.5, 0.55, 0.56), 0.3);
+  m = smin(m, ell(x, y, a, 1.45, 3.38, 0.78, 0.22, 0.13, 0.17), 0.1); // base das asas
+  m = smin(m, ell(x, y, a, 0.6, 3.32, 0.7, 0.18, 0.1, 0.14), 0.1);
+  for (let i = 0; i < 3; i++) {
+    const e = COXA_END(i);
+    m = smin(m, cone(x, y, a, CA.coxaX[i], 2.15, 0.38, e.x, e.y, e.z, 0.22, 0.19), 0.14);
+  }
+  let w = cone(x, y, a, -0.8, 2.52, 0, -1.2, 2.57, 0, 0.17, 0.16);
+  w = smin(w, ell(x, y, a, -1.35, 2.78, 0, 0.25, 0.33, 0.3), 0.1);
+  w = smin(w, cone(x, y, a, -1.5, 2.62, 0, -1.75, 2.64, 0, 0.15, 0.15), 0.08);
+  w = smin(w, ell(x, y, a, -1.92, 2.72, 0, 0.3, 0.36, 0.46), 0.1);
+  let g = gasterSegments(x, y, a, M_GASTER);
+  g = smin(g, cone(x, y, a, -5.95, 2.56, 0, -6.35, 2.5, 0, 0.2, 0.08), 0.1);   // pontinha
+  return smin(smin(smin(h, m, 0.2), w, 0.1), g, 0.12);
+}
+const sdfBody = (x, y, z) => CA.sdf(x, y, z);
 
 // ---- MANDÍBULA: lâmina triangular curva, grossa no meio e afiada no fio ----
 // x = para frente, z = para dentro (em direção à outra mandíbula), y = cima
@@ -349,10 +478,12 @@ scene.add(ground);
    ===================================================================== */
 const mBody = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.55, clearcoat: 0.3, clearcoatRoughness: 0.45, envMapIntensity: 0.6 });
 const mJaw = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.35, clearcoat: 0.55, clearcoatRoughness: 0.3, envMapIntensity: 0.7 });
-const mLeg = new THREE.MeshPhysicalMaterial({ color: COR.pernas, roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.45, envMapIntensity: 0.6 });
+let mLeg = null;            // criado por casta (cor das pernas)
+const legMat = (c) => { const m = new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.45, envMapIntensity: 0.6 }); addCuticle(m, 0.025, 2.0); return m; };
 const mJoint = new THREE.MeshPhysicalMaterial({ color: COR.juntas, roughness: 0.45, clearcoat: 0.3 });
 const mEye = new THREE.MeshStandardMaterial({ color: '#16110d', roughness: 0.22, metalness: 0.1, flatShading: true });
 const mHair = new THREE.MeshStandardMaterial({ color: COR.pelos, roughness: 0.7, transparent: true, opacity: 0.7 });
+const mOcelo = new THREE.MeshPhysicalMaterial({ color: '#2a1a10', roughness: 0.05, clearcoat: 1 });
 
 function shadowy(m) { m.castShadow = true; m.receiveShadow = true; return m; }
 
@@ -382,15 +513,16 @@ normal = bumpN(-vViewPosition, normal, cuticle(vObjPos) * ${strength.toFixed(3)}
   };
 }
 addCuticle(mBody, 0.05, 1.0);
-addCuticle(mLeg, 0.025, 2.0);
 addCuticle(mJaw, 0.006, 1.5);
 
 
 /* =====================================================================
    5) MONTAGEM DA FORMIGA
    ===================================================================== */
-const ant = new THREE.Group();
+const ant = new THREE.Group();           // move/gira no mundo
+ant.rotation.order = 'YZX';
 scene.add(ant);
+let G = null;                             // modelo da casta atual (filho de "ant")
 
 function hairMesh(list) {
   const geo = new THREE.ConeGeometry(1, 1, 4, 1, true);
@@ -407,28 +539,29 @@ function hairMesh(list) {
 }
 
 function buildBody() {
-  const cHead = new THREE.Color(COR.cabeca), cTor = new THREE.Color(COR.torax);
-  const cGas = new THREE.Color(COR.gaster), cDark = new THREE.Color(COR.juntas);
-  const body = sdfMesh(sdfBody, new V3(-6.3, 1.15, -2.05), new V3(5.35, 3.75, 2.05), 0.05, (x, y, z, n, c) => {
-    c.copy(cGas).lerp(cTor, smooth(x, -3.3, -2.9)).lerp(cHead, smooth(x, 1.4, 2.0));
-    if (y > 3.15) c.lerp(cDark, smooth(y, 3.15, 3.45) * 0.6);
+  const cHead = new THREE.Color(CA.cor.cabeca), cTor = new THREE.Color(CA.cor.torax);
+  const cGas = new THREE.Color(CA.cor.gaster), cDark = new THREE.Color(COR.juntas);
+  const body = sdfMesh(sdfBody, new V3(...CA.min), new V3(...CA.max), 0.05, (x, y, z, n, c) => {
+    c.copy(cGas).lerp(cTor, smooth(x, CA.gasterX - 0.2, CA.gasterX + 0.2)).lerp(cHead, smooth(x, CA.cabecaX - 0.3, CA.cabecaX + 0.3));
+    if (y > CA.espinhoY) c.lerp(cDark, smooth(y, CA.espinhoY, CA.espinhoY + 0.3) * 0.6);
+    if (CA.faixas) for (const bx of CA.faixas) c.multiplyScalar(1 - 0.4 * Math.exp(-Math.pow((x - bx) / 0.06, 2)));  // faixas do gáster
     c.multiplyScalar(0.88 + 0.24 * (0.5 + 0.5 * Math.sin(3.1 * x + 1.3 * Math.sin(2.3 * z)) * Math.sin(2.7 * y + 0.9 * x))); // manchinhas
     const ao = clamp(sdfBody(x + n.x * 0.18, y + n.y * 0.18, z + n.z * 0.18) / 0.18, 0, 1); // dobras mais escuras
     c.multiplyScalar(0.45 + 0.55 * ao);
   }, mBody);
-  ant.add(body);
+  G.add(body);
   // pelos deitados para trás
   const pos = body.geometry.attributes.position.array, nor = body.geometry.attributes.normal.array;
   const count = pos.length / 3, list = [];
-  for (let i = 0; i < 1500; i++) {
+  for (let i = 0; i < CA.pelos; i++) {
     const v = Math.floor(rand() * count);
     const p = new V3().fromArray(pos, v * 3), n = new V3().fromArray(nor, v * 3);
     if (n.y < -0.6 && rand() < 0.7) continue;
     const dir = n.clone().multiplyScalar(0.8).add(new V3(-0.5, 0.1, 0))
       .add(new V3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(0.35)).normalize();
-    list.push({ p, dir, len: p.x < -3 ? 0.14 + rand() * 0.18 : 0.08 + rand() * 0.14, r: 0.008 });
+    list.push({ p, dir, len: p.x < CA.gasterX ? 0.14 + rand() * 0.18 : 0.08 + rand() * 0.14, r: 0.008 });
   }
-  ant.add(hairMesh(list));
+  G.add(hairMesh(list));
 }
 
 // Segmento de perna/antena: grupo "em pé" (eixo +Y, de 0 até len),
@@ -466,22 +599,18 @@ function place(g, a, b) {
 }
 
 // ---- 6 PERNAS articuladas (cinemática inversa para andar) ----
-const legs = [];
+let legs = [];
 function buildLegs() {
-  const SPEC = [
-    { ang: 34, f: 2.9, t: 2.6, ta: 2.3 },   // dianteiras
-    { ang: 96, f: 3.1, t: 2.8, ta: 2.4 },   // do meio
-    { ang: 146, f: 3.6, t: 3.3, ta: 2.9 }   // traseiras (mais longas)
-  ];
+  const SPEC = CA.pernas, R = CA.pernaR;   // dianteiras, do meio, traseiras
   const TARSO = [0.38, 0.17, 0.14, 0.12, 0.19];
   for (const s of [1, -1]) for (let i = 0; i < 3; i++) {
     const L = SPEC[i];
     const ang = (L.ang + (rand() - 0.5) * 8) * Math.PI / 180;
     const dir = new V3(Math.cos(ang), 0, s * Math.sin(ang));
     const C = COXA_END(i); C.z *= s;
-    const troch = segGroup(0.33, 0.17, 0.15, { bulge: 0.15, hairDensity: 2 });
-    const femur = segGroup(L.f, 0.15, 0.12, { bulge: 0.35, skew: 0.8, hairLen: 0.16 });
-    const tibia = segGroup(L.t, 0.1, 0.105, { bulge: 0.1, hairLen: 0.14, hairDensity: 8 });
+    const troch = segGroup(0.33, 0.17 * R, 0.15 * R, { bulge: 0.15, hairDensity: 2 });
+    const femur = segGroup(L.f, 0.15 * R, 0.12 * R, { bulge: 0.35, skew: 0.8, hairLen: 0.16 });
+    const tibia = segGroup(L.t, 0.1 * R, 0.105 * R, { bulge: 0.1, hairLen: 0.14, hairDensity: 8 });
     const spur = shadowy(new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.3, 6), mJoint));
     spur.position.set(0.09, L.t - 0.12, 0); spur.rotation.z = Math.PI - 0.35;   // esporão da tíbia
     tibia.add(spur);
@@ -489,7 +618,7 @@ function buildLegs() {
     const tarsus = new THREE.Group();
     let y0 = 0;
     TARSO.forEach((fr, k) => {
-      const sg = segGroup(L.ta * fr, 0.085 - k * 0.008, 0.075 - k * 0.008, { bulge: 0.12, hairLen: 0.1, hairDensity: 7 });
+      const sg = segGroup(L.ta * fr, (0.085 - k * 0.008) * R, (0.075 - k * 0.008) * R, { bulge: 0.12, hairLen: 0.1, hairDensity: 7 });
       sg.position.y = y0; y0 += L.ta * fr;
       tarsus.add(sg);
     });
@@ -499,7 +628,7 @@ function buildLegs() {
       claw.rotation.set(0.6, 0, -side * 0.45);
       tarsus.add(claw);
     }
-    ant.add(troch, femur, tibia, tarsus);
+    G.add(troch, femur, tibia, tarsus);
     const reach = 0.32 + L.f * 0.84 + L.t * 0.64 + L.ta * 0.9;
     const neutral = new V3(C.x + dir.x * reach, 0.05, C.z + dir.z * reach);
     legs.push({ s, i, C, L, troch, femur, tibia, tarsus, neutral,
@@ -536,24 +665,25 @@ function solveLeg(leg, F) {
 }
 
 // ---- 2 ANTENAS cotoveladas (escapo + 11 gominhos) ----
-const antennae = [];
+let antennae = [];
 function buildAntennae() {
   for (const s of [1, -1]) {
-    const base = new V3(4.4, 2.62, 0.42 * s);
+    const A = CA.antena, F = A.fun, rr = A.r;
+    const base = new V3(A.base[0], A.base[1], A.base[2] * s);
     const g = new THREE.Group();
     g.position.copy(base);
-    ant.add(g);
+    G.add(g);
     const o = new V3();
-    const elbow = new V3(3.15, 3.55, 1.75 * s).sub(base);
-    const mid = o.clone().lerp(elbow, 0.5).add(new V3(0, 0.15, 0.08 * s));
+    const elbow = new V3(A.cotovelo[0], A.cotovelo[1], A.cotovelo[2] * s);   // escapo (curto no zangão)
+    const mid = o.clone().lerp(elbow, 0.5).add(new V3(0, 0.15 * A.escapo, 0.08 * s * A.escapo));
     const add = (a, b, r0, r1, opts) => { const sg = segGroup(a.distanceTo(b), r0, r1, opts); place(sg, a, b); g.add(sg); };
-    add(o, mid, 0.08, 0.095, { bulge: 0.05, hairDensity: 10, hairLen: 0.08 });
-    add(mid, elbow, 0.095, 0.12, { bulge: 0.05, hairDensity: 10, hairLen: 0.08 });
+    add(o, mid, 0.08 * rr, 0.095 * rr, { bulge: 0.05, hairDensity: 10, hairLen: 0.08 });
+    add(mid, elbow, 0.095 * rr, 0.12 * rr, { bulge: 0.05, hairDensity: 10, hairLen: 0.08 });
     let p = elbow;
-    for (let k = 1; k <= 11; k++) {
-      const t = k / 11;
-      const q = elbow.clone().add(new V3(3.1 * t, 0.55 * Math.sin(Math.PI * t * 0.9) - 0.75 * t * t, s * 0.95 * t));
-      const r = 0.075 + 0.055 * t * t;
+    for (let k = 1; k <= A.gomos; k++) {
+      const t = k / A.gomos;
+      const q = elbow.clone().add(new V3(F[0] * t, F[1] * Math.sin(Math.PI * t * 0.9) - F[2] * t * t, s * F[3] * t));
+      const r = (A.fina ? 0.07 : 0.075 + 0.055 * t * t) * rr;
       add(p, q, r * 0.85, r, { bulge: 0.18, joint: false, hairDensity: 14, hairLen: 0.06 });
       p = q;
     }
@@ -562,39 +692,136 @@ function buildAntennae() {
 }
 
 // ---- MANDÍBULAS esculpidas ----
-const jaws = [];
+let jaws = [];
+let jawProto = null;
 function buildMandibles() {
   const cBase = new THREE.Color(COR.mandibula), cEdge = new THREE.Color(COR.mandibulaFio);
-  const proto = sdfMesh(sdfJaw, new V3(-0.15, -0.38, -0.25), new V3(1.45, 0.22, 1.12), 0.014, (x, y, z, n, c) => {
+  const proto = jawProto || sdfMesh(sdfJaw, new V3(-0.15, -0.38, -0.25), new V3(1.45, 0.22, 1.12), 0.014, (x, y, z, n, c) => {
     const edge = 1 - smooth(-sdPoly(x, z, JAW_POLY), 0, 0.14);   // perto do fio = escuro
     c.copy(cBase).lerp(cEdge, Math.max(edge * 0.85, smooth(x, 0.7, 1.3) * 0.7));
   }, mJaw);
-  proto.geometry.translate(0, 0, -0.18);          // dobradiça na origem
+  if (!jawProto) { proto.geometry.translate(0, 0, -0.18); jawProto = proto; }   // dobradiça na origem
+  const J = CA.mandibula;
   for (const s of [1, -1]) {
     const pitch = new THREE.Group();                 // inclinação para baixo
-    pitch.position.set(4.55, 2.12 + s * 0.035, 0.6 * s);
-    pitch.rotation.z = -0.32;
+    pitch.position.set(J.pos[0], J.pos[1] + s * 0.035 * J.escala, J.pos[2] * s);
+    pitch.rotation.z = J.incl;
     const yaw = new THREE.Group();                   // abre/fecha
     const m = proto.clone();
-    m.scale.set(0.95, 0.95, -0.95 * s);              // espelha: +z local = para dentro
+    m.scale.set(J.escala, J.escala, -J.escala * s);  // espelha: +z local = para dentro
     yaw.add(m);
     pitch.add(yaw);
-    ant.add(pitch);
+    G.add(pitch);
     jaws.push({ s, yaw });
   }
 }
 
 // ---- OLHOS COMPOSTOS facetados ----
 function buildEyes() {
+  const E = CA.olho;
   for (const s of [1, -1]) {
     let z = 2.2;
-    while (z > 0 && sdfBody(3.95, 2.55, z * s) > 0) z -= 0.01;
-    const n = gradOf(sdfBody, 3.95, 2.55, z * s);
-    const eye = shadowy(new THREE.Mesh(new THREE.IcosahedronGeometry(0.3, 2), mEye));
-    eye.scale.set(1, 0.82, 0.55);
-    eye.position.set(3.95, 2.55, z * s).addScaledVector(n, 0.05);
+    while (z > 0 && sdfBody(E.x, E.y, z * s) > 0) z -= 0.01;
+    const n = gradOf(sdfBody, E.x, E.y, z * s);
+    // zangão: olhos enormes e bem facetados
+    const eye = shadowy(new THREE.Mesh(new THREE.IcosahedronGeometry(E.r, E.grande ? 4 : 2), mEye));
+    eye.scale.set(1, E.grande ? 1.05 : 0.82, E.grande ? 0.8 : 0.55);
+    eye.position.set(E.x, E.y, z * s).addScaledVector(n, E.sai);
     eye.quaternion.setFromUnitVectors(new V3(0, 0, 1), n);
-    ant.add(eye);
+    G.add(eye);
+  }
+  // ocelos: 3 olhinhos simples no alto da cabeça (rainha e zangão)
+  if (CA.ocelos) CA.ocelos.forEach(([x, y0, z]) => {
+    let y = y0 + 0.5;
+    while (y > y0 - 0.6 && sdfBody(x, y, z) > 0) y -= 0.01;
+    const o = shadowy(new THREE.Mesh(new THREE.SphereGeometry(CA.ocR, 14, 10), mOcelo));
+    o.position.set(x, y + CA.ocR * 0.3, z);
+    o.scale.y = 0.7;
+    G.add(o);
+  });
+}
+
+// ---- ASAS (rainha e zangão): 4 asas transparentes com nervuras ----
+let wings = [];
+const wingTex = {};
+function wingTexture(fore) {
+  const k = fore ? 'f' : 'h';
+  if (wingTex[k]) return wingTex[k];
+  const W = 1024, H = 320, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.setTransform(W, 0, 0, -H, 0, H);                  // desenha em coordenadas 0..1 (v para cima)
+  const outline = () => {
+    g.beginPath();
+    g.moveTo(0.0, 0.6);
+    g.bezierCurveTo(0.3, 0.8, 0.7, 0.92, 0.94, 0.86);  // borda da frente
+    g.bezierCurveTo(1.0, 0.82, 1.0, 0.55, 0.95, 0.45); // pontinha arredondada
+    g.bezierCurveTo(0.8, 0.18, 0.5, 0.04, 0.25, 0.18); // borda de trás
+    g.bezierCurveTo(0.1, 0.28, 0.02, 0.42, 0.0, 0.5);
+    g.closePath();
+  };
+  outline();
+  const gr = g.createLinearGradient(0, 0, 1, 0);
+  gr.addColorStop(0, 'rgba(150,115,80,.5)'); gr.addColorStop(0.3, 'rgba(185,160,125,.22)'); gr.addColorStop(1, 'rgba(200,180,150,.14)');
+  g.fillStyle = gr; g.fill();
+  g.save(); outline(); g.clip();
+  g.strokeStyle = 'rgba(70,40,20,.95)'; g.lineCap = 'round';
+  const v = (w, pts) => { g.lineWidth = w * 1.7; g.beginPath(); g.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]); g.stroke(); };
+  if (fore) {
+    v(0.012, [0, 0.62, 0.3, 0.8, 0.6, 0.88]);                    // costa
+    v(0.008, [0.02, 0.58, 0.35, 0.74, 0.55, 0.8]);               // radial
+    g.fillStyle = 'rgba(110,70,40,.9)';                           // pterostigma
+    g.beginPath(); g.ellipse(0.6, 0.845, 0.055, 0.03, 0.2, 0, Math.PI * 2); g.fill();
+    v(0.006, [0.55, 0.8, 0.62, 0.68, 0.8, 0.62, 0.97, 0.66]);    // setor radial
+    v(0.006, [0.35, 0.74, 0.42, 0.6, 0.62, 0.68]);               // célula cubital
+    v(0.006, [0.03, 0.52, 0.42, 0.6]);                            // média
+    v(0.006, [0.42, 0.6, 0.46, 0.45, 0.85, 0.42]);
+    v(0.006, [0.03, 0.48, 0.3, 0.4, 0.46, 0.45]);                // cubital
+    v(0.006, [0.3, 0.4, 0.55, 0.22]);
+    v(0.005, [0.02, 0.45, 0.22, 0.24]);                           // anal
+  } else {
+    v(0.01, [0, 0.6, 0.4, 0.82, 0.75, 0.88]);
+    v(0.006, [0.03, 0.54, 0.45, 0.6, 0.9, 0.6]);
+    v(0.006, [0.03, 0.5, 0.35, 0.4, 0.7, 0.3]);
+    v(0.005, [0.25, 0.57, 0.3, 0.42]);
+  }
+  g.restore();
+  outline(); g.strokeStyle = 'rgba(100,70,45,.7)'; g.lineWidth = 0.004; g.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return (wingTex[k] = t);
+}
+const mWing = {};
+function buildWings() {
+  wings = [];
+  if (!CA.asas) return;
+  for (const kind of ['frente', 'tras']) {
+    const A = CA.asas[kind], fore = kind === 'frente';
+    if (!mWing[kind]) mWing[kind] = new THREE.MeshPhysicalMaterial({
+      map: wingTexture(fore), transparent: true, side: THREE.DoubleSide, depthWrite: false,
+      roughness: 0.2, metalness: 0, iridescence: 0.6, iridescenceIOR: 1.3, iridescenceThicknessRange: [250, 600],
+      envMapIntensity: 0.5
+    });
+    const geo = new THREE.PlaneGeometry(A.comp, A.larg, 16, 4);
+    geo.translate(A.comp / 2, -(0.62 - 0.5) * A.larg, 0);       // base (borda da frente) na origem
+    geo.rotateX(-Math.PI / 2);
+    const p = geo.attributes.position;
+    for (let i = 0; i < p.count; i++) {                          // levemente curvada
+      const x = p.getX(i), z = p.getZ(i);
+      p.setY(i, 0.05 * z * z + 0.006 * x * x);
+    }
+    geo.computeVertexNormals();
+    for (const s of [1, -1]) {
+      const root = new THREE.Group();
+      root.position.set(A.base[0], A.base[1], A.base[2] * s);
+      const yaw = new THREE.Group(), flap = new THREE.Group();
+      const m = new THREE.Mesh(geo, mWing[kind]);
+      m.scale.z = s;                                             // espelha a asa da direita
+      m.renderOrder = fore ? 3 : 2;
+      flap.add(m); yaw.add(flap); root.add(yaw); G.add(root);
+      wings.push({ s, fore, yaw, flap, rest: fore ? 0.28 : 0.38 });
+    }
   }
 }
 
@@ -705,7 +932,8 @@ function buildLeaf() {
   leaf.position.set(5.75, 2.05, 0);
   leaf.rotation.set(0, 0.12, 0.42);    // em pé, presa pela ponta, inclinada para trás por cima da cabeça
   leaf.visible = false;
-  ant.add(leaf);
+  G.add(leaf);
+  return leaf;
 }
 
 /* =====================================================================
@@ -714,8 +942,10 @@ function buildLeaf() {
 const state = {
   yaw: 0, speed: 0, yawRate: 0, phase: 0,
   target: null, wander: false, wanderWait: 0,
-  biteT: -1, carrying: false
+  biteT: -1, carrying: false,
+  flyT: -1, fly: 0              // voo nupcial (rainha e zangão): tempo e quanto está no ar (0..1)
 };
+const VOO = { subir: 1.2, pairar: 5.5, descer: 1.6, altura: 7 };   // segundos e altura (mm)
 const SWING = 0.42;          // fração do passo com a pata no ar
 const STRIDE = 3.4;          // mm por ciclo
 const fwd = new V3(), vel = new V3(), _w = new V3(), _l = new V3();
@@ -733,7 +963,7 @@ function updateWalk(dt) {
     const turn = clamp(diff, -2.2 * dt, 2.2 * dt);
     state.yaw += turn;
     state.yawRate = turn / dt;
-    wantSpeed = dist < 1.0 ? 0 : VELOCIDADE * clamp(1 - Math.abs(diff) / 1.6, 0.12, 1) * clamp(dist / 3, 0.3, 1);
+    wantSpeed = dist < 1.0 ? 0 : CA.velocidade * clamp(1 - Math.abs(diff) / 1.6, 0.12, 1) * clamp(dist / 3, 0.3, 1);
     if (dist < 1.0) { state.target = null; state.wanderWait = 0.8 + Math.random() * 1.5; }
   } else {
     state.yawRate = 0;
@@ -750,13 +980,40 @@ function updateWalk(dt) {
   ant.rotation.y = state.yaw;
   vel.copy(fwd).multiplyScalar(state.speed);
 
+  // voo: sobe, paira e desce; enquanto isso as pernas ficam penduradas
+  if (state.flyT >= 0) {
+    state.flyT += dt;
+    const T = state.flyT, total = VOO.subir + VOO.pairar + VOO.descer;
+    state.fly = T < VOO.subir ? smooth(T, 0, VOO.subir)
+      : T < VOO.subir + VOO.pairar ? 1 : 1 - smooth(T, VOO.subir + VOO.pairar, total);
+    if (T >= total) {
+      state.flyT = -1; state.fly = 0;
+      ant.updateMatrixWorld(true);
+      legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld).setY(0.05 * CA.escala); });
+    }
+  }
+  if (state.fly > 0) {
+    ant.position.y = state.fly * VOO.altura * CA.escala + Math.sin(performance.now() / 260) * 0.25 * state.fly;
+    ant.rotation.z = 0.12 * state.fly;              // nariz um pouco para cima
+    ant.updateMatrixWorld(true);
+    inv.copy(ant.matrixWorld).invert();
+    for (const leg of legs) {
+      _w.copy(leg.foot).applyMatrix4(inv);           // pé no chão (coordenadas locais)
+      _l.copy(leg.neutral).multiplyScalar(0.7).setY(-0.9);   // pendurado
+      _l.x += leg.C.x * 0.3; _l.z += leg.C.z * 0.3;
+      solveLeg(leg, _w.lerp(_l, state.fly));
+    }
+    return;
+  }
+  ant.rotation.z = 0;
+
   // passos (marcha em tripé)
   ant.updateMatrixWorld(true);
   const anySwing = legs.some((l) => l.swing);
-  const far = legs.some((l) => _w.copy(l.neutral).applyMatrix4(ant.matrixWorld).setY(0).distanceTo(_l.copy(l.foot).setY(0)) > 0.45);
-  const rate = Math.max(state.speed / STRIDE, Math.abs(state.yawRate) * 0.9, (anySwing || far) ? 1.6 : 0);
+  const far = legs.some((l) => _w.copy(l.neutral).applyMatrix4(ant.matrixWorld).setY(0).distanceTo(_l.copy(l.foot).setY(0)) > 0.45 * CA.escala);
+  const rate = Math.max(state.speed / (STRIDE * CA.escala), Math.abs(state.yawRate) * 0.9, (anySwing || far) ? 1.6 : 0);
   state.phase = (state.phase + dt * rate) % 1;
-  ant.position.y = state.speed > 0.5 ? 0.04 * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0;
+  ant.position.y = state.speed > 0.5 ? 0.04 * CA.escala * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0;
   ant.updateMatrixWorld(true);
   inv.copy(ant.matrixWorld).invert();
   const swingTime = SWING / Math.max(rate, 0.01);
@@ -768,7 +1025,7 @@ function updateWalk(dt) {
       leg.start.copy(leg.foot);
       leg.target.copy(leg.neutral).applyMatrix4(ant.matrixWorld)
         .addScaledVector(vel, swingTime + (1 - SWING) / Math.max(rate, 0.01) * 0.5);
-      leg.target.y = 0.05;
+      leg.target.y = 0.05 * CA.escala;
     } else if (!inSwing && leg.swing) {
       leg.swing = false;
       leg.foot.copy(leg.target);
@@ -776,7 +1033,7 @@ function updateWalk(dt) {
     if (leg.swing) {
       const s = smooth(ph / SWING, 0, 1);
       leg.foot.lerpVectors(leg.start, leg.target, s);
-      leg.foot.y = 0.05 + 0.7 * Math.sin(Math.PI * ph / SWING);
+      leg.foot.y = (0.05 + 0.7 * Math.sin(Math.PI * ph / SWING)) * CA.escala;
     }
     solveLeg(leg, _l.copy(leg.foot).applyMatrix4(inv));
   }
@@ -793,6 +1050,15 @@ function updateJawsAndAntennae(t, dt) {
   jaws.forEach((j) => { j.yaw.rotation.y += (-j.s * open - j.yaw.rotation.y) * Math.min(1, dt * 18); });
   const walking = state.speed > 0.5, excited = state.biteT >= 0;
   if (leaf) leaf.rotation.x = Math.sin(state.phase * Math.PI * 4) * (walking ? 0.05 : 0.01) + Math.sin(t * 0.9) * 0.02;
+  // asas: deitadas sobre o corpo; no voo abrem para os lados e batem rápido
+  const fl = state.fly, buzz = state.flyT >= 0 ? Math.max(fl, 0.35) : 0;
+  wings.forEach((w) => {
+    const spread = w.rest + (1.45 - w.rest) * smooth(buzz, 0, 0.5);
+    w.yaw.rotation.y = w.s * (spread - Math.PI);
+    const beat = Math.sin(t * Math.PI * 2 * 13 + (w.fore ? 0 : 0.6));
+    w.flap.rotation.z = (w.fore ? 0.06 : 0.02) + buzz * (0.25 + 0.75 * beat);
+    w.flap.rotation.x = buzz * 0.25 * Math.cos(t * Math.PI * 2 * 13) * w.s;
+  });
   antennae.forEach((g, i) => {
     const f = walking || excited ? 6 : 1.7, amp = walking || excited ? 0.16 : 0.08;
     g.rotation.y = Math.sin(t * f + i * Math.PI) * amp;
@@ -829,12 +1095,12 @@ function home() {
 // câmera acompanha a formiga quando ela anda
 const _c = new V3(), lastAnt = new V3();
 function follow() {
-  _c.subVectors(ant.position, lastAnt).setY(0);
+  _c.subVectors(ant.position, lastAnt);
   lastAnt.copy(ant.position);
   controls.target.add(_c);
   camera.position.add(_c);
-  key.position.copy(ant.position).add(KEY_OFFSET);
-  key.target.position.copy(ant.position);
+  key.position.copy(ant.position).setY(0).add(KEY_OFFSET);
+  key.target.position.copy(ant.position).setY(0);
 }
 
 const hint = document.getElementById('hint');
@@ -880,6 +1146,12 @@ bLeaf.addEventListener('click', () => {
   bLeaf.classList.toggle('on', state.carrying);
 });
 document.getElementById('bBite').addEventListener('click', bite);
+document.getElementById('bFly').addEventListener('click', () => {
+  if (!CA.asas) return;
+  if (state.flyT < 0) state.flyT = 0;
+  else if (state.flyT < VOO.subir + VOO.pairar) state.flyT = VOO.subir + VOO.pairar;   // pousar
+});
+document.querySelectorAll('.castes button').forEach((b) => b.addEventListener('click', () => switchCaste(b.dataset.caste)));
 document.getElementById('bHome').addEventListener('click', home);
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -889,40 +1161,84 @@ window.addEventListener('resize', () => {
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
 /* =====================================================================
-   8) INÍCIO
+   8) TROCA DE CASTA E INÍCIO
    ===================================================================== */
-setTimeout(() => {
+const built = {};      // modelos já esculpidos (cada casta é feita uma vez só)
+function buildCaste(name) {
+  CA = CASTES[name];
+  seed = 7;
+  G = new THREE.Group();
+  legs = []; antennae = []; jaws = []; wings = []; leaf = null;
+  mLeg = legMat(CA.cor.pernas);
   const t0 = performance.now();
   buildBody();
   buildLegs();
   buildAntennae();
   buildMandibles();
   buildEyes();
-  buildLeaf();
-  ant.updateMatrixWorld(true);
-  legs.forEach((l) => { l.foot.copy(l.neutral); solveLeg(l, l.neutral); });
-  console.log('formiga pronta em ' + Math.round(performance.now() - t0) + ' ms');
+  buildWings();
+  if (CA.folha) buildLeaf();
+  legs.forEach((l) => solveLeg(l, l.neutral));
+  const box = new THREE.Box3().setFromObject(G);
+  console.log(CA.nome + ' pronta em ' + Math.round(performance.now() - t0) + ' ms');
+  return (built[name] = { G, legs, antennae, jaws, wings, leaf, center: box.getCenter(new V3()), radius: box.getSize(new V3()).length() / 2 });
+}
 
-  const box = new THREE.Box3().setFromObject(ant);
-  box.getCenter(centerLocal);
-  radius = box.getSize(new V3()).length() / 2;
-  home();
-  document.getElementById('loading').style.opacity = 0;
-  hint.style.opacity = 1;
-  setTimeout(() => { hint.style.opacity = 0; }, 7000);
+const loading = document.getElementById('loading');
+let current = null;
+function switchCaste(name, first) {
+  if (name === current) return;
+  document.querySelectorAll('.castes button').forEach((b) => b.classList.toggle('on', b.dataset.caste === name));
+  const go = () => {
+    const old = current ? built[current].G : null;
+    const m = built[name] || buildCaste(name);
+    CA = CASTES[name];
+    if (old) ant.remove(old);
+    ({ G, legs, antennae, jaws, wings, leaf } = m);
+    ant.add(G);
+    current = name;
+    ant.scale.setScalar(CA.escala);
+    ant.position.y = 0; ant.rotation.z = 0;
+    state.flyT = -1; state.fly = 0; state.biteT = -1;
+    state.carrying = state.carrying && CA.folha;
+    if (leaf) leaf.visible = state.carrying;
+    bLeaf.classList.toggle('on', state.carrying);
+    document.getElementById('tLeaf').classList.toggle('hide', !CA.folha);
+    document.getElementById('tFly').classList.toggle('hide', !CA.asas);
+    // pés no chão, na posição de descanso
+    ant.updateMatrixWorld(true);
+    legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld); l.foot.y = 0.05 * CA.escala; solveLeg(l, l.neutral); });
+    centerLocal.copy(m.center);
+    radius = m.radius * CA.escala;
+    const sh = key.shadow.camera, e = 12 * CA.escala;
+    Object.assign(sh, { left: -e, right: e, top: e, bottom: -e });
+    sh.updateProjectionMatrix();
+    lastAnt.copy(ant.position);
+    home();
+    loading.style.opacity = 0;
+  };
+  if (built[name]) go();
+  else {
+    loading.textContent = '🐜 Esculpindo a ' + CASTES[name].nome.replace('zangão', 'formiga zangão') + '…';
+    loading.style.opacity = 1;
+    setTimeout(go, first ? 60 : 40);
+  }
+}
 
-  const clock = new THREE.Clock();
-  renderer.setAnimationLoop(() => {
-    const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-    updateWalk(dt);
-    updateJawsAndAntennae(t, dt);
-    follow();
-    if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
-    controls.update();
-    renderer.render(scene, camera);
-  });
-  window.SAUVA = { state, ant, bite, home, camera, controls };   // para testes no console
-}, 60);
+switchCaste('operaria', true);
+setTimeout(() => { hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 7000); }, 900);
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  if (!G || !legs.length) { renderer.render(scene, camera); return; }
+  updateWalk(dt);
+  updateJawsAndAntennae(t, dt);
+  follow();
+  if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
+  controls.update();
+  renderer.render(scene, camera);
+});
+window.SAUVA = { state, ant, bite, home, camera, controls, switchCaste };   // para testes no console
 })();
 </script>
 </body>
