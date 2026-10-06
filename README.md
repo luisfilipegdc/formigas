@@ -1,6 +1,7 @@
 # 🐜 Saúva 3D
 
-Uma formiga saúva (a formiga vermelha de cabeção) em 3D, para girar e dar zoom com o dedo.
+Uma formiga saúva (a formiga vermelha de cabeção) em 3D realista, para girar e dar zoom com o dedo.
+O corpo é "esculpido" no próprio navegador ao abrir a página (leva 1–3 segundos no iPad).
 Fica tudo num único arquivo, `index.html`: não tem build, nem servidor, nem som.
 
 ## Como usar
