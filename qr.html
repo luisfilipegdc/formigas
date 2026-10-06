@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Code — Museu dos Insetos 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Baloo 2', ui-rounded, system-ui, sans-serif; color: #4a2a12; background: #f3eee4; }
+  .bar { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 16px; }
+  .bar button, .bar input { font-family: inherit; font-size: 18px; border-radius: 999px; border: 3px solid #4a2a12; padding: 6px 18px; }
+  .bar button { background: #ffd23f; font-weight: 800; cursor: pointer; }
+  .bar input { width: min(460px, 90vw); background: #fff; }
+  .sheet {
+    width: 186mm; min-height: 270mm; margin: 0 auto 24px; background: #fff; border-radius: 6mm;
+    padding: 14mm 12mm; display: flex; flex-direction: column; align-items: center; text-align: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,.12); border: 1.5mm dashed #f0c64a;
+  }
+  h1 { font-size: 30pt; line-height: 1.05; margin: 0; font-weight: 800; }
+  .bugs { font-size: 42pt; line-height: 1; margin-bottom: 4mm; }
+  .sub { font-size: 16pt; margin: 3mm 0 8mm; font-weight: 600; }
+  #qr { width: 120mm; height: 120mm; padding: 5mm; background: #fff; border: 1mm solid #4a2a12; border-radius: 5mm; }
+  #qr svg { width: 100%; height: 100%; display: block; }
+  .steps { font-size: 15pt; margin-top: 8mm; line-height: 1.4; }
+  .url { font-size: 13pt; margin-top: 6mm; word-break: break-all; font-weight: 800; }
+  .foot { margin-top: auto; padding-top: 6mm; font-size: 11pt; opacity: .7; }
+  @media print {
+    body { background: #fff; }
+    .bar { display: none; }
+    .sheet { box-shadow: none; margin: 0 auto; border-color: #f0c64a; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <input id="url" aria-label="Endereço do site">
+  <button id="print">🖨️ Imprimir</button>
+</div>
+<div class="sheet">
+  <div class="bugs">🐜 🐝</div>
+  <h1>Museu dos Insetos 3D</h1>
+  <div class="sub">Formigas e abelhas em 3D para girar, dar zoom e explorar!</div>
+  <div id="qr"></div>
+  <div class="steps">📱 Aponte a câmera do celular ou do tablet<br>para o código e toque no link.</div>
+  <div class="url" id="urlText"></div>
+  <div class="foot">Grátis, sem anúncios e sem cadastro.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+(function () {
+  // por padrão usa o endereço onde este site está publicado (a página inicial)
+  const base = location.origin + location.pathname.replace(/qr\.html$/, '');
+  const input = document.getElementById('url');
+  input.value = new URLSearchParams(location.search).get('url') || base;
+  function draw() {
+    const u = input.value.trim();
+    document.getElementById('urlText').textContent = u;
+    if (!window.qrcode) { document.getElementById('qr').textContent = 'Sem internet para gerar o código.'; return; }
+    const q = qrcode(0, 'H');            // correção alta: funciona mesmo com o papel amassado
+    q.addData(u);
+    q.make();
+    document.getElementById('qr').innerHTML = q.createSvgTag({ cellSize: 8, margin: 0, scalable: true });
+  }
+  input.addEventListener('input', draw);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  draw();
+})();
+</script>
+</body>
+</html>
