@@ -52,6 +52,38 @@
   }
   #hint { bottom: max(24px, env(safe-area-inset-bottom)); opacity: 0; }
   #loading { top: 50%; transform: translate(-50%, -50%); }
+  .castes .hivebtn { width: 112px; margin-left: 8px; background: #ffd77a; }
+  body.hive .castes, body.hive .tools, body.hive #hint { display: none; }
+  .hiveui { display: none; }
+  body.hive .hiveui { display: block; }
+  .hiveui .big {
+    position: fixed; left: max(16px, env(safe-area-inset-left)); top: max(16px, env(safe-area-inset-top));
+    width: 100px; height: 92px; border-radius: 24px; border: 5px solid #fff; background: #ffd23f; color: #4a2a12;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: inherit; cursor: pointer;
+    box-shadow: 0 6px 0 rgba(74,42,18,.15), 0 10px 20px rgba(74,42,18,.15);
+  }
+  .hiveui .big b { font-size: 40px; line-height: 1.1; } .hiveui .big span { font-size: 16px; font-weight: 800; }
+  .hiveui .round {
+    position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom));
+    width: 96px; height: 96px; border-radius: 50%; border: 5px solid #fff; background: #4aa8ff; font-size: 44px; cursor: pointer;
+    box-shadow: 0 6px 0 rgba(20,70,140,.25), 0 10px 20px rgba(20,70,140,.2);
+  }
+  .nlabel {
+    position: fixed; left: 0; top: 0; border: 4px solid #fff; border-radius: 999px; background: rgba(255,255,255,.9);
+    font-family: inherit; font-size: 18px; font-weight: 800; color: #4a2a12; padding: 4px 14px 4px 8px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 6px 14px rgba(0,0,0,.2);
+  }
+  .nlabel b { font-size: 24px; }
+  .nlabel.on { background: #ffd23f; }
+  #card {
+    position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%);
+    width: min(560px, calc(100vw - 160px)); background: #fff; border-radius: 26px; padding: 14px 22px 16px; color: #4a2a12;
+    box-shadow: 0 12px 30px rgba(0,0,0,.25); transition: transform .4s cubic-bezier(.3,1.4,.6,1);
+  }
+  #card.on { transform: translate(-50%, 0); }
+  #card b { font-size: 28px; display: block; }
+  #card p { font-size: 21px; margin: 4px 0 0; line-height: 1.3; }
+  #cardX { position: absolute; right: 10px; top: 8px; border: 0; background: #eee; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; }
   #fail { position: fixed; inset: 0; display: none; place-items: center; text-align: center; font-size: 26px; color: #4a2a12; padding: 30px; background: #cfe3ef; }
   @media (max-width: 700px) { .castes button, .castes a { width: 76px; height: 76px; } #hint { font-size: 16px; } }
 </style>
@@ -62,6 +94,13 @@
   <button data-caste="operaria" class="on" aria-label="Operária"><b>🐝</b><span>operária</span></button>
   <button data-caste="rainha" aria-label="Rainha"><b>👑</b><span>rainha</span></button>
   <button data-caste="zangao" aria-label="Zangão"><b>👀</b><span>zangão</span></button>
+  <button id="bHive" class="hivebtn" aria-label="Visitar a colmeia"><b>🍯</b><span>colmeia</span></button>
+</div>
+<div class="hiveui">
+  <button id="bBack" class="big" aria-label="Voltar para a abelha"><b>🐝</b><span>voltar</span></button>
+  <button id="bTour" class="round" aria-label="Próxima parte">⏭</button>
+  <div id="hiveLabels"></div>
+  <div id="card"><button id="cardX" aria-label="Fechar">✕</button><b id="cardT"></b><p id="cardP"></p></div>
 </div>
 <div class="tools">
   <div class="tool"><button id="bFly" aria-label="Voar">✈️</button><span>voar</span></div>
@@ -898,6 +937,7 @@ const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 let down = null;
 renderer.domElement.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
 renderer.domElement.addEventListener('pointerup', (e) => {
+  if (hiveMode) return;
   if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10 || performance.now() - down.t > 400) return;
   ndc.set(e.clientX / window.innerWidth * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
@@ -955,6 +995,543 @@ window.addEventListener('resize', () => {
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
 /* =====================================================================
+   8) COLMEIA — cena à parte: caixa de colmeia aberta na frente, com o
+   favo (hexágonos de cera), mel, pólen, ovos, larvas, cria fechada,
+   realeira, a rainha com suas operárias, a dança e a entrada.
+   Unidades = mm, no tamanho real (célula de operária ≈ 5,4 mm).
+   ===================================================================== */
+const HIVE = {
+  comb: { x0: -80, x1: 80, y0: 15, y1: 115 },
+  CD: 10,                                     // profundidade das células
+  brood: { cx: 0, cy: 52, rx: 56, ry: 33 },
+  queen: { x: -36, y: 36 },
+  dance: { x: 26, y: 27, ang: 1.0 },
+  realeiras: [[-63, 30], [-52, 22]],
+  entrance: new V3(0, 2, 10)
+};
+const hive = { built: false, scene: null, agents: [], stop: -1, flight: null, labels: [] };
+let hiveMode = false;
+
+function woodTexture() {
+  const W = 512, c = document.createElement('canvas'); c.width = c.height = W;
+  const g = c.getContext('2d');
+  g.fillStyle = '#b98a55'; g.fillRect(0, 0, W, W);
+  for (let i = 0; i < 160; i++) {
+    const y = Math.random() * W, a = rnd(0.5, 3);
+    g.strokeStyle = 'rgba(' + (Math.random() < 0.5 ? '120,80,40,' : '220,180,130,') + rnd(0.1, 0.35) + ')';
+    g.lineWidth = rnd(0.6, 2.4);
+    g.beginPath(); g.moveTo(0, y);
+    for (let x = 0; x <= W; x += 16) g.lineTo(x, y + a * Math.sin(x * 0.02 + i) + 3 * Math.sin(x * 0.005 + i * 0.3));
+    g.stroke();
+  }
+  for (let i = 0; i < 4; i++) {           // nós da madeira
+    const x = rnd(40, W - 40), y = rnd(40, W - 40);
+    for (let r = 18; r > 2; r -= 3) { g.strokeStyle = 'rgba(100,60,30,.35)'; g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, r * 2.2, r, 0, 0, 7); g.stroke(); }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding;
+  return t;
+}
+// textura de favo para o quadro de trás (só aparece ao fundo)
+function combBackTexture() {
+  const W = 1024, H = 640, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#6a4a1e'; g.fillRect(0, 0, W, H);
+  const a = 10, R = a / Math.cos(Math.PI / 6);
+  for (let j = 0, y = 6; y < H + R; j++, y += 1.5 * R) for (let x = (j % 2) * a; x < W + a; x += 2 * a) {
+    const v = y / H;
+    g.fillStyle = v < 0.3 ? 'hsl(' + rnd(38, 46) + ',70%,' + rnd(55, 66) + '%)' : (Math.random() < 0.7 ? 'hsl(' + rnd(30, 36) + ',45%,' + rnd(45, 55) + '%)' : 'hsl(' + rnd(20, 45) + ',70%,' + rnd(40, 55) + '%)');
+    g.beginPath();
+    for (let k = 0; k < 6; k++) { const an = Math.PI / 2 + k * Math.PI / 3; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(an) * R * 0.86, y + Math.sin(an) * R * 0.86); }
+    g.fill();
+  }
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+  return t;
+}
+
+// ---------- abelhinhas da colmeia: versão leve, com 4 poses de passada + voando ----------
+function mergeUV(parts) {
+  const pos = [], nor = [], uv = [];
+  parts.forEach(([geo, m]) => {
+    const g = geo.index ? geo.toNonIndexed() : geo.clone();
+    g.applyMatrix4(m);
+    pos.push(...g.attributes.position.array); nor.push(...g.attributes.normal.array); uv.push(...g.attributes.uv.array);
+  });
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  out.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  return out;
+}
+function bakeBee(name) {
+  const save = CA;
+  CA = CASTES[name];
+  const H = CA.cabeca, cHead = new THREE.Color(CA.cor.cabeca), cTor = new THREE.Color(CA.cor.torax), cFuzz = new THREE.Color(CA.cor.pelo);
+  const cAmb = new THREE.Color(CA.cor.ambar), cDark = new THREE.Color(CA.cor.escuro);
+  const headX = H.x - H.rx * 1.05, gx = CA.abd[0][0] + CA.abd[0][2];
+  const body = sdfMesh(sdfBee, new V3(...CA.min), new V3(...CA.max), 0.2, (x, y, z, n, c) => {
+    if (x > headX) c.copy(cHead).lerp(cFuzz, 0.15);
+    else if (x > gx - 0.15) c.copy(cTor).lerp(cFuzz, 0.55 + 0.2 * vnoise3(x * 5, y * 5, z * 5));   // tórax peludinho
+    else {
+      const b = abdBand(x);
+      c.copy(cDark).lerp(cAmb, b.u < CA.faixas[b.i] ? 1 : 0);
+      if (b.u < 0.2) c.lerp(cFuzz, 0.4);
+    }
+    const ao = clamp(sdfBee(x + n.x * 0.25, y + n.y * 0.25, z + n.z * 0.25) / 0.25, 0, 1);
+    c.multiplyScalar(0.5 + 0.5 * ao);
+  }, mBody);
+  const parts = [[body.geometry, new THREE.Matrix4(), null]];
+  const cLeg = new THREE.Color(CA.cor.pernas), cEye = new THREE.Color('#1e1915');
+  const tube = (a, b, r0, r1, out, col) => {
+    const len = a.distanceTo(b), g = new THREE.CylinderGeometry(r1, r0, len, 5, 1, true);
+    g.translate(0, len / 2, 0);
+    out.push([g, new THREE.Matrix4().compose(a, new THREE.Quaternion().setFromUnitVectors(UP, new V3().subVectors(b, a).normalize()), new V3(1, 1, 1)), col || cLeg]);
+  };
+  // olhos
+  for (const s of [1, -1]) {
+    const big = CA.olho.grande;
+    parts.push([new THREE.SphereGeometry(1, 10, 8), new THREE.Matrix4().compose(new V3(CA.olho.x, CA.olho.y, s * (big ? 0.62 : 0.95)),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(s * (big ? 0.45 : 0.12), 0, 0)), big ? new V3(0.62, 1.2, 0.58) : new V3(0.42, 0.88, 0.32)), cEye]);
+  }
+  // antenas
+  for (const s of [1, -1]) {
+    const b0 = new V3(H.x + H.rx * 0.82, H.y + 0.15, 0.24 * s), el = b0.clone().add(new V3(0.25, 0.95, 0.28 * s));
+    tube(b0, el, 0.07, 0.08, parts);
+    const A = CA.antena;
+    let p = el;
+    for (let q = 1; q <= 3; q++) { const t = q / 3, nx = el.clone().add(new V3(A.comp * 0.85 * t, 0.35 * Math.sin(Math.PI * t) - 0.45 * t * t, s * 0.45 * t)); tube(p, nx, 0.07, 0.075, parts); p = nx; }
+  }
+  // pernas
+  const L6 = [];
+  CA.pernas.forEach((L, i) => { for (const s of [1, -1]) {
+    const ang = L.ang * Math.PI / 180, dir = new V3(Math.cos(ang), 0, s * Math.sin(ang));
+    const C = COXA_END(i); C.z *= s;
+    const reach = 0.32 + L.f * 0.62 + L.t * 0.55 + L.ta * 0.75;
+    L6.push({ s, i, L, C, neutral: new V3(C.x + dir.x * reach, 0.05, C.z + dir.z * reach), group: ((s === 1) === (i % 2 === 0)) ? 0 : 1 });
+  } });
+  const legTubes = (lg, F, out) => {
+    const P = legPoints(lg, F), hind = lg.i === 2;
+    tube(P[0], P[1], 0.2, 0.18, out); tube(P[1], P[2], 0.2, 0.15, out);
+    tube(P[2], P[3], 0.14, hind ? 0.26 : 0.14, out); tube(P[3], P[4], 0.1, 0.06, out);
+  };
+  const geos = [];
+  for (let pose = 0; pose < 4; pose++) {
+    const out = parts.slice();
+    L6.forEach((lg) => {
+      const ph = (pose + lg.group * 2) % 4, F = lg.neutral.clone();
+      F.x += [0.8, 0, -0.8, 0][ph]; F.y = ph === 1 ? 0.6 : 0.05;
+      legTubes(lg, F, out);
+    });
+    geos.push(mergeColored(out));
+  }
+  { const out = parts.slice(); const F = new V3(); L6.forEach((lg) => { flightPose(lg, 0, F); legTubes(lg, F, out); }); geos.push(mergeColored(out)); }
+  // asas (dobradas e abertas)
+  const wingGeo = (open) => {
+    const parts2 = [];
+    for (const kind of ['frente', 'tras']) {
+      const A = CA.asas[kind], fore = kind === 'frente';
+      for (const s of [1, -1]) {
+        const g = new THREE.PlaneGeometry(A.comp, A.larg);
+        g.translate(A.comp / 2, -0.1 * A.larg, 0); g.rotateX(-Math.PI / 2);
+        const ang = open ? (fore ? 1.35 : 1.5) : (fore ? Math.PI - 0.06 : Math.PI - 0.1);
+        const m = new THREE.Matrix4().compose(new V3(A.base[0], A.base[1] + (fore ? 0.02 : 0), A.base[2] * s),
+          new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -s * ang, open ? 0.18 : 0.06, 'YZX')), new V3(1, 1, s));
+        parts2.push([g, m, fore]);
+      }
+    }
+    const fore = mergeUV(parts2.filter((p) => p[2])), back = mergeUV(parts2.filter((p) => !p[2]));
+    return { fore, back };
+  };
+  const r = { poses: geos, wFold: wingGeo(false), wOpen: wingGeo(true), len: CA.max[0] - CA.min[0] };
+  CA = save;
+  return r;
+}
+
+function larvaGeo() {
+  const parts = [], cBody = new THREE.Color('#f8f1e0');
+  const N = 10, R = 1.25;
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1), a = -0.3 * Math.PI + t * 1.55 * Math.PI, r = 0.45 + 0.35 * Math.sin(Math.PI * Math.pow(t, 0.8));
+    parts.push([new THREE.SphereGeometry(1, 10, 6), new THREE.Matrix4().compose(new V3(Math.cos(a) * R, Math.sin(a) * R, 0), new THREE.Quaternion(), new V3(r, r, r * 0.8)), cBody]);
+  }
+  return mergeColored(parts);
+}
+
+function buildHive() {
+  const S = new THREE.Scene();
+  S.background = new THREE.Color('#cfe3ef');
+  S.fog = new THREE.Fog('#cfe3ef', 400, 900);
+  S.environment = scene.environment;
+  const sun = new THREE.DirectionalLight(0xfff1dc, 1.3);
+  sun.position.set(80, 220, 260); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -160, right: 160, top: 200, bottom: -80, near: 10, far: 700 });
+  sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.4;
+  S.add(sun, new THREE.HemisphereLight(0xfff6e8, 0x6b5030, 0.45));
+  const warm = new THREE.PointLight(0xffc070, 0.5, 260);   // luz quentinha dentro da caixa
+  warm.position.set(0, 70, 60); S.add(warm);
+
+  // ---- chão e capim lá fora ----
+  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600), new THREE.MeshStandardMaterial({ map: ground.material.map.clone(), roughness: 0.95 }));
+  gnd.material.map.needsUpdate = true; gnd.material.map.repeat.set(40, 40);
+  gnd.rotation.x = -Math.PI / 2; gnd.position.y = -60; gnd.receiveShadow = true;
+  S.add(gnd);
+  const blade = new THREE.PlaneGeometry(1, 1, 1, 3); blade.translate(0, 0.5, 0);
+  { const p = blade.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) * (1 - y * 0.9)); p.setZ(i, 0.25 * y * y); } }
+  const grass = new THREE.InstancedMesh(blade, new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.8 }), 2200);
+  const o = new THREE.Object3D(), col = new THREE.Color();
+  for (let i = 0; i < 2200; i++) {
+    let x, z; do { x = rnd(-500, 500); z = rnd(-500, 400); } while (Math.abs(x) < 120 && z > -110 && z < 70);
+    o.position.set(x, -60, z); o.rotation.set(rnd(-0.2, 0.2), rnd(0, 6.3), 0); o.scale.set(rnd(3, 6), rnd(25, 80), 1);
+    o.updateMatrix(); grass.setMatrixAt(i, o.matrix); col.setHSL(rnd(0.2, 0.3), rnd(0.35, 0.6), rnd(0.2, 0.36)); grass.setColorAt(i, col);
+  }
+  S.add(grass);
+
+  // ---- caixa de madeira (frente cortada) ----
+  const wt = woodTexture();
+  const mWood = new THREE.MeshStandardMaterial({ map: wt, roughness: 0.8 });
+  const mWoodCut = new THREE.MeshStandardMaterial({ map: wt, color: '#d8b98e', roughness: 0.85 });   // madeira cortada (mais clara)
+  const box = (w, h, d, x, y, z, m) => { const b = shadowy(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m || mWood)); b.position.set(x, y, z); S.add(b); return b; };
+  box(6, 146, 84, -95, 70, -32);            // lateral esquerda
+  box(6, 146, 84, 95, 70, -32);             // lateral direita
+  box(196, 146, 6, 0, 70, -77);             // fundo
+  box(196, 6, 84, 0, -3, -32);              // piso
+  box(212, 8, 100, 0, 147, -32);            // tampa
+  box(196, 8, 4, 0, 8, 8, mWoodCut);        // frente: só a faixa de baixo, com a entrada
+  box(70, 5, 4, -63, 2.5, 8, mWoodCut); box(70, 5, 4, 63, 2.5, 8, mWoodCut);
+  box(110, 3, 22, 0, -1.5, 19);             // tábua de pouso
+  [[-85, -45], [85, -45], [-85, -20], [85, -20]].forEach(([x, z]) => box(8, 54, 8, x, -33, z));   // pés do suporte
+  // quadro de madeira em volta do favo
+  const C = HIVE.comb;
+  box(184, 8, 22, 0, C.y1 + 4, -6); box(170, 5, 22, 0, C.y0 - 3, -6);
+  box(6, C.y1 - C.y0 + 10, 22, C.x0 - 3, (C.y0 + C.y1) / 2, -6); box(6, C.y1 - C.y0 + 10, 22, C.x1 + 3, (C.y0 + C.y1) / 2, -6);
+  // favo de trás
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(160, 100), new THREE.MeshStandardMaterial({ map: combBackTexture(), roughness: 0.6, color: '#9a8a70' }));
+  back.position.set(0, 65, -45); back.receiveShadow = true; S.add(back);
+  // parede de cera atrás das células
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(C.x1 - C.x0, C.y1 - C.y0), new THREE.MeshStandardMaterial({ color: '#5e3f17', roughness: 0.7 }));
+  wall.position.set(0, (C.y0 + C.y1) / 2, -HIVE.CD - 0.2); S.add(wall);
+
+  // ---- células do favo ----
+  const a = 2.7, R = a / Math.cos(Math.PI / 6), CD = HIVE.CD;
+  const cells = [];
+  for (let j = 0, y = C.y0 + R; y < C.y1 - R * 0.5; j++, y += 1.5 * R)
+    for (let x = C.x0 + a + (j % 2) * a; x < C.x1 - a * 0.5; x += 2 * a) cells.push({ x, y });
+  const B = HIVE.brood;
+  const zoneOf = (c) => {
+    const e = Math.pow((c.x - B.cx) / B.rx, 2) + Math.pow((c.y - B.cy) / B.ry, 2);
+    const n = vnoise3(c.x * 0.15, c.y * 0.15, 3) * 0.25;
+    if (c.x > 52 && c.y < 36) return 'zangao';
+    if (e + n < 1) {
+      if (Math.random() < 0.06) return 'vazio';
+      const xx = c.x + (vnoise3(c.x * 0.2, c.y * 0.2, 9) - 0.5) * 14;
+      return xx < -20 ? 'ovo' : xx < 16 ? 'larva' : 'fechada';
+    }
+    if (e + n < 1.55) return Math.random() < 0.12 ? 'vazio' : 'polen';
+    if (c.y > 101 + 5 * vnoise3(c.x * 0.1, 1, 1)) return 'melTampado';
+    return Math.random() < 0.15 ? 'vazio' : 'mel';
+  };
+  cells.forEach((c) => { c.z = zoneOf(c); });
+  const count = (k) => cells.filter((c) => c.z === k);
+  const mWax = new THREE.MeshPhysicalMaterial({ side: THREE.DoubleSide, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.5, envMapIntensity: 0.4 });
+  const placeAll = (geo, mat, list, fill, shadow) => {
+    const m = new THREE.InstancedMesh(geo, mat, Math.max(1, list.length));
+    m.count = list.length;
+    list.forEach((c, i) => { fill(o, col, c, i); o.updateMatrix(); m.setMatrixAt(i, o.matrix); m.setColorAt(i, col); });
+    m.receiveShadow = true; m.castShadow = !!shadow;
+    S.add(m); return m;
+  };
+  const reset = () => { o.position.set(0, 0, 0); o.rotation.set(0, 0, 0); o.scale.set(1, 1, 1); };
+  const darkComb = (c) => c.z === 'ovo' || c.z === 'larva' || c.z === 'fechada' || c.z === 'zangao' || (c.z === 'vazio' && c.y < 85);
+  // paredes (tubinho hexagonal) + borda de cera + fundo
+  const wallGeo = new THREE.CylinderGeometry(R * 0.985, R * 0.985, CD, 6, 1, true); wallGeo.rotateX(Math.PI / 2); wallGeo.translate(0, 0, -CD / 2);
+  placeAll(wallGeo, mWax, cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, 0); col.set(darkComb(c) ? '#a97b3c' : '#e7c46a').offsetHSL(0, 0, rnd(-0.05, 0.04)); });
+  const rimGeo = new THREE.RingGeometry(R * 0.86, R * 1.0, 6, 1, Math.PI / 2);
+  placeAll(rimGeo, mWax, cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, 0.02); col.set(darkComb(c) ? '#c39a58' : '#f3d98a').offsetHSL(0, 0, rnd(-0.04, 0.04)); });
+  const baseGeo = new THREE.CircleGeometry(R, 6, Math.PI / 2);
+  placeAll(baseGeo, new THREE.MeshStandardMaterial({ roughness: 0.6 }), cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, -CD + 0.05); col.set(darkComb(c) ? '#4a2f12' : c.z === 'mel' ? '#8a4f0c' : '#c99a3a'); });
+
+  // mel aberto: brilhante e transparente
+  const honeyMat = new THREE.MeshPhysicalMaterial({ roughness: 0.03, clearcoat: 1, clearcoatRoughness: 0.02, transparent: true, opacity: 0.95, emissive: '#5a2a00', envMapIntensity: 1.4 });
+  placeAll(new THREE.CircleGeometry(R * 0.9, 6, Math.PI / 2), honeyMat, count('mel'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -rnd(0.6, 2.5)); col.setHSL(rnd(0.075, 0.1), 0.95, rnd(0.36, 0.46)); });
+  // mel tampado: tampinha de cera clara
+  const capGeo = new THREE.SphereGeometry(1, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); capGeo.rotateX(Math.PI / 2);
+  const mCap = new THREE.MeshPhysicalMaterial({ roughness: 0.55, clearcoat: 0.2, envMapIntensity: 0.4 });
+  addCuticle(mCap, 0.03, 1.0);
+  placeAll(capGeo, mCap, count('melTampado'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.4); o.scale.set(R * 0.9, R * 0.9, 0.5); col.set('#f7e7b4').offsetHSL(0, 0, rnd(-0.04, 0.03)); });
+  // pólen: bolinho colorido no fundo da célula
+  const polGeo = new THREE.IcosahedronGeometry(1, 2);
+  { const p = polGeo.attributes.position, v = new V3(); for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k); v.multiplyScalar(1 + 0.18 * (vnoise3(v.x * 3, v.y * 3, v.z * 3) - 0.5)); p.setXYZ(k, v.x, v.y, v.z); } polGeo.computeVertexNormals(); }
+  const PAL = ['#f2a21b', '#e8c23a', '#d9631e', '#b85c2a', '#9fae3a', '#e88a2b', '#f5d04a', '#c2441f'];
+  const mPol = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+  addCuticle(mPol, 0.05, 1.5);
+  placeAll(polGeo, mPol, count('polen'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -rnd(4.5, 7.5)); o.scale.set(R * 0.82, R * 0.82, 1.6); col.set(PAL[Math.floor(Math.random() * PAL.length)]); });
+  // ovos: em pé no fundo da célula
+  const eggGeo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.2, 1.1, 4, 8) : new THREE.CylinderGeometry(0.2, 0.2, 1.4, 8);
+  eggGeo.rotateX(Math.PI / 2);
+  placeAll(eggGeo, new THREE.MeshPhysicalMaterial({ roughness: 0.2, clearcoat: 1, color: '#fffdf2' }), count('ovo'), (o, col, c) => {
+    reset(); o.position.set(c.x + rnd(-0.3, 0.3), c.y + rnd(-0.3, 0.3), -CD + 0.8); o.rotation.set(rnd(-0.3, 0.3), rnd(-0.3, 0.3), 0); col.set('#ffffff');
+  });
+  // larvas: enroladinhas em "C" no fundo, em cima da geleia
+  const lv = count('larva');
+  placeAll(new THREE.CircleGeometry(R * 0.85, 12), new THREE.MeshPhysicalMaterial({ roughness: 0.1, clearcoat: 1, transparent: true, opacity: 0.8, color: '#fffaf0' }), lv, (o, col, c) => { reset(); o.position.set(c.x, c.y, -CD + 0.3); col.set('#ffffff'); });
+  placeAll(larvaGeo(), new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.3, clearcoat: 0.7, sheen: 0.5 }), lv, (o, col, c) => {
+    reset(); const sc = rnd(0.6, 1.25); o.position.set(c.x, c.y, -CD + 1.1); o.rotation.set(0, 0, rnd(0, 6.3)); o.scale.set(sc, sc, sc); col.set('#ffffff');
+  });
+  // cria fechada (pupas lá dentro): tampinhas marrons, um pouco abauladas; zangões: bem mais estufadas
+  const mBroodCap = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+  addCuticle(mBroodCap, 0.06, 1.2);
+  placeAll(capGeo, mBroodCap, count('fechada'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.3); o.scale.set(R * 0.93, R * 0.93, 1.0); col.set('#c79b5b').offsetHSL(rnd(-0.01, 0.01), 0, rnd(-0.06, 0.04)); });
+  placeAll(capGeo, mBroodCap, count('zangao'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.2); o.scale.set(R * 0.95, R * 0.95, 2.4); col.set('#b58a4e').offsetHSL(0, 0, rnd(-0.05, 0.03)); });
+
+  // realeiras: células compridas, penduradas, com a casca cheia de furinhos
+  const mRoyal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 });
+  addCuticle(mRoyal, 0.4, 2.5);
+  HIVE.realeiras.forEach(([x, y]) => {
+    const f = (px, py, pz) => {
+      const t = clamp((y - py) / 22, 0, 1);
+      const r = 4.2 * Math.sin(Math.PI * clamp(t * 0.95 + 0.05, 0, 1)) * (1 - 0.25 * t) + 0.3;
+      return Math.hypot(px - x, pz - 4.5) - r + 0.25 * (vnoise3(px * 1.6, py * 1.6, pz * 1.6) - 0.5);
+    };
+    const m = sdfMesh(f, new V3(x - 6, y - 24, -2), new V3(x + 6, y + 1, 11), 0.35, (px, py, pz, n, c) => c.set('#c49a5e').multiplyScalar(0.8 + 0.25 * vnoise3(px * 2, py * 2, pz * 2)), mRoyal);
+    S.add(m);
+  });
+
+  // ---- abelhas ----
+  hive.kinds = {};
+  const mBee = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.55 });
+  addCuticle(mBee, 0.03, 1.2);
+  const mkWingMat = (fore) => new THREE.MeshPhysicalMaterial({ map: beeWingTexture(fore), transparent: true, side: THREE.DoubleSide, depthWrite: false, roughness: 0.2, envMapIntensity: 0.5 });
+  const MAX = { operaria: 80, rainha: 2, zangao: 8 };
+  for (const k of ['operaria', 'rainha', 'zangao']) {
+    const bk = bakeBee(k);
+    const meshes = bk.poses.map((g) => { const m = new THREE.InstancedMesh(g, mBee, MAX[k]); m.castShadow = true; m.count = 0; S.add(m); return m; });
+    const wing = (geo, fore) => { const m = new THREE.InstancedMesh(geo, mkWingMat(fore), MAX[k]); m.count = 0; m.renderOrder = 3; S.add(m); return m; };
+    hive.kinds[k] = { meshes, fold: [wing(bk.wFold.fore, true), wing(bk.wFold.back, false)], open: [wing(bk.wOpen.fore, true), wing(bk.wOpen.back, false)] };
+  }
+
+  // agentes
+  const A = hive.agents = [];
+  const onComb = (x, y) => x > C.x0 + 6 && x < C.x1 - 6 && y > C.y0 + 5 && y < C.y1 - 6;
+  const rp = () => { let x, y; do { x = rnd(C.x0 + 8, C.x1 - 8); y = rnd(C.y0 + 8, C.y1 - 8); } while (Math.hypot(x - HIVE.queen.x, y - HIVE.queen.y) < 16); return [x, y]; };
+  for (let i = 0; i < 30; i++) { const [x, y] = rp(); A.push({ k: 'operaria', type: 'anda', x, y, ang: rnd(0, 6.3), sp: rnd(3, 6), ph: rnd(0, 4), pause: 0 }); }
+  for (let i = 0; i < 3; i++) A.push({ k: 'zangao', type: 'anda', x: rnd(45, 72), y: rnd(70, 100), ang: rnd(0, 6.3), sp: 2.2, ph: rnd(0, 4), pause: 0, box: [42, 75, 66, 104] });
+  // rainha e a corte (operárias viradas para ela)
+  A.push({ k: 'rainha', type: 'rainha', x: HIVE.queen.x, y: HIVE.queen.y, ang: 1.2, ph: 0 });
+  for (let i = 0; i < 8; i++) {
+    const t = i / 8 * Math.PI * 2;
+    A.push({ k: 'operaria', type: 'corte', i, t, ph: rnd(0, 4) });
+  }
+  // babás com a cabeça dentro das células das larvas
+  lv.filter((c, i) => i % 9 === 0).slice(0, 4).forEach((c, i) => A.push({ k: 'operaria', type: 'baba', cx: c.x, cy: c.y, ang: 0.6 + i * 1.7, ph: rnd(0, 4) }));
+  // a dançarina e as seguidoras
+  A.push({ k: 'operaria', type: 'danca', t: 0, ph: 0 });
+  for (let i = 0; i < 4; i++) A.push({ k: 'operaria', type: 'segue', i, ph: rnd(0, 4) });
+  // na entrada: guardas na tábua de pouso, e abelhas voando para fora e para dentro
+  for (let i = 0; i < 3; i++) A.push({ k: 'operaria', type: 'guarda', x: -22 + i * 22, z: 18, ang: Math.PI / 2 + rnd(-0.3, 0.3), ph: rnd(0, 4) });
+  for (let i = 0; i < 7; i++) {
+    const side = i % 2 ? 1 : -1, far = new V3(side * rnd(60, 160), rnd(30, 90), rnd(140, 260));
+    const curve = new THREE.CatmullRomCurve3([new V3(rnd(-15, 15), 1, 22), new V3(side * rnd(10, 30), rnd(12, 25), 60), far.clone().lerp(new V3(0, 40, 80), 0.4), far]);
+    A.push({ k: 'operaria', type: 'voa', curve, u: Math.random(), dir: i < 4 ? 1 : -1, sp: rnd(0.07, 0.11) });
+  }
+  hive.cells = cells;
+  hive.scene = S;
+
+  // ---- etiquetas e passeio ----
+  const Q = HIVE.queen, D = HIVE.dance;
+  hive.stops = [
+    { em: '🏠', t: 'A colmeia', p: new V3(0, 60, 0), cam: new V3(0, 95, 330), txt: 'Esta é a casa das abelhas. A frente está aberta para a gente olhar lá dentro!' },
+    { em: '⬡', t: 'Favo', lp: new V3(-60, 112, 2), p: new V3(-58, 102, 0), cam: new V3(-48, 108, 52), txt: 'O favo é feito de cera. Ele tem casinhas de seis lados: os hexágonos!' },
+    { em: '🍯', t: 'Mel', lp: new V3(48, 106, 2), p: new V3(48, 96, -1), cam: new V3(54, 99, 40), txt: 'Lá em cima as abelhas guardam o mel. Quando fica pronto, tampam com cera.' },
+    { em: '🌼', t: 'Pólen', lp: new V3(-2, 93, 2), p: new V3(0, 87, 0), cam: new V3(6, 90, 42), txt: 'O pólen colorido das flores fica perto dos bebês: é a comida deles.' },
+    { em: '🥚', t: 'Ovos', lp: new V3(-40, 66, 2), p: new V3(-40, 58, -4), cam: new V3(-38, 60, 26), txt: 'A rainha bota um ovinho em cada casinha. Olhe lá no fundo!' },
+    { em: '🐛', t: 'Larvas', lp: new V3(-2, 66, 2), p: new V3(-2, 58, -4), cam: new V3(0, 60, 26), txt: 'Do ovo nasce a larva. As abelhas babás dão comida para ela crescer.' },
+    { em: '🟫', t: 'Pupas', lp: new V3(36, 66, 2), p: new V3(36, 58, 0), cam: new V3(40, 61, 32), txt: 'Depois a casinha é fechada com cera. Lá dentro a larva vira abelha!' },
+    { em: '👑', t: 'Rainha', lp: new V3(Q.x, Q.y + 13, 6), p: new V3(Q.x, Q.y, 2), cam: new V3(Q.x + 4, Q.y + 6, 40), txt: 'A rainha é a mãe de todas as abelhas. As operárias ficam em volta cuidando dela.' },
+    { em: '🥜', t: 'Realeira', lp: new V3(-58, 38, 10), p: new V3(-58, 18, 4), cam: new V3(-50, 24, 48), txt: 'Nestas casinhas compridas nascem novas rainhas!' },
+    { em: '💃', t: 'Dança', lp: new V3(D.x, D.y + 14, 6), p: new V3(D.x, D.y, 2), cam: new V3(D.x + 4, D.y + 6, 42), txt: 'Esta abelha está dançando! A dança conta para as outras onde ficam as flores.' },
+    { em: '🚪', t: 'Entrada', lp: new V3(0, 16, 22), p: new V3(0, 4, 18), cam: new V3(30, 28, 90), txt: 'Pela porta as abelhas entram e saem. As guardas vigiam quem chega.' },
+    { em: '👀', t: 'Zangões', lp: new V3(58, 106, 6), p: new V3(58, 88, 2), cam: new V3(62, 92, 48), txt: 'Os zangões são os machos: maiores, com olhos enormes e sem ferrão.' }
+  ];
+  const lb = document.getElementById('hiveLabels');
+  lb.innerHTML = '';
+  hive.labels = hive.stops.map((st, i) => {
+    if (i === 0) return null;
+    const el = document.createElement('button');
+    el.className = 'nlabel'; el.innerHTML = '<b>' + st.em + '</b>' + st.t;
+    el.addEventListener('click', () => goHiveStop(i));
+    lb.appendChild(el); return el;
+  });
+  hive.built = true;
+}
+
+// coloca uma abelha em cima do favo: costas para fora (+z), andando no plano XY
+const _bm = new THREE.Matrix4(), _bx = new V3(), _by = new V3(0, 0, 1), _bz = new V3(), _bp = new V3(), _pitch = new THREE.Matrix4();
+function combMatrix(x, y, ang, pitch, z) {
+  _bx.set(Math.cos(ang), Math.sin(ang), 0); _bz.crossVectors(_bx, _by);
+  _bm.makeBasis(_bx, _by, _bz).setPosition(x, y, z || 0.1);
+  if (pitch) _bm.multiply(_pitch.makeRotationZ(pitch));
+  return _bm;
+}
+const _q = new THREE.Quaternion(), _s1 = new V3(1, 1, 1), _fm = new THREE.Matrix4();
+function updateHive(dt, t) {
+  const C = HIVE.comb, K = hive.kinds, Q = HIVE.queen, D = HIVE.dance;
+  const cnt = {};
+  for (const k in K) cnt[k] = { p: [0, 0, 0, 0, 0], f: 0, o: 0 };
+  const put = (a, m, pose, open) => {
+    const c = cnt[a.k], kk = K[a.k];
+    kk.meshes[pose].setMatrixAt(c.p[pose]++, m);
+    const w = open ? kk.open : kk.fold;
+    const idx = open ? c.o++ : c.f++;
+    w[0].setMatrixAt(idx, m); w[1].setMatrixAt(idx, m);
+  };
+  for (const a of hive.agents) {
+    let m, pose = 0, open = false, moving = 0;
+    if (a.type === 'anda') {
+      if (a.pause > 0) a.pause -= dt;
+      else {
+        a.ang += (vnoise3(a.x * 0.08, a.y * 0.08, t * 0.3) - 0.5) * 3 * dt;
+        const nx = a.x + Math.cos(a.ang) * a.sp * dt, ny = a.y + Math.sin(a.ang) * a.sp * dt;
+        const bx = a.box || [C.x0 + 7, C.y0 + 6, C.x1 - 7, C.y1 - 7];
+        const nearQ = Math.hypot(nx - Q.x, ny - Q.y) < 15 || Math.hypot(nx - D.x, ny - D.y) < 13;
+        if (nx < bx[0] || nx > bx[2] || ny < bx[1] || ny > bx[3] || nearQ) a.ang += Math.PI * 0.6 + rnd(0, 0.8);
+        else { a.x = nx; a.y = ny; moving = a.sp; }
+        if (Math.random() < dt * 0.15) a.pause = rnd(0.8, 3);
+      }
+      m = combMatrix(a.x, a.y, a.ang);
+    } else if (a.type === 'rainha') {
+      a.ang = 1.2 + 0.25 * Math.sin(t * 0.3);
+      m = combMatrix(Q.x + Math.sin(t * 0.25) * 1.2, Q.y + Math.cos(t * 0.21) * 0.8, a.ang);
+      moving = 0.6;
+    } else if (a.type === 'corte') {
+      const qa = 1.2 + 0.25 * Math.sin(t * 0.3), r = 11 + 0.6 * Math.sin(t * 0.8 + a.i);
+      const x = Q.x + Math.cos(a.t + qa) * r * 1.15, y = Q.y + Math.sin(a.t + qa) * r * 0.85;
+      m = combMatrix(x, y, Math.atan2(Q.y - y, Q.x - x) + 0.15 * Math.sin(t * 1.3 + a.i));
+      moving = 0.4 * Math.abs(Math.sin(t * 0.8 + a.i));
+    } else if (a.type === 'baba') {
+      // cabeça dentro da célula da larva (corpo inclinado, abdômen para fora)
+      const pitch = -0.75;
+      combMatrix(0, 0, a.ang, pitch, 0);
+      _bp.set(4.4, 2.6, 0).applyMatrix4(_bm);
+      m = combMatrix(a.cx - _bp.x, a.cy - _bp.y, a.ang, pitch, -2.2 - _bp.z + 0.4 * Math.sin(t * 2 + a.ang));
+    } else if (a.type === 'danca') {
+      // dança do requebrado: corrida reta balançando o corpo e volta em semicírculo, alternando os lados
+      const T = 3.2, k = (t % (2 * T)) / T, side = k < 1 ? 1 : -1, u = k % 1;
+      const ux = Math.cos(D.ang + Math.PI / 2), uy = Math.sin(D.ang + Math.PI / 2), len = 13;
+      let x, y, ang;
+      if (u < 0.55) {
+        const s = u / 0.55;
+        x = D.x + ux * len * (s - 0.5); y = D.y + uy * len * (s - 0.5);
+        ang = D.ang + Math.PI / 2 + 0.38 * Math.sin(t * Math.PI * 2 * 13);
+        x += -uy * 0.5 * Math.sin(t * Math.PI * 2 * 13); y += ux * 0.5 * Math.sin(t * Math.PI * 2 * 13);
+      } else {
+        // volta em semicírculo (uma vez por um lado, outra pelo outro)
+        const s = (u - 0.55) / 0.45, th = Math.PI * s, r = len / 2, nx = -uy, ny = ux;
+        x = D.x + ux * r * Math.cos(th) + side * nx * r * Math.sin(th);
+        y = D.y + uy * r * Math.cos(th) + side * ny * r * Math.sin(th);
+        const tx = -ux * Math.sin(th) + side * nx * Math.cos(th), ty = -uy * Math.sin(th) + side * ny * Math.cos(th);
+        ang = Math.atan2(ty, tx);
+      }
+      a.x = x; a.y = y;
+      m = combMatrix(x, y, ang);
+      moving = 5;
+      open = true;                                // asas um pouco abertas, vibrando
+    } else if (a.type === 'segue') {
+      const dz = hive.agents.find((b) => b.type === 'danca');
+      const ang0 = a.i * Math.PI / 2 + 0.6 + 0.2 * Math.sin(t + a.i);
+      const x = dz.x + Math.cos(ang0) * 8.5, y = dz.y + Math.sin(ang0) * 8.5;
+      m = combMatrix(x, y, Math.atan2(dz.y - y, dz.x - x));
+      moving = 1.5;
+    } else if (a.type === 'guarda') {
+      // em pé na tábua de pouso (no chão de verdade: costas para cima)
+      _q.setFromAxisAngle(UP, a.ang + 0.2 * Math.sin(t * 0.9 + a.x));
+      m = _fm.compose(_bp.set(a.x, 0.05, a.z), _q, _s1);
+      moving = 0.3;
+    } else if (a.type === 'voa') {
+      a.u += a.dir * a.sp * dt;
+      if (a.u > 1) a.u -= 1; if (a.u < 0) a.u += 1;
+      const p = a.curve.getPointAt(a.u), tg = a.curve.getTangentAt(a.u).multiplyScalar(a.dir);
+      _q.setFromUnitVectors(new V3(1, 0, 0), tg.setY(tg.y * 0.3).normalize());
+      p.y += Math.sin(t * 6 + a.sp * 50) * 0.6;
+      m = _fm.compose(p, _q, _s1);
+      pose = 4; open = true;
+    }
+    if (a.type !== 'voa') { a.ph = (a.ph + dt * (0.5 + moving * 0.7)) % 4; pose = moving > 0.2 ? Math.floor(a.ph) : 1; }
+    put(a, m, pose, open);
+  }
+  for (const k in K) {
+    const c = cnt[k], kk = K[k];
+    kk.meshes.forEach((mm, i) => { mm.count = c.p[i]; mm.instanceMatrix.needsUpdate = true; });
+    kk.fold.forEach((mm) => { mm.count = c.f; mm.instanceMatrix.needsUpdate = true; });
+    kk.open.forEach((mm) => { mm.count = c.o; mm.instanceMatrix.needsUpdate = true; mm.material.opacity = 0.55 + 0.3 * Math.sin(t * 60); });
+  }
+  if (hive.flight) {
+    const F = hive.flight; F.k = Math.min(1, F.k + dt / 1.4);
+    const e = smooth(F.k, 0, 1);
+    camera.position.lerpVectors(F.p0, F.p1, e); controls.target.lerpVectors(F.t0, F.t1, e);
+    if (F.k >= 1) hive.flight = null;
+  }
+  camera.updateMatrixWorld();
+  // etiquetas
+  const w = window.innerWidth, h = window.innerHeight;
+  hive.labels.forEach((el, i) => {
+    if (!el) return;
+    _bp.copy(hive.stops[i].lp || hive.stops[i].p).project(camera);
+    el.style.display = _bp.z < 1 ? '' : 'none';
+    el.style.transform = 'translate(' + ((_bp.x + 1) / 2 * w) + 'px,' + ((1 - _bp.y) / 2 * h) + 'px) translate(-50%,-100%)';
+    el.classList.toggle('on', i === hive.stop);
+  });
+
+  // a câmera não entra nas paredes da caixa
+  const c = camera.position;
+  if (c.z < 14 && c.z > -84 && Math.abs(c.x) < 104 && c.y > -8 && c.y < 155) {
+    if (c.z > -8 && Math.abs(c.x) < 92 && c.y < 140) { /* dentro da caixa, na frente do favo: tudo bem */ if (c.z < 4) c.z = 4; }
+    else c.z = 14;
+  }
+  if (c.y < -55) c.y = -55;
+}
+function goHiveStop(i) {
+  const st = hive.stops[i];
+  hive.stop = i;
+  hive.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.cam.clone(), t1: st.p.clone() };
+  document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
+  document.getElementById('cardP').textContent = st.txt;
+  document.getElementById('card').classList.add('on');
+  document.getElementById('bTour').innerHTML = i < hive.stops.length - 1 ? '⏭' : '🔁';
+}
+const beeView = { p: new V3(), t: new V3() };
+function enterHive() {
+  const go = () => {
+    if (!hive.built) buildHive();
+    hiveMode = true;
+    beeView.p.copy(camera.position); beeView.t.copy(controls.target);
+    document.body.classList.add('hive');
+    controls.autoRotate = false;
+    Object.assign(controls, { maxDistance: 600, minDistance: 6, maxPolarAngle: Math.PI * 0.6, minAzimuthAngle: -1.15, maxAzimuthAngle: 1.15 });
+    camera.far = 2000; camera.updateProjectionMatrix();
+    hive.stop = -1;
+    camera.position.set(-120, 160, 420); controls.target.set(0, 50, 0);
+    goHiveStop(0);
+    loading.style.opacity = 0;
+  };
+  if (hive.built) go();
+  else { loading.textContent = '🍯 Montando a colmeia…'; loading.style.opacity = 1; setTimeout(go, 50); }
+}
+function leaveHive() {
+  hiveMode = false;
+  document.body.classList.remove('hive');
+  document.getElementById('card').classList.remove('on');
+  Object.assign(controls, { maxDistance: 120, minDistance: 4, maxPolarAngle: Math.PI * 0.49, minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity });
+  camera.far = 600; camera.updateProjectionMatrix();
+  camera.position.copy(beeView.p); controls.target.copy(beeView.t);
+  lastPos.copy(bee.position);
+}
+document.getElementById('bHive').addEventListener('click', enterHive);
+document.getElementById('bBack').addEventListener('click', leaveHive);
+document.getElementById('bTour').addEventListener('click', () => goHiveStop((hive.stop + 1) % hive.stops.length));
+document.getElementById('cardX').addEventListener('click', () => document.getElementById('card').classList.remove('on'));
+
+/* =====================================================================
    7) TROCA DE CASTA E INÍCIO
    ===================================================================== */
 const built = {};
@@ -1007,12 +1584,13 @@ setTimeout(() => {
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    if (hiveMode) { updateHive(dt, t); controls.update(); renderer.render(hive.scene, camera); return; }
     if (G) { updateBee(dt, t); updateParts(t, dt); follow(); }
     if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
     controls.update();
     renderer.render(scene, camera);
   });
-  window.ABELHA = { state, bee, flyTo, FLORES, camera, controls, home, switchCaste, GROOM };
+  window.ABELHA = { state, bee, flyTo, FLORES, camera, controls, home, switchCaste, GROOM, enterHive, leaveHive, goHiveStop, hive };
 }, 60);
 })();
 </script>

@@ -5,7 +5,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 ## Páginas
 - `index.html`: tela inicial, onde se escolhe o inseto.
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
-- `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
+- `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar
