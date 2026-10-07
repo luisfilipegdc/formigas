@@ -14,6 +14,7 @@
      som        → (opcional) { arquivo: 'som/x.mp3', autor, lic, fonte } para o botão 🔊
      silencio   → curiosidade para bichos que não fazem som audível
      porDentro  → true quando o 3D tem "Por Dentro do Bicho" (selo 🧩 e descoberta extra)
+     processo   → nome do "Como funciona?" do 3D (descoberta extra), ex.: 'como nasce o mel'
      tipo       → (opcional) agrupa várias espécies do mesmo tipo (ex.: 'aranha', 'cigarra')
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
@@ -95,7 +96,7 @@ const ANIMAIS = [
   {
     id: 'abelha', nome: 'Abelha-europeia', cientifico: 'Apis mellifera', grupo: 'insetos', emoji: '🐝', cor: '#ffe58a',
     curto: 'abelha', pista: 'Eu visito flores e faço zum-zum.', procurar: 'Perto de flores, nas horas de sol.',
-    pagina: 'bicho3d.html?id=abelha',
+    pagina: 'bicho3d.html?id=abelha', processo: 'como nasce o mel',
     resumo: 'A abelha do mel, que poliniza flores e vive em colmeias.',
     fotos: [
       { arquivo: 'img/animais/abelha-1.jpg', autor: 'Cole Shoemaker', lic: 'CC BY', especie: 'Apis mellifera', inat: 117869766 },

@@ -41,10 +41,12 @@ As perguntas em "A validar" são para conferir em fonte e com especialista. **N�
 | **Digestão das formigas** | Saúva (*Atta*), operária | Bolsa infrabucal (filtro de partículas); o papo como "estômago social"; trofalaxia; o que a adulta come (seiva, fungo) e o que vai para as larvas | Didática | P3 |
 | **Postura de ovos pelas rainhas** | Rainha de saúva e rainha de *Apis mellifera* | Ovários e espermateca; ovo fertilizado → fêmea, não fertilizado → macho (haplodiploidia); ritmo de postura; onde cada uma põe (câmara × alvéolo) | Didática | P2, P3 |
 | **Ferrão da abelha** | *Apis mellifera*: operária, comparada com a rainha | Ferrão farpado da operária × liso da rainha; zangão sem ferrão; o que acontece quando a operária pica um mamífero; glândula e saco de veneno. Tom: sem assustar e sem fazer espetáculo da morte da abelha | Didática, com partes externas fiéis | P2 |
-| **Produção do mel (corpo e colmeia)** | *Apis mellifera*: operária campeira e operária de colmeia | Papo de mel; enzimas; passagem entre operárias; evaporação (abanar as asas); opérculo de cera; ligação com a colmeia 3D que já existe | Didática | P2 |
+| **Produção do mel (corpo e colmeia)** — ✅ **protótipo feito (outubro de 2026)**, em revisão científica | *Apis mellifera*: operária campeira e de colmeia | Feito como "Como nasce o mel": flor → papo de mel → trofalaxia e enzimas → abanar as asas (evaporação) → opérculo de cera. **Falta validar** com especialista os textos e a simplificação (ex.: o papo aparece por "transparência" e a evaporação é mostrada com gotinhas) | Didática | — |
 | **Estruturas de plantas** | PENDENTE: escolher uma espécie concreta (ex.: ipê, ou feijão germinando) | Partes da flor; folha e estômatos; raiz; semente e germinação; fotossíntese | Didática | Ficha revisada da planta |
 | **Modelos do mundo microscópico** | PENDENTE: escolher uma bactéria (ex.: bastonete), uma levedura e um vírus | Escala (comparar com um fio de cabelo); célula × vírus; estruturas (parede, membrana, flagelo, capsídeo); evitar medo e associação só com doença | **Sempre didática**, com aviso de escala e de cores artificiais | Ficha revisada do Micromundo |
 | **Rochas e minerais** | PENDENTE: escolher (ex.: quartzo e granito) | Forma do cristal; grãos de minerais no granito; formação (resfriamento do magma, camadas, pressão); ciclo das rochas | Didática; a forma do cristal pode ser fiel | Ficha revisada de Rochas e minerais |
+
+**Também feito:** a 🟤 **própolis** na colmeia (resina das plantas tapando frestas e estreitando a entrada), com etiqueta no passeio. Texto em revisão.
 
 ## 6. Ordem sugerida (PROPOSTA)
 1. P1, que é barato.

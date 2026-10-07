@@ -17,6 +17,7 @@ const Progresso = (function () {
     l.push(['ficha', '📋', 'Leu a ficha'], ['vida', '🔄', 'Viu o ciclo de vida'], ['cur', '💡', 'Descobriu curiosidades'], ['real', '📷', 'Viu fotos de verdade']);
     if (A.visita) l.push(['casa', A.visita[0], A.visita[1]]);
     if (A.porDentro) l.push(['dentro', '🧩', 'Explorou por dentro']);
+    if (A.processo) l.push(['funciona', '▶️', 'Viu como funciona: ' + A.processo]);
     l.push(['vi', '👀', 'Encontrou um de verdade']);
     return l;
   }

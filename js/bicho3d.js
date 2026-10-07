@@ -305,6 +305,7 @@ function iniciar3d(id) {
     $('modos').hidden = false; document.body.classList.add('com-modos');
     $('modos').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setModo(b.dataset.m)));
     if (!M.processo) $('modos').querySelector('[data-m="funciona"]').remove();
+    if (!M.dentro) $('modos').querySelector('[data-m="dentro"]').remove();
   }
   const bIdade = $('idade');
   const pintaIdade = () => { bIdade.textContent = idade === 'pequeno' ? '🧸 Pequeno' : '🧒 Explorador'; bIdade.setAttribute('aria-label', 'Modo ' + (idade === 'pequeno' ? 'Pequeno (até 6 anos)' : 'Explorador (7 anos ou mais)') + '. Toque para trocar.'); };
@@ -369,7 +370,7 @@ function iniciar3d(id) {
     ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
     ray.setFromCamera(ndc, camera);
     const hits = ctx.grupo ? ray.intersectObject(ctx.grupo, true) : [];
-    if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits); return; }
+    if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits, ray); return; }
     if (M.toqueCena) { M.toqueCena(ctx, ray); return; }
     if (hits.length && M.toque) M.toque(ctx);
   });

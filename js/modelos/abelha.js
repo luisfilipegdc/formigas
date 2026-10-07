@@ -1111,6 +1111,16 @@ function buildHive() {
     S.add(m);
   });
 
+  // ---- própolis: cola escura feita de resina das plantas, tapando frestas e juntas ----
+  const mProp = new THREE.MeshPhysicalMaterial({ color: '#6b3212', roughness: 0.42, clearcoat: 0.6, clearcoatRoughness: 0.3, envMapIntensity: 0.6 });
+  const propGeo = new THREE.SphereGeometry(1, 14, 10);
+  { const p = propGeo.attributes.position, v = new V3(); for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k); v.multiplyScalar(1 + 0.35 * (vnoise3(v.x * 2.2, v.y * 2.2, v.z * 2.2) - 0.5)); p.setXYZ(k, v.x, v.y, v.z); } propGeo.computeVertexNormals(); }
+  const pontosProp = [];
+  for (let y = C.y0 + 2; y < C.y1 - 2; y += rnd(2.2, 4)) { pontosProp.push([C.x0 + 0.6, y, rnd(1, 3.5)]); if (Math.random() < 0.6) pontosProp.push([C.x1 - 0.6, y, rnd(1, 3.5)]); }
+  for (let x = C.x0 + 2; x < C.x1 - 2; x += rnd(3, 6)) if (Math.random() < 0.45) pontosProp.push([x, C.y1 - 0.6, rnd(1, 3.5)]);
+  for (const sx of [-1, 1]) for (let k = 0; k < 7; k++) pontosProp.push([sx * rnd(25, 31), rnd(0.5, 5), rnd(8, 11)]);   // estreitando a entrada
+  placeAll(propGeo, mProp, pontosProp, (o, col, c) => { reset(); o.position.set(c[0], c[1], c[2]); o.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3)); o.scale.set(rnd(1.2, 2.6), rnd(0.8, 1.7), rnd(0.35, 0.8)); col.set('#6b3212').offsetHSL(rnd(-0.02, 0.02), 0, rnd(-0.06, 0.05)); }, true);
+
   // ---- abelhas ----
   hive.kinds = {};
   const mBee = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.55 });
@@ -1165,6 +1175,7 @@ function buildHive() {
     { em: '🥜', t: 'Realeira', lp: new V3(-58, 38, 10), p: new V3(-58, 18, 4), cam: new V3(-50, 24, 48), txt: 'Nestas casinhas compridas nascem novas rainhas!' },
     { em: '💃', t: 'Dança', lp: new V3(D.x, D.y + 14, 6), p: new V3(D.x, D.y, 2), cam: new V3(D.x + 4, D.y + 6, 42), txt: 'Esta abelha está dançando! A dança conta para as outras onde ficam as flores.' },
     { em: '🚪', t: 'Entrada', lp: new V3(0, 16, 22), p: new V3(0, 4, 18), cam: new V3(30, 28, 90), txt: 'Pela porta as abelhas entram e saem. As guardas vigiam quem chega.' },
+    { em: '🟤', t: 'Própolis', lp: new V3(-86, 74, 8), p: new V3(-78, 66, 2), cam: new V3(-56, 74, 72), txt: 'Uma cola escura que as abelhas fazem com a resina das plantas. Elas tapam as frestas e deixam a colmeia protegida contra germes.' },
     { em: '👀', t: 'Zangões', lp: new V3(64, 80, 6), p: new V3(58, 88, 2), cam: new V3(62, 92, 48), txt: 'Os zangões são os machos: maiores, com olhos enormes e sem ferrão.' }
   ];
   hive.built = true;
@@ -1252,6 +1263,9 @@ function updateHive(dt, t) {
       _q.setFromAxisAngle(UP, a.ang + 0.2 * Math.sin(t * 0.9 + a.x));
       m = _fm.compose(_bp.set(a.x, 0.05, a.z), _q, _s1);
       moving = 0.3;
+    } else if (a.type === 'fixa') {                  // abelhas do "Como nasce o mel": trocando néctar ou abanando
+      m = combMatrix(a.x, a.y, a.ang + (a.abana ? 0.05 * Math.sin(t * 40) : 0));
+      open = !!a.abana; moving = a.abana ? 0 : 0.3;
     } else if (a.type === 'voa') {
       a.u += a.dir * a.sp * dt;
       if (a.u > 1) a.u -= 1; if (a.u < 0) a.u += 1;
@@ -1311,7 +1325,7 @@ function enterHive() {
       hive.stop = -1;
       camera.position.set(-120, 160, 420); controls.target.set(0, 50, 0);
       ctx.carregando(false);
-      ctx.mostrarPartes(true);
+      if (!ctx.aoVivo()) ctx.mostrarPartes(true);
       res();
     };
     if (hive.built) go();
@@ -1397,7 +1411,132 @@ function partesColmeia() {
 }
 
 /* =====================================================================
-   10) REGISTRO NO MOTOR
+   10) COMO NASCE O MEL (▶️ Como funciona?) — a criança provoca cada etapa:
+   toca na flor (a abelha bebe o néctar), vê o papo de mel encher, leva
+   para a colmeia, faz as abelhas abanarem as asas e tampa a casinha.
+   Representação didática simplificada (conteúdo em revisão científica).
+   ===================================================================== */
+const MEL = { passo: -1, fill: 0, espera: 0, toques: 0, abana: 0, papo: null, hive: null };
+const TOQUES_SECAR = 6;
+function papoMel() {                       // o papo de mel aparece "por transparência" dentro da barriga
+  if (MEL.papo) return MEL.papo;
+  const A1 = CASTES.operaria.abd[1];
+  const m = new THREE.Mesh(new THREE.SphereGeometry(1.0, 24, 16), new THREE.MeshStandardMaterial({ color: '#f5b120', emissive: '#d27800', emissiveIntensity: 0.7, roughness: 0.3, transparent: true, opacity: 0.88, depthTest: false }));
+  m.renderOrder = 20; m.position.set(A1[0] + 0.25, A1[1] + 0.05, 0); m.visible = false;
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(1.45, 24, 16), new THREE.MeshBasicMaterial({ color: '#ffd34d', transparent: true, opacity: 0.22, depthTest: false, depthWrite: false }));
+  halo.renderOrder = 19; m.add(halo);
+  bee.add(m);
+  return (MEL.papo = m);
+}
+function celulaMel() {                     // uma casinha vazia perto do mel, para guardar o néctar novo
+  let best = null, bd = 1e9;
+  hive.cells.forEach((c) => { if (c.z !== 'vazio' || c.y < 70) return; const d = Math.hypot(c.x - 24, c.y - 88); if (d < bd) { bd = d; best = c; } });
+  return best || hive.cells.find((c) => c.y > 85);
+}
+function montarMelColmeia() {
+  if (MEL.hive) return MEL.hive;
+  const S = hive.scene, P = celulaMel(), R = 2.7 / Math.cos(Math.PI / 6);
+  const g = new THREE.Group(); S.add(g);
+  const nectar = new THREE.Mesh(new THREE.CircleGeometry(R * 0.9, 6, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: '#fff1a8', roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.9, emissive: '#3a2000' }));
+  nectar.position.set(P.x, P.y, -HIVE.CD + 0.5); nectar.visible = false; g.add(nectar);
+  const anel = new THREE.Mesh(new THREE.RingGeometry(R * 1.15, R * 1.6, 6, 1, Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ff9f1a', transparent: true, opacity: 0.95, depthWrite: false, depthTest: false }));
+  anel.renderOrder = 30; anel.position.set(P.x, P.y, 0.6); anel.visible = false; g.add(anel);
+  const tampa = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: '#f7e7b4', roughness: 0.55, clearcoat: 0.2 }));
+  tampa.geometry.rotateX(Math.PI / 2); tampa.position.set(P.x, P.y, -0.4); tampa.scale.set(0.001, 0.001, 0.001); g.add(tampa);
+  const gota = new THREE.Mesh(new THREE.SphereGeometry(0.95, 16, 10), new THREE.MeshStandardMaterial({ color: '#f5b120', emissive: '#a35a00', emissiveIntensity: 0.6, roughness: 0.2 }));
+  gota.position.set(P.x - 9, P.y + 9, 4.6); gota.visible = false; g.add(gota);
+  const agua = [];
+  for (let i = 0; i < 14; i++) { const d = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshBasicMaterial({ color: '#9fd8ff', transparent: true, opacity: 0 })); d.userData.t = 9; g.add(d); agua.push(d); }
+  return (MEL.hive = { g, P, nectar, anel, tampa, gota, agua });
+}
+function abelhasMel(tipo) {                // coloca/retira as abelhas paradas do processo
+  hive.agents = hive.agents.filter((a) => !a.mel);
+  const H = MEL.hive; if (!H) return;
+  const P = H.P;
+  if (tipo === 'troca') {                  // duas operárias passando o néctar boca a boca
+    hive.agents.push({ k: 'operaria', type: 'fixa', mel: true, x: P.x - 14.2, y: P.y + 9, ang: 0, ph: 0 });
+    hive.agents.push({ k: 'operaria', type: 'fixa', mel: true, x: P.x - 3.8, y: P.y + 9, ang: Math.PI, ph: 2 });
+  } else if (tipo === 'abana') {           // operárias em volta da casinha, prontas para abanar
+    [[-11, -4, 0.3], [11, -4, Math.PI - 0.3], [0, 12, -Math.PI / 2], [-9, 9, -0.7]].forEach(([dx, dy, a]) => hive.agents.push({ k: 'operaria', type: 'fixa', mel: true, x: P.x + dx, y: P.y + dy, ang: a, ph: Math.random() * 4 }));
+  }
+}
+function voarAteCelula(c) {
+  const H = montarMelColmeia(), P = H.P;
+  hive.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: fitPortrait(new V3(P.x + 4, P.y - 2, 95), new V3(P.x - 4, P.y - 9, 0)), t1: new V3(P.x - 4, P.y - 9, 0) };   // o painel de passos fica embaixo: a cena sobe na tela
+}
+function limparMel() {
+  MEL.passo = -1; MEL.fill = 0; MEL.espera = 0; MEL.toques = 0; MEL.abana = 0;
+  if (MEL.papo) MEL.papo.visible = false;
+  if (hive.built) abelhasMel(null);
+  const H = MEL.hive;
+  if (H) { H.nectar.visible = false; H.anel.visible = false; H.gota.visible = false; H.tampa.scale.set(0.001, 0.001, 0.001); H.agua.forEach((d) => { d.userData.t = 9; d.material.opacity = 0; }); }
+}
+const _cor1 = new THREE.Color('#fff1a8'), _cor2 = new THREE.Color('#c27410');
+function atualizarMel(dt, t) {
+  if (MEL.passo < 0) return;
+  // jardim: esperar ela pousar na flor e o papo encher
+  if (MEL.passo === 0 && state.flower >= 0 && state.drinkT > 0) ctx.passoFeito();
+  if (MEL.passo === 1) {
+    MEL.fill = Math.max(MEL.fill, clamp(1 - state.drinkT / 4.5, 0, 1));
+    if (state.drinkT <= 0) { MEL.espera += dt; if (MEL.espera > 0.9) ctx.passoFeito(); }
+  }
+  if (MEL.papo) {
+    MEL.papo.visible = (MEL.passo >= 1 && MEL.passo <= 2) && current === 'operaria' && !hiveMode;
+    MEL.papo.scale.setScalar(0.35 + 0.65 * MEL.fill);
+    MEL.papo.material.emissiveIntensity = 0.55 + 0.25 * Math.sin(t * 4);
+  }
+  const H = MEL.hive;
+  if (!H || !hiveMode) return;
+  const k = MEL.toques / TOQUES_SECAR;
+  H.anel.visible = MEL.passo === 4 || MEL.passo === 5;
+  H.anel.material.opacity = 0.65 + 0.35 * Math.sin(t * 5);
+  H.anel.scale.setScalar(1 + 0.12 * Math.sin(t * 5));
+  H.gota.visible = MEL.passo === 3;
+  if (H.gota.visible) H.gota.scale.setScalar(0.8 + 0.3 * Math.sin(t * 5));
+  H.nectar.visible = MEL.passo >= 3;
+  H.nectar.material.color.copy(_cor1).lerp(_cor2, k);
+  H.nectar.position.z = -HIVE.CD + 0.5 + 6.5 * (1 - 0.25 * k);           // néctar ralo enche a casinha; o mel fica mais grosso
+  MEL.abana = Math.max(0, MEL.abana - dt);
+  hive.agents.forEach((a) => { if (a.mel && MEL.passo === 4) a.abana = MEL.abana > 0; });
+  H.agua.forEach((d) => {                  // gotinhas de água saindo enquanto elas abanam
+    if (d.userData.t > 1.4 && MEL.abana > 0 && Math.random() < dt * 10) { d.userData.t = 0; d.userData.x = H.P.x + rnd(-2, 2); d.userData.y = H.P.y + rnd(-2, 2); }
+    if (d.userData.t <= 1.4) { d.userData.t += dt; const u = d.userData.t; d.position.set(d.userData.x + u * 3, d.userData.y + u * 6, 1 + u * 7); d.material.opacity = 0.8 * (1 - u / 1.4); }
+  });
+  if (MEL.passo >= 5 && MEL.tampar) { const s = Math.min(1, H.tampa.scale.x / (H.P ? 2.8 : 1) + dt * 1.5); H.tampa.scale.set(2.8 * s, 2.8 * s, 0.6 * s); if (s >= 1 && MEL.passo === 5) ctx.passoFeito(); }
+}
+const _plano = new THREE.Plane(new V3(0, 0, 1), 0), _pt = new V3();
+const processoMel = {
+  titulo: 'Como nasce o mel',
+  revisado: false,
+  iniciar(c) {
+    limparMel();
+    state.wander = false; c.marcar('flores', false);
+    c.trocarForma('operaria');
+  },
+  parar() { limparMel(); MEL.tampar = false; },
+  passos: [
+    { espera: true, texto: 'Toque numa flor! A abelha operária voa até lá e bebe o néctar com a língua, que funciona como um canudinho.', pequeno: 'Toque numa flor!', acao: () => { MEL.passo = 0; } },
+    { espera: true, texto: 'O néctar vai para o papo de mel, uma bolsinha dentro da barriga. Veja ele enchendo!', pequeno: 'O néctar vai para uma bolsinha na barriga!', acao: () => { MEL.passo = 1; MEL.espera = 0; papoMel(); } },
+    { texto: 'Papo cheio! Agora ela leva o néctar para a colmeia. Toque em "Próximo".', pequeno: 'Bolsinha cheia! Vamos para a colmeia.', acao: () => { MEL.passo = 2; MEL.fill = 1; } },
+    { texto: 'Na colmeia, ela passa o néctar boca a boca para outra operária. As abelhas misturam o néctar com substâncias do próprio corpo (enzimas) e guardam numa casinha do favo.', pequeno: 'Ela passa o néctar boca a boca para a amiga!', acao: (c) => { MEL.passo = 3; MEL.toques = 0; c.trocarForma('colmeia'); if (hiveMode) { montarMelColmeia(); abelhasMel('troca'); voarAteCelula(c); } } },
+    { espera: true, texto: 'O néctar ainda tem muita água. Toque perto da casinha que brilha para as abelhas abanarem as asas e secarem o néctar!', pequeno: 'Toque para as abelhas abanarem as asas!', acao: () => { MEL.passo = 4; MEL.toques = 0; abelhasMel('abana'); } },
+    { espera: true, texto: 'O néctar virou mel: grosso e docinho! Toque na casinha para as abelhas tamparem com cera.', pequeno: 'Mel pronto! Toque para tampar com cera.', acao: () => { MEL.passo = 5; MEL.tampar = false; abelhasMel(null); } },
+    { texto: 'Mel guardado! É a comida das abelhas para quando faltar flor. Uma abelha faz bem pouquinho mel na vida toda: o pote inteiro é trabalho de milhares delas.', pequeno: 'Mel guardado! É a comida das abelhas.', acao: () => { MEL.passo = 6; Progresso.marcar('abelha', 'funciona'); } }
+  ],
+  toque(c, hits, ray) {
+    if (MEL.passo === 0) { toqueCena(c, ray); return; }
+    if (MEL.passo !== 4 && MEL.passo !== 5) return;
+    const H = MEL.hive; if (!H || !hiveMode) return;
+    if (!ray.ray.intersectPlane(_plano, _pt) || _pt.distanceTo(new V3(H.P.x, H.P.y, 0)) > 22) { c.aviso('Toque perto da casinha que brilha!'); return; }
+    if (MEL.passo === 4) {
+      MEL.abana = 1.4; MEL.toques++;
+      if (MEL.toques >= TOQUES_SECAR) setTimeout(() => { if (MEL.passo === 4) c.passoFeito(); }, 900);
+    } else if (!MEL.tampar) MEL.tampar = true;
+  }
+};
+
+/* =====================================================================
+   11) REGISTRO NO MOTOR
    ===================================================================== */
 Modelos3D.abelha = {
   cena: 'chao',
@@ -1431,7 +1570,7 @@ Modelos3D.abelha = {
     vestir('operaria');
     c.seguir = bee;
     setTimeout(() => c.aviso('🌼 Toque numa flor e ela voa até lá!'), 1800);
-    window.__abelha = { state, bee, flyTo, FLORES, hive, goHiveStop, CASTES };   // para testes
+    window.__abelha = { state, bee, flyTo, FLORES, hive, goHiveStop, CASTES, MEL };   // para testes
     return { grupo: bee, raio: radius, centro: bee.localToWorld(centerLocal.clone()) };
   },
   forma(id) {
@@ -1442,14 +1581,22 @@ Modelos3D.abelha = {
   centroAtual: () => bee.localToWorld(centerLocal.clone()),
   home(c) {
     if (!hiveMode) return false;
+    if (c.aoVivo()) {                       // no "Como nasce o mel": câmera na casinha do processo
+      montarMelColmeia();
+      if (MEL.passo === 3) abelhasMel('troca');
+      voarAteCelula(c);
+      return true;
+    }
     goHiveStop(0);
     c.cartao(hive.stops[0].em + ' ' + hive.stops[0].t, hive.stops[0].txt);
     return true;
   },
+  processo: processoMel,
   partesAtuais: () => (hiveMode ? partesColmeia() : partesAbelha()),
   toqueCena,
   update(dt, t) {
     dt = Math.min(dt, 0.05);
+    atualizarMel(dt, t);
     if (hiveMode) { updateHive(dt, t); return; }
     if (G) { updateBee(dt, t); updateParts(t, dt); }
     if (camera.position.y < 1) camera.position.y = 1;
