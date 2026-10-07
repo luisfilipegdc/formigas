@@ -11,6 +11,10 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - `css/splash.css`, `js/splash.js` e `js/splash-bichos.js`: abertura (mascote, folhas e bichos passando: aranha descendo no fio, borboleta-azul e joaninha; para trocar por imagens realistas, veja o topo de `js/splash-bichos.js`), "Olá, explorador!" no primeiro acesso e saudação com os bichos encontrados na volta. Toque pula; não aparece de novo na mesma sessão.
 - `js/home.js`: lógica da home. `js/icones.js`: ícones SVG da interface.
 - `design/`: referências visuais da marca (não são usadas pelo site).
+- `bicho3d.html?id=<bicho>`: **página 3D reutilizável** no "Modo Explorar" (barra de formas no topo, ações na lateral, Partes, Tamanho real com arroz/moeda/régua, modo "só o bicho", selo "No meu bolso" e dicas do Curu). O motor fica em `js/bicho3d.js` e cada bicho tem só o seu modelo em `js/modelos/<id>.js`:
+  - `cigarra` (*Quesada gigas*): adulta, ninfa e casca (exúvia no tronco); canta (som imitado) e voa.
+  - `aranha` (*Trichonephila clavipes*): fêmea e o macho pequenininho na teia dourada; anda, desce no fio e sente a teia tremer.
+- **Novo bicho com 3D:** cadastre em `js/catalogo.js` com `pagina: 'bicho3d.html?id=<id>'` e crie `js/modelos/<id>.js` (veja o topo de `js/bicho3d.js`). Espécies do mesmo tipo (várias aranhas, várias cigarras) usam o campo `tipo`.
 - `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
 - `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.

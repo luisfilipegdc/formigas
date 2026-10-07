@@ -27,7 +27,7 @@
   document.querySelectorAll('[data-ico]').forEach((el) => { el.insertAdjacentHTML('afterbegin', Icone(el.dataset.ico)); });
 
   // ---------- "Que bicho você quer conhecer?": grupos com foto real ----------
-  const ROSTO = { insetos: 'joaninha', aves: 'arara', mamiferos: 'onca', repteis: 'tartaruga', anfibios: 'sapo', peixes: 'pirarucu' };
+  const ROSTO = { aracnideos: 'aranha', insetos: 'joaninha', aves: 'arara', mamiferos: 'onca', repteis: 'tartaruga', anfibios: 'sapo', peixes: 'pirarucu' };
   GRUPOS.filter((g) => g.id !== 'todos').forEach((g) => {
     const A = porId(ROSTO[g.id]) || ANIMAIS.find((a) => a.grupo === g.id);
     if (!A) return;
@@ -51,6 +51,19 @@
     el.querySelector('button').addEventListener('click', () => Ficha.abrir(A.id));
     $('destaques').appendChild(el);
   });
+
+  // ---------- "Explore em 3D": todos os bichos com 3D (exceto a formiga, que está na janela grande) ----------
+  ANIMAIS.filter((A) => A.pagina && A.id !== 'formiga').forEach((A) => {
+    const a = document.createElement('a');
+    a.className = 'mini'; a.href = A.pagina;
+    const f = Dados.locais(A)[0];
+    a.innerHTML = '<img alt="" loading="lazy" src="' + esc(f ? f.mini : '') + '"><div><b>' + esc(A.nome) + ' em 3D</b><span>' + esc((A.destaques || []).map((d) => d.replace(/^\S+\s/, '')).join(' · ')) + '</span></div>';
+    $('minis').appendChild(a);
+  });
+  { const a = document.createElement('a');
+    a.className = 'mini'; a.href = 'comparar.html?a=formiga&b=onca';
+    a.innerHTML = '<span class="mini-duo"><img src="img/animais/formiga-1p.jpg" alt="" loading="lazy"><img src="img/animais/onca-1p.jpg" alt="" loading="lazy"></span><div><b>Qual bicho é maior?</b><span>Compare tamanho, comida e parentesco</span></div>';
+    $('minis').appendChild(a); }
 
   // ---------- categorias ----------
   const chips = $('chips');
@@ -89,7 +102,8 @@
       b.setAttribute('aria-pressed', b.dataset.g === grupo);
     });
     const t = norm(q.value.trim());
-    const lista = ANIMAIS.filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
+    const ordemG = (a) => GRUPOS.findIndex((g) => g.id === a.grupo);
+    const lista = ANIMAIS.slice().sort((a, b) => ordemG(a) - ordemG(b)).filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
       (!t || norm(a.nome + ' ' + a.cientifico + ' ' + (a.resumo || '')).includes(t)));
     // na home: 8 bichos; ao buscar, filtrar ou tocar em "Ver todos", a lista inteira
     const tudo = todos || t || grupo !== 'todos';
@@ -121,6 +135,11 @@
     const nv = Progresso.nivel(n);
     $('nivel').innerHTML = '<span class="nivel-emoji">' + nv.emoji + '</span><div><b>' + esc(nv.nome) + '</b>' +
       (nv.proximo ? 'Faltam ' + nv.falta + (nv.falta === 1 ? ' bicho' : ' bichos') + ' para ' + esc(nv.proximo) + '.' : 'Você encontrou todos os bichos!') + '</div>';
+    $('colecoes').innerHTML = COLECOES.map((C) => {
+      const tem = C.bichos.filter((id) => porId(id) && encontrado(porId(id))).length, tot = C.bichos.length;
+      return '<li class="' + (tem === tot ? 'completa' : '') + '"><span class="col-emoji">' + C.emoji + '</span><div><b>' + esc(C.nome) + '</b>' +
+        '<span class="barra"><span style="width:' + (100 * tem / tot) + '%"></span></span></div><em>' + (tem === tot ? '🏅 ' + esc(C.selo) : tem + '/' + tot + (tot - tem === 1 ? ' · falta só um!' : '')) + '</em></li>';
+    }).join('');
     const album = $('album');
     album.innerHTML = '';
     ANIMAIS.forEach((A, i) => album.appendChild(carta(A, i + 1)));

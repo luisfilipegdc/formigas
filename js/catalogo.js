@@ -13,6 +13,7 @@
      procurar   → onde procurar no mundo real
      som        → (opcional) { arquivo: 'som/x.mp3', autor, lic, fonte } para o botão 🔊
      silencio   → curiosidade para bichos que não fazem som audível
+     tipo       → (opcional) agrupa várias espécies do mesmo tipo (ex.: 'aranha', 'cigarra')
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
                   pequena "-1p.jpg" para os cartões); autor e licença aparecem no site
@@ -26,6 +27,7 @@
 const GRUPOS = [
   { id: 'todos', nome: 'Todos', emoji: '🌍' },
   { id: 'insetos', nome: 'Insetos', emoji: '🐞' },
+  { id: 'aracnideos', nome: 'Aracnídeos', emoji: '🕷️' },
   { id: 'aves', nome: 'Aves', emoji: '🐦' },
   { id: 'mamiferos', nome: 'Mamíferos', emoji: '🐾' },
   { id: 'repteis', nome: 'Répteis', emoji: '🦎' },
@@ -421,18 +423,88 @@ const ANIMAIS = [
       'As escamas são tão duras que são usadas como lixa de unha.',
       '"Pirarucu" vem do tupi e quer dizer "peixe vermelho", pela cor da cauda.'
     ]
+  },
+  {
+    id: 'cigarra', nome: 'Cigarra-gigante', cientifico: 'Quesada gigas', grupo: 'insetos', tipo: 'cigarra', emoji: '🦗', cor: '#d9e8c4',
+    curto: 'cigarra', pista: 'No verão eu canto tão alto que dá para ouvir de longe.', procurar: 'Troncos de árvores no verão, e a casquinha que eu deixo grudada neles.',
+    pagina: 'bicho3d.html?id=cigarra',
+    resumo: 'A cantora do verão, que passa anos crescendo debaixo da terra.',
+    fotos: [
+      { arquivo: 'img/animais/cigarra-1.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Quesada gigas', inat: 57045694 },
+      { arquivo: 'img/animais/cigarra-2.jpg', autor: 'Jorge Armín Escalante Pasos', lic: 'CC BY', especie: 'Quesada gigas', inat: 28089419 },
+      { arquivo: 'img/animais/cigarra-3.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Quesada gigas', inat: 9901553 }
+    ],
+    busca: 'Quesada gigas', wiki: 'Quesada gigas',
+    destaques: ['🦗 adulta', '🐛 ninfa', '🤎 casca (exúvia)', '🎵 canto'],
+    rapido: { tamanho: '6 a 7 cm', onde: 'Américas', come: 'Seiva' },
+    comp: { mm: 65, tam: '6 a 7 cm (com as asas)', igual: 'um dedo de adulto', dieta: 'seiva', come: 'Seiva das árvores, que ela suga com um bico fino.', vive: 'Vários anos como ninfa; poucas semanas como adulta', social: 'Sozinha (os machos cantam em coro)', casa: 'Árvores; a ninfa vive debaixo da terra', tax: ['Arthropoda', 'Insecta', 'Hemiptera', 'Cicadidae'], iucn: null },
+    ficha: [
+      ['🔬', 'Nome científico', 'Quesada gigas, uma das maiores cigarras do Brasil. Existem milhares de espécies de cigarras.'],
+      ['🧬', 'Classificação', 'Inseto · Ordem Hemiptera (percevejos e cigarras) · Família Cicadidae'],
+      ['📍', 'Onde vive', 'Do sul dos Estados Unidos à Argentina. No Brasil, em cidades, matas e plantações.'],
+      ['🍽️', 'O que come', 'Seiva das plantas. A ninfa suga as raízes; a adulta, os galhos e troncos.'],
+      ['🎵', 'O canto', 'Só os machos cantam, para chamar as fêmeas. O som sai de duas "membranas-tambor" (tímbalos) na barriga.'],
+      ['⏳', 'Quanto vive', 'Passa anos debaixo da terra como ninfa. Depois de adulta, vive só algumas semanas.']
+    ],
+    ciclo: [
+      ['🥚', 'Ovo', 'A mãe bota os ovos dentro de galhos finos.'],
+      ['🐛', 'Ninfa', 'Cai no chão, cava um túnel e passa anos sugando a seiva das raízes.'],
+      ['🧗', 'Subida', 'Numa noite quente, sobe pelo tronco de uma árvore.'],
+      ['🤎', 'Troca de pele', 'A pele das costas se abre e sai a adulta. A casca (exúvia) fica grudada no tronco.'],
+      ['🦗', 'Adulta', 'Canta, encontra um par e bota ovos. Vive poucas semanas.']
+    ],
+    curiosidades: [
+      'A cigarra não "estoura" de tanto cantar! A casquinha que você acha na árvore é a pele velha que ela trocou.',
+      'O canto de algumas cigarras é tão alto quanto um liquidificador.',
+      'Cigarras não picam nem mordem: são inofensivas para as pessoas.'
+    ]
+  },
+  {
+    id: 'aranha', nome: 'Aranha-de-teia-dourada', cientifico: 'Trichonephila clavipes', grupo: 'aracnideos', tipo: 'aranha', emoji: '🕷️', cor: '#f2e3b8',
+    curto: 'aranha', pista: 'Faço uma teia enorme que brilha como ouro no sol.', procurar: 'Entre árvores e arbustos, em matas, parques e quintais.',
+    pagina: 'bicho3d.html?id=aranha',
+    resumo: 'A tecelã da teia dourada, gigante e brilhante.',
+    fotos: [
+      { arquivo: 'img/animais/aranha-1.jpg', autor: 'yvesbas', lic: 'CC BY', especie: 'Trichonephila clavipes', inat: 58647311 },
+      { arquivo: 'img/animais/aranha-2.jpg', autor: 'akt2', lic: 'CC BY', especie: 'Trichonephila clavipes', inat: 49938905 },
+      { arquivo: 'img/animais/aranha-3.jpg', autor: 'alessandradalia', lic: 'CC BY-SA', especie: 'Trichonephila clavipes', inat: 30837400 }
+    ],
+    busca: 'Trichonephila clavipes', wiki: 'Trichonephila clavipes',
+    destaques: ['🕷️ fêmea', '🔍 macho pequenininho', '🕸️ teia dourada', '🧵 desce no fio'],
+    rapido: { tamanho: '2,5 a 4 cm', onde: 'Américas', come: 'Insetos' },
+    comp: { mm: 30, tam: 'fêmea: 2,5 a 4 cm de corpo', igual: 'uma tampinha de garrafa', dieta: 'carnivoro', come: 'Insetos que ficam presos na teia.', vive: 'Cerca de 1 ano', social: 'Sozinha (o macho mora na teia da fêmea)', casa: 'Teia grande entre árvores', tax: ['Arthropoda', 'Arachnida', 'Araneae', 'Araneidae'], iucn: null },
+    silencio: 'Aranhas não fazem som que a gente escute. Elas "ouvem" sentindo a teia tremer!',
+    ficha: [
+      ['🔬', 'Nome científico', 'Trichonephila clavipes (antes Nephila clavipes). Existem mais de 50 mil espécies de aranhas.'],
+      ['🧬', 'Classificação', 'Aracnídeo (não é inseto!) · Ordem Araneae (aranhas) · Família Araneidae'],
+      ['📍', 'Onde vive', 'Do sul dos Estados Unidos à Argentina. Muito comum no Brasil, em matas, parques e quintais.'],
+      ['🍽️', 'O que come', 'Insetos que ficam presos na teia, como moscas, besouros e mariposas.'],
+      ['🕸️', 'A teia', 'A seda é amarela e brilha como ouro. A teia pode ter mais de 1 metro.'],
+      ['🛡️', 'É perigosa?', 'Não para pessoas. Mesmo assim, observe sem tocar.']
+    ],
+    ciclo: [
+      ['🥚', 'Ovos', 'A mãe guarda centenas de ovos num saquinho de seda.'],
+      ['🕷️', 'Filhotes', 'Nascem miniaturas de aranha, que soltam um fio e voam com o vento.'],
+      ['🔄', 'Crescimento', 'Trocam de pele várias vezes enquanto crescem.'],
+      ['🕸️', 'Adulta', 'A fêmea fica grande e faz a teia dourada. O macho é bem pequeno.']
+    ],
+    curiosidades: [
+      'O macho é tão pequeno que parece um filhote perto da fêmea: ela pode ser 100 vezes mais pesada.',
+      'Aranha não é inseto: tem 8 patas, e os insetos têm 6.',
+      'A seda de aranha é mais resistente que um fio de aço da mesma grossura.'
+    ]
   }
 ];
 
 // rótulos usados pela ficha e pelo comparador
 const DIETAS = {
   fungo: ['🍄', 'Come fungo'], nectar: ['🌸', 'Come néctar'], frutas: ['🍎', 'Come frutas'],
-  carnivoro: ['🥩', 'Carnívoro'], herbivoro: ['🌿', 'Herbívoro'], sementes: ['🌰', 'Come cocos e sementes']
+  carnivoro: ['🥩', 'Carnívoro'], herbivoro: ['🌿', 'Herbívoro'], sementes: ['🌰', 'Come cocos e sementes'], seiva: ['🌳', 'Bebe seiva']
 };
 const NIVEIS_TAX = ['Filo', 'Classe', 'Ordem', 'Família'];
 const NOMES_TAX = {
   Arthropoda: 'Artrópodes (esqueleto por fora)', Chordata: 'Cordados (ossos por dentro)',
-  Insecta: 'Insetos', Aves: 'Aves', Mammalia: 'Mamíferos', Reptilia: 'Répteis', Amphibia: 'Anfíbios', Actinopterygii: 'Peixes ósseos'
+  Insecta: 'Insetos', Arachnida: 'Aracnídeos', Aves: 'Aves', Mammalia: 'Mamíferos', Reptilia: 'Répteis', Amphibia: 'Anfíbios', Actinopterygii: 'Peixes ósseos'
 };
 const IUCN = {
   LC: ['🟢', 'Pouco preocupante'], NT: ['🟡', 'Quase ameaçada'], VU: ['🟠', 'Vulnerável'],
@@ -444,6 +516,21 @@ const MISSOES = [
   {
     id: 'jardim', nome: 'Pequenos do jardim', selo: 'Explorador do Jardim',
     texto: 'Procure perto de casa ou da escola. Viu um de verdade? Toque em "encontrei!".',
-    bichos: [['formiga', 'uma formiga'], ['abelha', 'uma abelha'], ['joaninha', 'uma joaninha'], ['borboleta', 'uma borboleta'], ['beijaflor', 'um beija-flor']]
+    bichos: [['formiga', 'uma formiga'], ['abelha', 'uma abelha'], ['joaninha', 'uma joaninha'], ['borboleta', 'uma borboleta'], ['aranha', 'uma aranha'], ['cigarra', 'uma cigarra']]
   }
+];
+
+// tipos: agrupam várias espécies (cada espécie tem ficha, fotos e carta próprias)
+const TIPOS = {
+  aranha: { nome: 'Aranhas', emoji: '🕷️' },
+  cigarra: { nome: 'Cigarras', emoji: '🦗' }
+};
+
+// coleções do Meu Bolso (completar uma coleção ganha um selo)
+const COLECOES = [
+  { id: 'jardim', nome: 'Bichos do jardim', emoji: '🌻', selo: 'Explorador do Jardim', bichos: ['formiga', 'abelha', 'joaninha', 'borboleta', 'beijaflor', 'cigarra', 'aranha', 'sapo'] },
+  { id: 'cantores', nome: 'Bichos que cantam', emoji: '🎵', selo: 'Ouvido de Explorador', bichos: ['cigarra', 'sapo', 'beijaflor', 'arara'] },
+  { id: 'agua', nome: 'Vida na água', emoji: '🌊', selo: 'Explorador Aquático', bichos: ['tartaruga', 'pirarucu', 'sapo'] },
+  { id: 'gigantes', nome: 'Gigantes do Brasil', emoji: '🦖', selo: 'Caçador de Gigantes', bichos: ['onca', 'arara', 'tartaruga', 'pirarucu', 'preguica'] },
+  { id: 'pequenos', nome: 'Pequenos gigantes', emoji: '🔍', selo: 'Olho de Lupa', bichos: ['formiga', 'abelha', 'joaninha', 'cigarra', 'aranha'] }
 ];

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bicho no Bolso">
+<meta name="theme-color" content="#164A3A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icone/favicon.png">
+<link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
+<title>Bicho em 3D · Bicho no Bolso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/marca.css">
+<link rel="stylesheet" href="css/bicho3d.css">
+</head>
+<body>
+<div id="palco"></div>
+<header class="topo3d">
+  <a class="voltar" href="index.html#bichos" aria-label="Voltar para os bichos">←</a>
+  <h1 id="nome">Bicho</h1>
+  <nav class="abas" id="abas" aria-label="Formas"></nav>
+</header>
+<div class="acoes" id="acoes" role="toolbar" aria-label="Explorar"></div>
+<div class="base3d">
+  <button class="bolso" id="bolso" type="button"></button>
+  <button class="acao-ficha" id="ficha" type="button">ℹ️ Ficha</button>
+</div>
+<div id="etiquetas"></div>
+<div class="cartao" id="cartao" hidden><button id="cartao-x" type="button" aria-label="Fechar">✕</button><b id="cartao-t"></b><p id="cartao-p"></p></div>
+<div class="curu" id="curu" aria-live="polite"><img src="img/mascote/curu-rosto-360.jpg" alt=""><span></span></div>
+<div class="aviso3d" id="aviso" role="status"></div>
+<button class="voltar-ui" id="voltar-ui" type="button">Mostrar botões</button>
+<div class="carregando" id="carregando">Montando…</div>
+
+<script src="js/catalogo.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/progresso.js"></script>
+<script src="js/ficha.js"></script>
+<script src="vendor/three/three.min.js"></script>
+<script src="vendor/three/OrbitControls.js"></script>
+<script src="vendor/three/RoomEnvironment.js"></script>
+<script src="vendor/three/MarchingCubes.js"></script>
+<script src="js/core3d.js"></script>
+<script src="js/bicho3d.js"></script>
+<script src="js/modelos/cigarra.js"></script>
+<script src="js/modelos/aranha.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

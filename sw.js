@@ -3,13 +3,15 @@
    (por exemplo, no Wi-Fi da escola que bloqueia o endereço).
    A lista abaixo é gerada por: python3 ferramentas/atualizar-cache.py
    ===================================================================== */
-const VERSAO = '1e4acfd617';
+const VERSAO = 'c3bb1531e9';
 const CACHE = 'animais3d-' + VERSAO;
 const FONTES = 'animais3d-fontes';
 const ARQUIVOS = [
   './',
   './abelha.html',
+  './bicho3d.html',
   './comparar.html',
+  './css/bicho3d.css',
   './css/catalogo.css',
   './css/formiga.css',
   './css/marca.css',
@@ -19,6 +21,10 @@ const ARQUIVOS = [
   './img/animais/abelha-1p.jpg',
   './img/animais/abelha-2.jpg',
   './img/animais/abelha-3.jpg',
+  './img/animais/aranha-1.jpg',
+  './img/animais/aranha-1p.jpg',
+  './img/animais/aranha-2.jpg',
+  './img/animais/aranha-3.jpg',
   './img/animais/arara-1.jpg',
   './img/animais/arara-1p.jpg',
   './img/animais/arara-2.jpg',
@@ -31,6 +37,10 @@ const ARQUIVOS = [
   './img/animais/borboleta-1p.jpg',
   './img/animais/borboleta-2.jpg',
   './img/animais/borboleta-3.jpg',
+  './img/animais/cigarra-1.jpg',
+  './img/animais/cigarra-1p.jpg',
+  './img/animais/cigarra-2.jpg',
+  './img/animais/cigarra-3.jpg',
   './img/animais/formiga-1.jpg',
   './img/animais/formiga-1p.jpg',
   './img/animais/formiga-2.jpg',
@@ -80,6 +90,7 @@ const ARQUIVOS = [
   './img/mascote/curu-rosto-360.jpg',
   './index.html',
   './js/app.js',
+  './js/bicho3d.js',
   './js/catalogo.js',
   './js/core3d.js',
   './js/dados.js',
@@ -87,6 +98,8 @@ const ARQUIVOS = [
   './js/formiga.js',
   './js/home.js',
   './js/icones.js',
+  './js/modelos/aranha.js',
+  './js/modelos/cigarra.js',
   './js/progresso.js',
   './js/splash-bichos.js',
   './js/splash.js',

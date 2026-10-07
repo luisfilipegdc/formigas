@@ -45,6 +45,9 @@ const Progresso = (function () {
     const n = encontrados(), nv = nivel(n);
     if (novo) {
       const subiu = nivel(n - 1).nome !== nv.nome;
+      // completou uma coleção com este bicho?
+      const col = typeof COLECOES !== 'undefined' && COLECOES.find((C) => C.bichos.indexOf(A.id) >= 0 && C.bichos.every((id) => { const B = ANIMAIS.find((x) => x.id === id); return B && conta(B).feitas > 0; }));
+      if (col) { aviso('<b>🏅 Coleção completa!</b>' + col.emoji + ' ' + col.nome + ' · selo ' + col.selo); return true; }
       aviso('<b>🎉 Novo bicho no bolso!</b>' + A.nome + ' · ' + n + ' de ' + ANIMAIS.length + (subiu ? '<br>' + nv.emoji + ' Agora você é ' + nv.nome + '!' : ''));
       return true;
     }
