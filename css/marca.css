@@ -59,7 +59,7 @@ button, input { font: inherit; color: inherit; }
 
 /* ---------- logo ---------- */
 .logo { display: inline-flex; align-items: center; gap: 2px; text-decoration: none; color: var(--color-nature); line-height: .9; flex: none; }
-.logo-img { height: 72px; width: auto; display: block; }
+.logo-img { height: 64px; width: auto; display: block; }
 
 /* ---------- cabeçalho ---------- */
 .cabecalho {
@@ -139,11 +139,3 @@ button, input { font: inherit; color: inherit; }
   .secao { padding-top: 28px; }
   .painel { padding: 16px; border-radius: var(--radius-m); }
 }
-
-/* logo provisório em texto (até chegar a arte nova do Bicho no Bolso) */
-.logo-txt { display: inline-flex; align-items: center; gap: 10px; line-height: 1; }
-.logo-txt img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-primary-soft); }
-.logo-txt b { font-size: 28px; font-weight: 900; color: var(--color-primary); letter-spacing: -.02em; }
-.logo-txt i { font-style: normal; font-size: 22px; font-weight: 900; color: var(--color-nature); }
-.rodape-marca { display: flex; justify-content: center; margin-bottom: 10px; }
-@media (max-width: 520px) { .logo-txt img { width: 40px; height: 40px; } .logo-txt b { font-size: 23px; } .logo-txt i { font-size: 18px; } }
