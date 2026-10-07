@@ -31,8 +31,15 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 
 Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR ficam em `vendor/` e as fotos em `img/animais/`. Fora do site só ficam a fonte (se não carregar, aparece a fonte do aparelho) e os dados extras da aba 📷 Real.
 
+## Usar sem internet (app na Tela de Início)
+O site funciona como um app (PWA). Na primeira vez que abre com internet, ele guarda tudo no aparelho: páginas, 3D e fotos (cerca de 4 MB). Depois abre mesmo sem internet, ou num Wi-Fi que bloqueia o endereço.
+- **iPad/iPhone:** abra no Safari (no 4G ou em casa) › **Compartilhar** › **Adicionar à Tela de Início**. O ícone 🐜🐝 3D abre o app em tela cheia.
+- No catálogo aparece "✅ Pronto para usar sem internet" quando terminou de guardar.
+- **Mudou ou adicionou arquivos?** Rode `python3 ferramentas/atualizar-cache.py` antes de publicar: ele atualiza a lista do `sw.js` e a versão, e os aparelhos baixam a novidade na próxima abertura com internet.
+
 ## "Esta Conexão Não É Privada" no iPad
 Esse aviso do Safari não vem do site: a Vercel usa um certificado válido. Ele aparece quando algo na rede troca o certificado no caminho. Na escola, quase sempre é o filtro ou firewall do Wi-Fi.
+0. **Mais rápido:** instale o app pelo 4G (veja acima). Depois disso ele abre na escola mesmo com o bloqueio.
 1. **Teste no 4G:** abra o mesmo endereço num celular fora do Wi-Fi da escola. Se abrir, o problema é a rede.
 2. **Data e hora do iPad:** Ajustes › Geral › Data e Hora › "Ajustar Automaticamente" ligado. Com a data errada, todo site seguro dá esse aviso.
 3. **Wi-Fi com página de login:** conecte de novo na rede e faça o login (abra `captive.apple.com` para a página aparecer).

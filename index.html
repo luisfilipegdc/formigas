@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-title" content="Animais 3D">
 <meta name="theme-color" content="#fff3c8">
 <meta name="description" content="Catálogo 3D de Animais: explore formigas, abelhas e outros animais em 3D, com ficha da espécie e ciclo de vida. Grátis, direto no navegador.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icone/favicon.png">
+<link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
 <title>Catálogo 3D de Animais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,6 +78,8 @@
   .top { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
   .top a, .top span { font-weight: 800; font-size: 17px; color: var(--ink); text-decoration: none; background: #fff; border-radius: 999px; padding: 6px 16px; box-shadow: 0 4px 0 rgba(74,42,18,.1); }
   .top span { background: rgba(255,255,255,.6); }
+  .offline { background: rgba(255,255,255,.75); border-radius: 18px; padding: 8px 14px; margin: 0 auto 12px; max-width: 560px; font-size: 16px; opacity: 1; }
+  .offline button { font: inherit; font-weight: 800; background: #ffd23f; border: 0; border-radius: 999px; padding: 6px 16px; cursor: pointer; text-decoration: none; }
   footer button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
   .empty { text-align: center; font-size: 20px; padding: 30px; opacity: .7; }
   footer { margin-top: auto; padding-top: 26px; font-size: 15px; opacity: .75; text-align: center; line-height: 1.5; }
@@ -111,6 +116,7 @@
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" hidden>Nenhum animal encontrado 🐾</div>
   <footer>
+    <p id="offline" class="offline" hidden></p>
     Grátis, sem anúncios e sem coleta de dados. Gire com um dedo e dê zoom com dois.<br>
     Fotos reais do <b>iNaturalist</b>, com o nome de cada fotógrafo e licença Creative Commons (CC0, CC BY, CC BY-SA).<br>
     <a href="qr.html">🖨️ QR code para imprimir</a> · <button id="apagar">apagar minhas descobertas</button>
@@ -203,5 +209,6 @@
   Ficha.criar(ANIMAIS[0].id, { botao: false });
 })();
 </script>
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Animais 3D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icone/favicon.png">
+<link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
 <title>QR Code — Catálogo 3D de Animais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +50,7 @@
   <h1>Catálogo 3D de Animais</h1>
   <div class="sub">Animais em 3D para girar, dar zoom e conhecer a vida deles!</div>
   <div id="qr"></div>
-  <div class="steps">📱 Aponte a câmera do celular ou do tablet<br>para o código e toque no link.</div>
+  <div class="steps">📱 Aponte a câmera do celular ou do tablet<br>para o código e toque no link.<br>📲 Depois toque em <b>Compartilhar › Adicionar à Tela de Início</b>:<br>assim funciona até sem internet.</div>
   <div class="url" id="urlText"></div>
   <div class="foot">Grátis, sem anúncios e sem cadastro.</div>
 </div>
@@ -70,5 +75,6 @@
   draw();
 })();
 </script>
+<script src="js/app.js"></script>
 </body>
 </html>
