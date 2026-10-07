@@ -13,13 +13,30 @@
      forma(id, ctx), update(dt, t, ctx), toque(ctx),
      partes: [{ nome, texto, ponto(ctx) → Vector3 }]
    }
+   Opcionais para bichos com cenário próprio (ex.: abelha no jardim):
+     cenario: 'proprio'        → sem o chão e o micro-habitat padrão
+     formas: [{ id, nome, ocultar: ['tam', 'voar'] }]  → esconde botões nessa forma
+     forma(id, ctx) pode devolver uma Promise (o motor espera antes da câmera)
+     toqueCena(ctx, ray)       → recebe todo toque na tela (flores, chão…)
+     centroAtual(ctx)          → centro da câmera quando o bicho anda
+     home(ctx, fator)          → devolve true se o modelo cuidou da câmera
+     partesAtuais(ctx)         → lista de partes conforme a forma; parte com
+                                 ir(ctx) vira passeio (botão "Próxima" no cartão)
+   O motor carrega js/modelos/<id>.js sozinho se o modelo não estiver na página.
    Unidades ≈ milímetros. Y para cima.
    ===================================================================== */
 const Modelos3D = {};
 
 window.addEventListener('load', () => {
-  const $ = (id) => document.getElementById(id);
   const id = new URLSearchParams(location.search).get('id');
+  if (!id || Modelos3D[id] || !/^[a-z0-9-]+$/.test(id)) { iniciar3d(id); return; }
+  const sc = document.createElement('script');          // carrega só o modelo deste bicho
+  sc.src = 'js/modelos/' + id + '.js';
+  sc.onload = sc.onerror = () => iniciar3d(id);
+  document.body.appendChild(sc);
+});
+function iniciar3d(id) {
+  const $ = (id) => document.getElementById(id);
   const A = typeof ANIMAIS !== 'undefined' && ANIMAIS.find((a) => a.id === id);
   const M = Modelos3D[id];
   if (!A || !M) { $('carregando').textContent = 'Bicho não encontrado.'; return; }
@@ -115,6 +132,8 @@ window.addEventListener('load', () => {
   const ctx = { THREE, scene, camera, controls, renderer, A, MOBILE, chao, sol, estado: {}, aviso: avisoRapido, aoVivo: () => proc.ativo };
   let raio = 30, centro = new V3(0, 10, 0);
   function home(fator) {
+    if (M.home && M.home(ctx, fator)) return;
+    if (M.centroAtual) centro = M.centroAtual(ctx);
     const vfov = camera.fov * Math.PI / 180, hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
     // o bicho ocupa ~60% da altura útil
     const d = raio / Math.sin(Math.min(vfov, hfov) / 2) * (fator || 0.75);
@@ -172,7 +191,7 @@ window.addEventListener('load', () => {
   }
 
   /* ---------- partes ---------- */
-  let partesOn = false, modo = 'fora';
+  let partesOn = false, modo = 'fora', passeioI = -1;
   let idade = 'pequeno'; try { idade = localStorage.getItem('bnb-idade') || 'pequeno'; } catch (e) {}
   ctx.idade = () => idade;
   const txt = (o) => (idade === 'pequeno' && o.pequeno) || o.texto;
@@ -181,13 +200,20 @@ window.addEventListener('load', () => {
     partesOn = !partesOn;
     etiqueta('partes', partesOn);
     labels.innerHTML = '';
-    const lista = (modo === 'dentro' && M.dentro && M.dentro.partes) || M.partes || [];
+    const lista = (modo === 'dentro' && M.dentro && M.dentro.partes) || (M.partesAtuais && M.partesAtuais(ctx)) || M.partes || [];
+    const passeio = lista.some((p) => p.ir);
+    passeioI = -1;
     if (partesOn) lista.forEach((p, i) => {
       const b = document.createElement('button');
-      b.className = 'etq'; b.type = 'button'; b.textContent = (idade === 'pequeno' && p.emoji ? p.emoji + ' ' : (i + 1) + ' ') + (idade === 'pequeno' && p.curto ? p.curto : p.nome);
-      b.addEventListener('click', () => { labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b)); cartao(p.nome, txt(p)); });
+      b.className = 'etq'; b.type = 'button'; b.textContent = (idade === 'pequeno' && p.emoji ? p.emoji + ' ' : (p.emoji && passeio ? p.emoji + ' ' : (i + 1) + ' ')) + (idade === 'pequeno' && p.curto ? p.curto : p.nome);
+      b.addEventListener('click', () => {
+        labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b));
+        passeioI = i; cartao((p.emoji && passeio ? p.emoji + ' ' : '') + p.nome, txt(p));
+        if (p.ir) p.ir(ctx);
+      });
       b._p = p; labels.appendChild(b);
     });
+    $('cartao-prox').hidden = !(partesOn && passeio);
     $('cartao').hidden = !partesOn;
     $('cartao').classList.remove('topo');
     if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', 'Toque numa etiqueta para saber para que serve cada parte.'); }
@@ -199,15 +225,27 @@ window.addEventListener('load', () => {
       _v.copy(b._p.ponto(ctx)).project(camera);
       const vis = _v.z < 1;
       b.style.display = vis ? '' : 'none';
-      b.style.transform = 'translate(' + ((_v.x + 1) / 2 * innerWidth) + 'px,' + ((1 - _v.y) / 2 * innerHeight) + 'px) translate(-50%,-50%)';
+      b.style.transform = 'translate(' + clamp((_v.x + 1) / 2 * innerWidth, 64, innerWidth - 64) + 'px,' + ((1 - _v.y) / 2 * innerHeight) + 'px) translate(-50%,-50%)';
     });
   }
   function cartao(t, txt) { $('cartao-t').textContent = t; $('cartao-p').textContent = txt; $('cartao').hidden = false; }
+  ctx.cartao = cartao;
+  ctx.mostrarPartes = (on) => { if (partesOn !== !!on) partes(); };
+  ctx.carregando = (t) => { const el = $('carregando'); if (t) el.textContent = t; el.classList.toggle('fora', !t); };
+  $('cartao-prox').addEventListener('click', () => {      // passeio: vai para a próxima etiqueta
+    const ets = labels.querySelectorAll('.etq');
+    if (ets.length) ets[(passeioI + 1) % ets.length].click();
+  });
   $('cartao-x').addEventListener('click', () => { $('cartao').hidden = true; if (partesOn) partes(); if (tamanhoOn) tamanho(); });
   function avisoRapido(txt) { const a = $('aviso'); a.textContent = txt; a.classList.add('on'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('on'), 2600); }
 
   /* ---------- interface ---------- */
   const lado = $('acoes');
+  let formaAtual = M.formas ? M.formas[0] : null;
+  function ocultarBotoes() {
+    const oc = (formaAtual && formaAtual.ocultar) || [];
+    lado.querySelectorAll('.acao').forEach((b) => { b.hidden = oc.indexOf(b.dataset.id) >= 0; });
+  }
   function botao(ico, rotulo, fn, idb) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'acao'; if (idb) b.dataset.id = idb;
@@ -220,7 +258,7 @@ window.addEventListener('load', () => {
   (M.acoes || []).forEach((a) => botao(a.ico, a.rotulo, (b) => a.fn(ctx, b), a.id));
   botao('🔎', 'Partes', () => partes(), 'partes');
   botao('📏', 'Tamanho', () => tamanho(), 'tam');
-  botao('🔄', 'Câmera', () => { controls.autoRotate = true; home(); }, 'cam');
+  botao('🔄', 'Câmera', () => { controls.autoRotate = !M.centroAtual; home(); }, 'cam');
   botao('👁', 'Só o bicho', () => document.body.classList.add('limpo'), 'limpo');
   $('voltar-ui').addEventListener('click', () => document.body.classList.remove('limpo'));
 
@@ -289,10 +327,14 @@ window.addEventListener('load', () => {
         abas.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
         if (partesOn) partes();
         if (modo !== 'fora' && M.dentro && M.dentro.forma && f.id !== M.dentro.forma) setModo('fora');
-        M.forma(f.id, ctx); home();
+        if (tamanhoOn) tamanho();
+        formaAtual = f; ocultarBotoes();
+        const r = M.forma(f.id, ctx);
+        if (r && r.then) r.then(() => home()); else home();
       });
       abas.appendChild(b);
     });
+    ocultarBotoes();
   }
 
   // ficha e bolso
@@ -327,6 +369,7 @@ window.addEventListener('load', () => {
     ray.setFromCamera(ndc, camera);
     const hits = ctx.grupo ? ray.intersectObject(ctx.grupo, true) : [];
     if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits); return; }
+    if (M.toqueCena) { M.toqueCena(ctx, ray); return; }
     if (hits.length && M.toque) M.toque(ctx);
   });
   controls.addEventListener('start', () => { controls.autoRotate = false; });
@@ -336,9 +379,11 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     try {
       if (M.cena === 'teia') { scene.background = new THREE.Color('#3e6a48'); scene.fog = new THREE.Fog('#3e6a48', 300, 1000); }
+      if (M.cenario === 'proprio') chao.visible = false;
       const r = M.construir(ctx);
       ctx.grupo = r.grupo; raio = r.raio; centro = r.centro;
-      if (M.cena !== 'teia') habitat(raio);
+      if (M.cenario === 'proprio') { /* o modelo monta o próprio cenário */ }
+      else if (M.cena !== 'teia') habitat(raio);
       else habitat(raio * 0.6);
     } catch (err) { $('carregando').textContent = 'Não foi possível montar o 3D neste aparelho.'; console.error(err); return; }
     home();
@@ -353,12 +398,12 @@ window.addEventListener('load', () => {
       if (M.update) M.update(dt, t, ctx);
       if (ctx.seguir) {                         // a câmera acompanha o bicho (voo)
         ctx.seguir.getWorldPosition(_seg);
-        if (_segAnt) { _segD.subVectors(_seg, _segAnt); controls.target.add(_segD); camera.position.add(_segD); }
+        if (_segAnt) { _segD.subVectors(_seg, _segAnt); controls.target.add(_segD); camera.position.add(_segD); sol.position.add(_segD); sol.target.position.add(_segD); }
         _segAnt = (_segAnt || new V3()).copy(_seg);
       }
       controls.update();
       moverEtiquetas();
-      renderer.render(scene, camera);
+      renderer.render(ctx.cenaAtiva || scene, camera);
     });
   }, 60);
-});
+}

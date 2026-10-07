@@ -1,0 +1,1459 @@
+/* =====================================================================
+   modelos/abelha.js — abelha-europeia (Apis mellifera) no motor bicho3d
+   Operária, rainha e zangão num jardim com flores, e a colmeia aberta
+   com passeio. A escultura, o comportamento e a colmeia vieram da página
+   antiga (abelha.html), agora usando a interface padrão do Modo Explorar.
+   Unidades = mm. Y para cima.
+   ===================================================================== */
+(function () {
+'use strict';
+let ctx = null, scene = null, renderer = null, camera = null, controls = null, MOBILE = false, ground = null;
+
+/* =====================================================================
+   1) AS 3 CASTAS DA ABELHA-EUROPEIA (Apis mellifera) — edite à vontade
+   abd = gomos do abdômen: [x, y, comprimento/2, altura/2, largura/2]
+   faixas = quanto de cada gomo é dourado (o resto é marrom-escuro)
+   ===================================================================== */
+const CASTES = {
+  operaria: {
+    nome: 'operária', escala: 1, velocidade: 10,
+    cabeca: { x: 4.3, y: 3.15, rx: 0.6, ry: 1.02, rz: 1.12 },
+    torax: [1.65, 3.08, 1.42, 1.3, 1.24],
+    abd: [[-1.05, 2.86, 0.78, 1.14, 1.26], [-1.95, 2.8, 0.82, 1.3, 1.44], [-2.9, 2.72, 0.8, 1.3, 1.42], [-3.8, 2.62, 0.74, 1.16, 1.26], [-4.58, 2.52, 0.62, 0.96, 1.03], [-5.2, 2.44, 0.46, 0.7, 0.74]],
+    faixas: [0.7, 0.62, 0.55, 0.3, 0.15, 0.05],
+    cor: { cabeca: '#23170e', torax: '#2a1c12', ambar: '#d08a22', escuro: '#2e1c0d', pernas: '#2a1d13', pelo: '#a8834e' },
+    pelos: { torax: 7000, cabeca: 1600, abd: 2600 },
+    ferrao: true, cesta: true, olho: { x: 4.12, y: 3.25, r: 1, grande: false },
+    antena: { gomos: 10, comp: 2.3 },
+    asas: { frente: { base: [2.25, 4.05, 0.8], comp: 8.4, larg: 2.6 }, tras: { base: [1.55, 3.95, 0.76], comp: 5.9, larg: 1.75 } },
+    pernas: [{ ang: 44, f: 1.75, t: 1.6, ta: 1.55 }, { ang: 98, f: 1.9, t: 1.8, ta: 1.65 }, { ang: 150, f: 2.3, t: 2.35, ta: 2.0 }],
+    coxaX: [2.45, 1.7, 0.95], coxaY: 1.95, coxaZ: 0.72,
+    min: [-5.95, 1.2, -1.75], max: [5.2, 4.55, 1.75]
+  },
+  rainha: {
+    nome: 'rainha', escala: 1.1, velocidade: 8,
+    cabeca: { x: 4.3, y: 3.15, rx: 0.6, ry: 1.0, rz: 1.1 },
+    torax: [1.65, 3.1, 1.5, 1.38, 1.3],
+    abd: [[-1.0, 2.86, 0.62, 1.2, 1.32], [-1.98, 2.8, 0.66, 1.36, 1.5], [-3.02, 2.72, 0.68, 1.38, 1.52], [-4.06, 2.62, 0.66, 1.32, 1.44], [-5.06, 2.5, 0.62, 1.2, 1.3], [-5.98, 2.38, 0.55, 1.0, 1.06], [-6.78, 2.28, 0.45, 0.74, 0.76], [-7.38, 2.2, 0.3, 0.45, 0.46]],
+    faixas: [0.6, 0.5, 0.45, 0.4, 0.32, 0.22, 0.12, 0.05],
+    cor: { cabeca: '#24170e', torax: '#2c1d12', ambar: '#a8661f', escuro: '#3a2010', pernas: '#3a2514', pelo: '#c79f68' },
+    pelos: { torax: 5200, cabeca: 1200, abd: 900 },
+    ferrao: true, cesta: false, olho: { x: 4.12, y: 3.25, r: 0.95, grande: false },
+    antena: { gomos: 10, comp: 2.3 },
+    asas: { frente: { base: [2.25, 4.12, 0.84], comp: 8.3, larg: 2.6 }, tras: { base: [1.55, 4.0, 0.8], comp: 5.8, larg: 1.75 } },
+    pernas: [{ ang: 44, f: 1.95, t: 1.8, ta: 1.75 }, { ang: 98, f: 2.1, t: 2.0, ta: 1.85 }, { ang: 150, f: 2.5, t: 2.5, ta: 2.2 }],
+    coxaX: [2.5, 1.7, 0.9], coxaY: 1.85, coxaZ: 0.76,
+    min: [-7.85, 1.15, -1.8], max: [5.2, 4.65, 1.8]
+  },
+  zangao: {
+    nome: 'zangão', escala: 1.12, velocidade: 9,
+    cabeca: { x: 4.3, y: 3.25, rx: 0.68, ry: 1.0, rz: 1.12 },
+    torax: [1.6, 3.15, 1.6, 1.5, 1.45],
+    abd: [[-1.15, 2.9, 0.66, 1.3, 1.45], [-2.15, 2.84, 0.7, 1.48, 1.66], [-3.2, 2.76, 0.7, 1.5, 1.68], [-4.2, 2.66, 0.66, 1.42, 1.58], [-5.05, 2.58, 0.55, 1.22, 1.32], [-5.6, 2.52, 0.38, 0.92, 0.98]],
+    faixas: [0.45, 0.4, 0.35, 0.25, 0.15, 0.05],
+    cor: { cabeca: '#1d130c', torax: '#24180f', ambar: '#9a6a2a', escuro: '#2a1a0e', pernas: '#24180f', pelo: '#a8834f' },
+    pelos: { torax: 8000, cabeca: 1200, abd: 3000 },
+    ferrao: false, cesta: false, olho: { x: 4.05, y: 3.5, r: 1, grande: true },
+    antena: { gomos: 11, comp: 3.0 },
+    asas: { frente: { base: [2.25, 4.22, 0.88], comp: 10.0, larg: 3.0 }, tras: { base: [1.5, 4.1, 0.84], comp: 7.0, larg: 2.05 } },
+    pernas: [{ ang: 44, f: 1.9, t: 1.75, ta: 1.65 }, { ang: 98, f: 2.05, t: 1.95, ta: 1.75 }, { ang: 150, f: 2.45, t: 2.45, ta: 2.1 }],
+    coxaX: [2.5, 1.7, 0.85], coxaY: 1.85, coxaZ: 0.8,
+    min: [-6.2, 1.15, -1.95], max: [5.3, 4.85, 1.95]
+  }
+};
+
+// Flores do jardim (mm): posição, altura da flor, raio, cor das pétalas e do miolo
+const FLORES = [
+  { x: 24, z: -6, h: 22, r: 13, petala: '#ffffff', miolo: '#f0b21c', n: 18 },
+  { x: -24, z: -14, h: 28, r: 12, petala: '#b77be6', miolo: '#f4c430', n: 12 },
+  { x: -4, z: -38, h: 19, r: 11, petala: '#ffcf2e', miolo: '#6b3f17', n: 16 },
+  { x: 38, z: -34, h: 30, r: 12, petala: '#ff8fb1', miolo: '#ffd04a', n: 10 },
+  { x: -40, z: 16, h: 21, r: 12, petala: '#ffffff', miolo: '#f0b21c', n: 18 },
+  { x: 8, z: 30, h: 16, r: 10, petala: '#7fb3ff', miolo: '#fff2a8', n: 8 }
+];
+
+let CA = null;
+const COXA_END = (i) => new V3(CA.coxaX[i] + [0.15, 0, -0.15][i], CA.coxaY, CA.coxaZ);
+
+/* =====================================================================
+   2) FORMA DO CORPO (SDF)
+   ===================================================================== */
+function abdSegments(x, y, a) {
+  let g = Infinity;
+  for (const q of CA.abd) {
+    const e = ell(x, y, a, q[0], q[1], 0, q[2], q[3], q[4]);
+    g = g === Infinity ? e : smin(g, e, 0.42);
+  }
+  return g;
+}
+function sdfBee(x, y, z) {
+  const a = Math.abs(z), H = CA.cabeca, T = CA.torax;
+  // cabeça triangular vista de frente: mais estreita embaixo
+  const ws = 0.6 + 0.4 * smooth(y, H.y - 1.0, H.y + 0.55);
+  let h = ell(x, y, a / ws, H.x, H.y, 0, H.rx, H.ry, H.rz) * ws;
+  h = smin(h, ell(x, y, a, H.x + 0.25, H.y - 0.78, 0, 0.3, 0.36, 0.42), 0.25);          // clípeo
+  const neck = cone(x, y, a, H.x - 0.42, H.y - 0.08, 0, T[0] + T[2] * 0.82, T[1] + 0.02, 0, 0.32, 0.36);
+  let t = ell(x, y, a, T[0], T[1], 0, T[2], T[3], T[4]);
+  t = smin(t, ell(x, y, a, T[0] - T[2] * 0.7, T[1] + T[3] * 0.55, 0, 0.55, 0.32, 0.58), 0.28);   // escutelo
+  t = smin(t, ell(x, y, a, T[0] + T[2] * 0.5, T[1] + T[3] * 0.2, 0, 0.7, 0.6, T[4] * 0.95), 0.3); // ombros
+  for (let i = 0; i < 3; i++) {
+    const e = COXA_END(i);
+    t = smin(t, cone(x, y, a, CA.coxaX[i], T[1] - T[3] * 0.55, 0.35, e.x, e.y, e.z, 0.3, 0.26), 0.15);
+  }
+  const A0 = CA.abd[0];
+  const pet = cone(x, y, a, T[0] - T[2] * 0.95, T[1] - 0.3, 0, A0[0] + A0[2] * 0.6, A0[1] - 0.1, 0, 0.26, 0.28);
+  let g = abdSegments(x, y, a);
+  if (CA.ferrao) {
+    const L = CA.abd[CA.abd.length - 1];
+    g = smin(g, cone(x, y, a, L[0] - L[2] * 0.6, L[1] - 0.08, 0, L[0] - L[2] - 0.22, L[1] - 0.14, 0, 0.07, 0.015), 0.05);   // pontinha do ferrão
+  }
+  return smin(smin(smin(h, neck, 0.2), t, 0.25), smin(pet, g, 0.15), 0.15);
+}
+// em que gomo do abdômen está o ponto, e quanto já andou dentro dele (0 = frente, 1 = trás)
+function abdBand(x) {
+  for (let i = 0; i < CA.abd.length; i++) {
+    const q = CA.abd[i], next = CA.abd[i + 1];
+    const back = next ? (q[0] + next[0]) / 2 + next[2] * 0.25 : q[0] - q[2];
+    if (x >= back) return { i, u: clamp((q[0] + q[2] - x) / (q[0] + q[2] - back), 0, 1) };
+  }
+  return { i: CA.abd.length - 1, u: 1 };
+}
+
+/* =====================================================================
+   3) CENÁRIO: chão do jardim, capim e flores
+   ===================================================================== */
+function gardenTexture() {
+  const S = 512, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d');
+  g.fillStyle = '#6d6a3c'; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 9000; i++) {
+    const green = Math.random() < 0.55;
+    g.fillStyle = green ? 'hsla(' + rnd(70, 105) + ',' + rnd(30, 55) + '%,' + rnd(22, 40) + '%,.6)' : 'hsla(' + rnd(25, 40) + ',' + rnd(20, 40) + '%,' + rnd(20, 42) + '%,.55)';
+    g.beginPath(); g.arc(Math.random() * S, Math.random() * S, rnd(0.5, 2.6), 0, 7); g.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(18, 18);
+  t.encoding = THREE.sRGBEncoding; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+/* ---------------- capim e flores ---------------- */
+function buildGarden() {
+  const blade = new THREE.PlaneGeometry(1, 1, 1, 4);
+  blade.translate(0, 0.5, 0);
+  { const p = blade.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) * (1 - y * 0.9)); p.setZ(i, 0.25 * y * y); } }
+  blade.computeVertexNormals();
+  const grass = new THREE.InstancedMesh(blade, new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.75 }), 2600);
+  const o = new THREE.Object3D(), col = new THREE.Color();
+  for (let i = 0; i < 2600; i++) {
+    let x, z;
+    do { x = rnd(-170, 170); z = rnd(-170, 170); } while (Math.hypot(x, z) < 55 + Math.random() * 30 || FLORES.some((f) => Math.hypot(x - f.x, z - f.z) < 8));
+    o.position.set(x, 0, z);
+    o.rotation.set(rnd(-0.2, 0.2), rnd(0, 6.3), rnd(-0.2, 0.2));
+    o.scale.set(rnd(0.9, 1.7), rnd(8, 30), 1);
+    o.updateMatrix(); grass.setMatrixAt(i, o.matrix);
+    col.setHSL(rnd(0.2, 0.3), rnd(0.35, 0.6), rnd(0.2, 0.36)); grass.setColorAt(i, col);
+  }
+  grass.receiveShadow = true;
+  scene.add(grass);
+
+  // pétala: textura em tons de cinza (a cor vem de cada flor)
+  const pc = document.createElement('canvas'); pc.width = 128; pc.height = 256;
+  const pg = pc.getContext('2d');
+  pg.beginPath(); pg.moveTo(64, 256);
+  pg.bezierCurveTo(-10, 180, 10, 30, 64, 6); pg.bezierCurveTo(118, 30, 138, 180, 64, 256);
+  const grd = pg.createLinearGradient(0, 256, 0, 0); grd.addColorStop(0, '#d9d9d9'); grd.addColorStop(0.35, '#ffffff'); grd.addColorStop(1, '#f2f2f2');
+  pg.fillStyle = grd; pg.fill();
+  pg.strokeStyle = 'rgba(0,0,0,.08)'; pg.lineWidth = 2;
+  for (let k = -3; k <= 3; k++) { pg.beginPath(); pg.moveTo(64, 250); pg.quadraticCurveTo(64 + k * 12, 120, 64 + k * 8, 20); pg.stroke(); }
+  const petalTex = new THREE.CanvasTexture(pc); petalTex.encoding = THREE.sRGBEncoding;
+  const mPetal = new THREE.MeshStandardMaterial({ map: petalTex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.55, envMapIntensity: 0.5 });
+  const mStem = new THREE.MeshStandardMaterial({ color: '#4f7a2c', roughness: 0.7 });
+  const mFloret = new THREE.MeshStandardMaterial({ roughness: 0.8 });
+  const floretGeo = new THREE.SphereGeometry(1, 6, 4);
+
+  FLORES.forEach((F, fi) => {
+    // caule curvinho
+    const base = new V3(F.x + rnd(-3, 3), 0, F.z + rnd(-3, 3));
+    const curve = new THREE.CatmullRomCurve3([base, new V3((base.x * 2 + F.x) / 3 + rnd(-2, 2), F.h * 0.45, (base.z * 2 + F.z) / 3), new V3(F.x, F.h - 0.6, F.z)]);
+    scene.add(shadowy(new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.6, 7), mStem)));
+    // folhinhas no caule
+    for (let k = 0; k < 2; k++) {
+      const lf = shadowy(new THREE.Mesh(new THREE.PlaneGeometry(3.2, 9, 1, 3), mPetal.clone()));
+      lf.material.color.set('#5b8f34');
+      lf.geometry.translate(0, 4.5, 0);
+      const p = curve.getPoint(0.25 + k * 0.25);
+      lf.position.copy(p); lf.rotation.set(rnd(0.7, 1.1), k * 3.1 + rnd(0, 1), 0, 'YXZ');
+      scene.add(lf);
+    }
+    const head = new THREE.Group();
+    head.position.set(F.x, F.h, F.z);
+    head.userData.flower = fi;
+    scene.add(head);
+    // pétalas (levemente em concha)
+    const pgeo = new THREE.PlaneGeometry(F.r * 0.42, F.r * 0.78, 2, 6);
+    pgeo.translate(0, F.r * 0.39 + F.r * 0.26, 0);
+    { const p = pgeo.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i) / F.r; p.setZ(i, 0.9 * y * y * F.r * 0.12); } }
+    pgeo.rotateX(-Math.PI / 2);
+    pgeo.computeVertexNormals();
+    const petals = new THREE.InstancedMesh(pgeo, mPetal, F.n * 2);
+    for (let i = 0; i < F.n * 2; i++) {
+      const layer = i < F.n ? 0 : 1, ang = (i % F.n) / F.n * Math.PI * 2 + layer * Math.PI / F.n;
+      o.position.set(0, -0.1 - layer * 0.25, 0);
+      o.rotation.set(0, ang, 0);
+      o.rotateX(rnd(-0.12, 0.05) - layer * 0.1);
+      o.scale.set(rnd(0.85, 1.1), 1, rnd(0.9, 1.05) * (1 - layer * 0.08));
+      o.updateMatrix(); petals.setMatrixAt(i, o.matrix);
+      col.set(F.petala).offsetHSL(0, 0, rnd(-0.06, 0.03) - layer * 0.05); petals.setColorAt(i, col);
+    }
+    petals.castShadow = true; petals.receiveShadow = true;
+    head.add(petals);
+    // miolo (disco) com florzinhas em espiral
+    const R = F.r * 0.3;
+    const disk = shadowy(new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), new THREE.MeshStandardMaterial({ color: F.miolo, roughness: 0.9 })));
+    disk.scale.set(R, 1.3, R); disk.position.y = 0.15;
+    disk.userData.flower = fi;
+    head.add(disk);
+    const N = 260, florets = new THREE.InstancedMesh(floretGeo, mFloret, N);
+    for (let i = 0; i < N; i++) {
+      const rr = R * 0.95 * Math.sqrt((i + 0.5) / N), th = i * 2.39996;
+      const yy = 0.15 + 1.3 * Math.sqrt(Math.max(0, 1 - (rr / R) * (rr / R)));
+      o.position.set(Math.cos(th) * rr, yy, Math.sin(th) * rr);
+      o.rotation.set(0, 0, 0);
+      const s = 0.22 + 0.12 * (rr / R);
+      o.scale.set(s, s * 0.8, s);
+      o.updateMatrix(); florets.setMatrixAt(i, o.matrix);
+      col.set(F.miolo).offsetHSL(rnd(-0.02, 0.02), 0, (rr / R) * 0.08 - 0.06 + rnd(-0.03, 0.03)); florets.setColorAt(i, col);
+    }
+    florets.castShadow = true;
+    head.add(florets);
+    F.head = head;
+    F.land = new V3(F.x, F.h + 1.45, F.z);        // onde a abelha pousa (em cima do miolo)
+  });
+}
+
+/* =====================================================================
+   4) MATERIAIS E MONTAGEM DA ABELHA
+   ===================================================================== */
+const mBody = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.5, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.6 });
+addCuticle(mBody, 0.03, 1.2);
+const mJoint = new THREE.MeshPhysicalMaterial({ color: '#1a110a', roughness: 0.45, clearcoat: 0.3 });
+const mEye = new THREE.MeshPhysicalMaterial({ color: '#2a241e', roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.3, flatShading: true, envMapIntensity: 0.5 });
+const mOcelo = new THREE.MeshPhysicalMaterial({ color: '#2a1f14', roughness: 0.05, clearcoat: 1 });
+const mHair = new THREE.MeshStandardMaterial({ color: '#7a5c3a', roughness: 0.85, envMapIntensity: 0.35 });        // pelos das patas e antenas
+const mHairBody = new THREE.MeshStandardMaterial({ roughness: 0.85, envMapIntensity: 0.35 });                     // pelos do corpo (cor por pelo)
+const mTongue = new THREE.MeshPhysicalMaterial({ color: '#4a2c16', roughness: 0.5, clearcoat: 0.3 });
+const mPollen = new THREE.MeshStandardMaterial({ color: '#efa524', roughness: 0.85 });
+addCuticle(mPollen, 0.35, 6.0);
+const mPollenDust = new THREE.MeshStandardMaterial({ color: '#f2b52a', roughness: 0.8, emissive: '#3a2400' });
+
+const bee = new THREE.Group();
+bee.rotation.order = 'YZX';
+let G = null, legs = [], antennae = [], wings = [], tongue = null, pollenBalls = [], pollenDust = null;
+
+function buildBody() {
+  const cHead = new THREE.Color(CA.cor.cabeca), cTor = new THREE.Color(CA.cor.torax);
+  const cAmb = new THREE.Color(CA.cor.ambar), cDark = new THREE.Color(CA.cor.escuro), cTmp = new THREE.Color();
+  const tx = CA.torax[0], headX = CA.cabeca.x - CA.cabeca.rx * 1.05, gx = CA.abd[0][0] + CA.abd[0][2];
+  const body = sdfMesh(sdfBee, new V3(...CA.min), new V3(...CA.max), 0.05, (x, y, z, n, c) => {
+    if (x > headX) c.copy(cHead);
+    else if (x > gx - 0.15) c.copy(cTor);
+    else {
+      const b = abdBand(x);
+      const amber = b.u < CA.faixas[b.i] ? 1 - smooth(b.u, CA.faixas[b.i] - 0.06, CA.faixas[b.i]) : 0;
+      c.copy(cDark).lerp(cAmb, amber);
+      if (b.u > 0.9) c.multiplyScalar(0.7);                                 // sulco entre os gomos
+      c.multiplyScalar(0.93 + 0.14 * vnoise3(x * 6, y * 6, z * 6));
+    }
+    const ao = clamp(sdfBee(x + n.x * 0.16, y + n.y * 0.16, z + n.z * 0.16) / 0.16, 0, 1);
+    c.multiplyScalar(0.42 + 0.58 * ao);
+  }, mBody);
+  G.add(body);
+
+  // pelos: muitos no tórax (dourados e compridos), finos na cabeça, faixas claras no abdômen
+  const pos = body.geometry.attributes.position.array, nor = body.geometry.attributes.normal.array, count = pos.length / 3;
+  const list = [], hp = new THREE.Color(CA.cor.pelo), k = MOBILE ? 0.5 : 1;
+  const want = { torax: CA.pelos.torax * k, cabeca: CA.pelos.cabeca * k, abd: CA.pelos.abd * k };
+  const got = { torax: 0, cabeca: 0, abd: 0 };
+  for (let tries = 0; tries < 150000 && (got.torax < want.torax || got.cabeca < want.cabeca || got.abd < want.abd); tries++) {
+    const v = Math.floor(rand() * count);
+    const p = new V3().fromArray(pos, v * 3), n = new V3().fromArray(nor, v * 3);
+    let zone = p.x > headX ? 'cabeca' : p.x > gx - 0.1 ? 'torax' : 'abd';
+    if (got[zone] >= want[zone]) continue;
+    let len, color = hp.clone(), r = 0.012;
+    if (zone === 'torax') {
+      len = rnd(0.2, 0.42) * (n.y < -0.4 ? 0.7 : 1);
+      color.offsetHSL(rnd(-0.02, 0.02), rnd(-0.1, 0.05), rnd(-0.14, 0.06));
+      r = 0.009;
+    } else if (zone === 'cabeca') {
+      len = rnd(0.12, 0.26);
+      color.lerp(new THREE.Color('#d9c49a'), p.x > CA.cabeca.x ? 0.5 : 0.15);
+      r = 0.007;
+    } else {
+      const b = abdBand(p.x);
+      const onBand = b.u < 0.22;
+      if (!onBand && rand() < 0.65) continue;
+      len = onBand ? rnd(0.1, 0.2) : rnd(0.05, 0.11);
+      color = onBand ? new THREE.Color('#c9ab78') : new THREE.Color('#4a311b');
+      r = 0.006;
+    }
+    const dir = n.clone().multiplyScalar(zone === 'abd' ? 0.55 : 0.75).add(new V3(-0.35, 0.1, 0))
+      .add(new V3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(zone === 'torax' ? 0.9 : 0.5)).normalize();   // pelos bagunçados = fofinho
+    list.push({ p, dir, len, r, col: color });
+    got[zone]++;
+  }
+  G.add(hairMesh(list, mHairBody));
+  // grãozinhos de pólen que grudam nos pelos quando ela visita as flores (aparecem aos poucos)
+  if (CA.cesta) {
+    const spots = list.filter((h) => h.p.x < CA.cabeca.x + 0.3 && h.p.y > CA.min[1] + 0.4);
+    const N = 650, dust = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), mPollenDust, N);
+    const o = new THREE.Object3D();
+    for (let i = 0; i < N; i++) {
+      const h = spots[Math.floor(rand() * spots.length)];
+      o.position.copy(h.p).addScaledVector(h.dir, h.len * (0.4 + rand() * 0.6));
+      o.rotation.set(rand() * 3, rand() * 3, rand() * 3);
+      o.scale.setScalar(0.022 + rand() * 0.022);
+      o.updateMatrix();
+      dust.setMatrixAt(i, o.matrix);
+    }
+    dust.count = 0;
+    dust.userData.N = N;
+    G.add(dust);
+    pollenDust = dust;
+  }
+}
+
+function buildEyes() {
+  const E = CA.olho, H = CA.cabeca;
+  for (const s of [1, -1]) {
+    const geo = new THREE.IcosahedronGeometry(1, 5);
+    const p = geo.attributes.position;
+    for (let i = 0; i < p.count; i++) p.setX(i, p.getX(i) + 0.22 * p.getY(i) * p.getY(i) - 0.1);   // forma de rim
+    geo.computeVertexNormals();
+    const eye = shadowy(new THREE.Mesh(geo, mEye));
+    if (E.grande) {          // zangão: olhos enormes que se encontram no alto da cabeça
+      eye.scale.set(0.62, 1.22, 0.58);
+      eye.position.set(E.x, E.y, s * 0.62);
+      eye.rotation.set(s * 0.45, 0, 0);
+    } else {
+      eye.scale.set(0.42, 0.9 * E.r, 0.3);
+      let z = 2;
+      while (z > 0 && sdfBee(E.x, E.y, z) > 0) z -= 0.01;
+      eye.position.set(E.x - 0.05, E.y, s * (z - 0.12));     // embutido na cabeça
+      eye.rotation.set(s * 0.12, s * 0.2, 0.1);
+    }
+    G.add(eye);
+  }
+  // 3 ocelos (olhinhos simples) no alto da cabeça
+  const oc = CA.olho.grande ? [[H.x + 0.42, H.y + 0.72, 0], [H.x + 0.3, H.y + 0.62, 0.2], [H.x + 0.3, H.y + 0.62, -0.2]]
+                            : [[H.x - 0.05, H.y + 0.98, 0], [H.x - 0.2, H.y + 0.92, 0.22], [H.x - 0.2, H.y + 0.92, -0.22]];
+  oc.forEach(([x, y0, z]) => {
+    let y = y0 + 0.6;
+    while (y > y0 - 0.8 && sdfBee(x, y, z) > 0) y -= 0.01;
+    const o = shadowy(new THREE.Mesh(new THREE.SphereGeometry(0.075, 14, 10), mOcelo));
+    o.position.set(x, y + 0.02, z); o.scale.y = 0.7;
+    G.add(o);
+  });
+}
+
+function buildAntennae(mLeg, hairOpts) {
+  const H = CA.cabeca, A = CA.antena;
+  for (const s of [1, -1]) {
+    const base = new V3(H.x + H.rx * 0.82, H.y + 0.15, 0.24 * s);
+    const g = new THREE.Group(); g.position.copy(base); G.add(g);
+    const add = (a, b, r0, r1, o) => { const sg = segGroup(a.distanceTo(b), r0, r1, Object.assign({ mat: mLeg, jointMat: mJoint, hairMat: mHair }, hairOpts, o)); place(sg, a, b); g.add(sg); };
+    const elbow = new V3(0.25, 0.95, 0.28 * s);                     // escapo (sobe)
+    add(new V3(), elbow, 0.07, 0.085, { bulge: 0.05, hairDensity: 6, hairLen: 0.05 });
+    let p = elbow;
+    for (let k = 1; k <= A.gomos; k++) {                            // flagelo, dobrando para a frente
+      const t = k / A.gomos;
+      const q = elbow.clone().add(new V3(A.comp * 0.85 * t, 0.35 * Math.sin(Math.PI * t) - 0.45 * t * t, s * 0.45 * t));
+      add(p, q, 0.075, 0.08, { bulge: 0.12, joint: false, hairDensity: 10, hairLen: 0.04 });
+      p = q;
+    }
+    antennae.push(g);
+  }
+}
+
+function buildMouth() {
+  const H = CA.cabeca;
+  // mandíbulas pequenas em forma de colher
+  for (const s of [1, -1]) {
+    const m = shadowy(new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), mJoint));
+    m.scale.set(0.32, 0.12, 0.16);
+    m.position.set(H.x + 0.42, H.y - 1.18, 0.2 * s);
+    m.rotation.set(0, s * 0.5, -0.5);
+    G.add(m);
+  }
+  // Língua (probóscide): duas "lâminas" (gáleas) formam um canudinho; dentro dele
+  // a glossa, peludinha, vai e volta lambendo o néctar. Dobrada, fica embaixo da cabeça.
+  const prob = new THREE.Group();
+  prob.position.set(H.x + 0.3, H.y - 1.15, 0);
+  G.add(prob);
+  const mGalea = new THREE.MeshPhysicalMaterial({ color: '#3b2414', roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.3 });
+  const mGlossa = new THREE.MeshPhysicalMaterial({ color: '#c98d5e', roughness: 0.45, clearcoat: 0.4, sheen: 0.6, sheenColor: new THREE.Color('#ffd9b0') });
+  const mTip = new THREE.MeshPhysicalMaterial({ color: '#f2c99a', roughness: 0.4, clearcoat: 0.5 });
+  // gáleas: lâminas compridas, um pouco achatadas, uma de cada lado
+  const galeas = new THREE.Group();
+  prob.add(galeas);
+  for (const sd of [1, -1]) {
+    const gl = segGroup(1.7, 0.09, 0.045, { mat: mGalea, joint: false, hairMat: mHair, bulge: 0.25, hairDensity: 5, hairLen: 0.06, flat: 1.6 });
+    gl.position.z = sd * 0.06;
+    gl.rotation.x = sd * 0.06;
+    galeas.add(gl);
+  }
+  // palpos labiais: dois fiozinhos ao lado
+  for (const sd of [1, -1]) {
+    const pl = segGroup(1.35, 0.035, 0.025, { mat: mGalea, joint: false, hairMat: mHair, bulge: 0.1, hairDensity: 6, hairLen: 0.05 });
+    pl.position.z = sd * 0.16;
+    pl.rotation.x = sd * 0.12;
+    galeas.add(pl);
+  }
+  // glossa: a linguinha peluda que sai da ponta, com a "colherzinha" (flabelo) no fim
+  const glossa = new THREE.Group();
+  galeas.add(glossa);
+  glossa.position.y = 1.15;
+  const gls = segGroup(1.3, 0.035, 0.03, { mat: mGlossa, joint: false, hairMat: mHair, bulge: 0.05, hairDensity: 60, hairLen: 0.05 });
+  glossa.add(gls);
+  const tip = shadowy(new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), mTip));
+  tip.scale.set(0.06, 0.09, 0.06); tip.position.y = 1.32;
+  glossa.add(tip);
+  tongue = { prob, galeas, glossa };
+  poseTongue(0, 0);
+}
+function poseTongue(k, t) {      // k: 0 = dobrada embaixo da cabeça, 1 = esticada para baixo e para a frente
+  const e = smooth(k, 0, 1);
+  // ângulo no plano XY: dobrada aponta para trás (encostada no peito); esticada aponta para a frente-baixo
+  tongue.galeas.rotation.z = -2.75 + (2.75 - 0.95) * e - Math.PI / 2;
+  tongue.galeas.scale.y = 0.55 + 0.45 * e;
+  // a glossa sai e entra rapidinho quando está bebendo (lambendo)
+  const lap = e > 0.9 ? 0.5 + 0.5 * Math.sin(t * Math.PI * 2 * 3.5) : 0;
+  tongue.glossa.scale.y = 0.05 + e * (0.55 + 0.45 * lap);
+  tongue.glossa.rotation.z = 0.08 * Math.sin(t * 7) * e;
+}
+
+function buildLegs(mLeg) {
+  CA.pernas.forEach((L, i) => { for (const s of [1, -1]) {
+    const ang = (L.ang + (rand() - 0.5) * 8) * Math.PI / 180;
+    const dir = new V3(Math.cos(ang), 0, s * Math.sin(ang));
+    const C = COXA_END(i); C.z *= s;
+    const hind = i === 2;
+    const opt = (o) => Object.assign({ mat: mLeg, jointMat: mJoint, hairMat: mHair }, o);
+    const troch = segGroup(0.33, 0.22, 0.2, opt({ bulge: 0.15, hairDensity: 4 }));
+    const femur = segGroup(L.f, 0.2, 0.16, opt({ bulge: 0.3, skew: 0.8, hairLen: 0.3, hairDensity: 18 }));
+    // pata de trás: tíbia larga e achatada (a "cestinha" de pólen)
+    const tibia = segGroup(L.t, 0.14, hind ? 0.27 : 0.15, opt({ bulge: hind ? 0.05 : 0.15, flat: hind ? 1.7 : 1, hairLen: 0.28, hairDensity: hind ? 26 : 14 }));
+    const tarsus = new THREE.Group();
+    let y0 = 0;
+    [0.4, 0.15, 0.13, 0.12, 0.2].forEach((fr, k) => {
+      const w = k === 0 ? (hind ? 0.17 : 0.11) : 0.075 - k * 0.006;
+      const sg = segGroup(L.ta * fr, w, w * 0.9, opt({ bulge: 0.1, flat: k === 0 && hind ? 1.5 : 1, hairLen: 0.14, hairDensity: 14 }));
+      sg.position.y = y0; y0 += L.ta * fr;
+      tarsus.add(sg);
+    });
+    for (const side of [-1, 1]) {
+      const claw = shadowy(new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.18, 6), mJoint));
+      claw.position.set(side * 0.05, L.ta + 0.06, 0.04); claw.rotation.set(0.6, 0, -side * 0.45);
+      tarsus.add(claw);
+    }
+    if (hind && CA.cesta) {      // bolinha de pólen presa na tíbia
+      const bg = new THREE.IcosahedronGeometry(1, 3);
+      { const p = bg.attributes.position, v = new V3();
+        for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k); v.multiplyScalar(1 + 0.12 * (vnoise3(v.x * 4, v.y * 4, v.z * 4) - 0.5)); v.y *= 1.35; p.setXYZ(k, v.x, v.y, v.z); } }
+      bg.computeVertexNormals();
+      const ball = shadowy(new THREE.Mesh(bg, mPollen));
+      ball.position.set(0, L.t * 0.62, 0.16 * s);      // na face de fora da perna (a "cestinha")
+      ball.scale.set(0.001, 0.001, 0.001);
+      tibia.add(ball);
+      pollenBalls.push(ball);
+    }
+    G.add(troch, femur, tibia, tarsus);
+    const reach = 0.32 + L.f * 0.62 + L.t * 0.55 + L.ta * 0.75;    // patas dobradas: corpo mais baixo
+    const neutral = new V3(C.x + dir.x * reach, 0.05, C.z + dir.z * reach);
+    legs.push({ s, i, C, L, troch, femur, tibia, tarsus, neutral, foot: neutral.clone(), start: new V3(), target: new V3(), swing: false, cur: neutral.clone(), lift: neutral.clone(),
+      off: ((s === 1) === (i % 2 === 0)) ? 0 : 0.5 });
+  } });
+}
+
+// ---- asas de abelha: anteriores grandes e posteriores menores, com nervuras ----
+const wingTex = {};
+function beeWingTexture(fore) {
+  if (wingTex[fore]) return wingTex[fore];
+  const outline = (g) => {
+    g.beginPath();
+    g.moveTo(0.0, 0.62);
+    g.bezierCurveTo(0.35, 0.8, 0.72, 0.88, 0.93, 0.8);
+    g.bezierCurveTo(1.0, 0.74, 1.0, 0.5, 0.94, 0.4);
+    g.bezierCurveTo(0.78, 0.16, 0.45, 0.08, 0.22, 0.22);
+    g.bezierCurveTo(0.08, 0.32, 0.02, 0.45, 0.0, 0.52);
+    g.closePath();
+  };
+  const draw = fore ? (g, v) => {
+    v(0.016, [0, 0.62, 0.35, 0.8, 0.55, 0.84]);                       // costa (borda da frente)
+    v(0.01, [0.02, 0.58, 0.4, 0.72, 0.56, 0.8, 0.78, 0.8]);           // radial + célula marginal
+    v(0.008, [0.56, 0.8, 0.62, 0.72, 0.82, 0.7, 0.9, 0.76]);
+    v(0.008, [0.4, 0.72, 0.45, 0.6, 0.58, 0.62, 0.62, 0.72]);          // células submarginais
+    v(0.008, [0.58, 0.62, 0.66, 0.56, 0.78, 0.6, 0.82, 0.7]);
+    v(0.008, [0.03, 0.52, 0.3, 0.55, 0.45, 0.6]);                      // média
+    v(0.008, [0.3, 0.55, 0.35, 0.42, 0.6, 0.4, 0.66, 0.56]);           // célula discoidal
+    v(0.007, [0.03, 0.47, 0.25, 0.38, 0.35, 0.42]);                    // cubital
+    v(0.006, [0.25, 0.38, 0.4, 0.22]);
+  } : (g, v) => {
+    v(0.012, [0, 0.6, 0.4, 0.78, 0.7, 0.84]);
+    v(0.007, [0.03, 0.54, 0.4, 0.6, 0.62, 0.58]);
+    v(0.007, [0.03, 0.5, 0.35, 0.42, 0.6, 0.36]);
+    v(0.006, [0.4, 0.6, 0.42, 0.42]);
+  };
+  return (wingTex[fore] = wingTextureFrom(outline, draw, ['rgba(120,90,55,.55)', 'rgba(160,140,110,.3)', 'rgba(180,165,140,.22)']));
+}
+const WING_FRONT = 0.55, WING_BACK = 2.35;     // ângulos (rad) da batida: 0 = para a frente, π/2 = para o lado
+let fanTex = null;
+function fanTexture() {                        // leque mais forte na ponta da asa, sumindo perto do corpo
+  if (fanTex) return fanTex;
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const gr = g.createRadialGradient(128, 128, 20, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.55, 'rgba(255,255,255,.35)');
+  gr.addColorStop(0.92, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  return (fanTex = new THREE.CanvasTexture(c));
+}
+function buildWings() {
+  for (const kind of ['frente', 'tras']) {
+    const A = CA.asas[kind], fore = kind === 'frente';
+    const mat = new THREE.MeshPhysicalMaterial({ map: beeWingTexture(fore), transparent: true, side: THREE.DoubleSide, depthWrite: false,
+      roughness: 0.15, iridescence: 0.7, iridescenceIOR: 1.3, iridescenceThicknessRange: [250, 600], envMapIntensity: 0.6 });
+    const geo = new THREE.PlaneGeometry(A.comp, A.larg, 16, 4);
+    geo.translate(A.comp / 2, -(0.6 - 0.5) * A.larg, 0);
+    geo.rotateX(-Math.PI / 2);
+    { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i); p.setY(i, 0.05 * z * z + 0.005 * x * x); } }
+    geo.computeVertexNormals();
+    for (const s of [1, -1]) {
+      const root = new THREE.Group(); root.position.set(A.base[0], A.base[1], A.base[2] * s);
+      const yaw = new THREE.Group(), flap = new THREE.Group();
+      const m = new THREE.Mesh(geo, mat); m.scale.z = s; m.renderOrder = fore ? 3 : 2;
+      flap.add(m); yaw.add(flap); root.add(yaw); G.add(root);
+      // "borrão" em leque: a área que a asa varre batendo rápido (só aparece voando)
+      const fan = new THREE.Mesh(new THREE.CircleGeometry(A.comp * 0.97, 32, s > 0 ? -WING_BACK : WING_FRONT, WING_BACK - WING_FRONT),
+        new THREE.MeshBasicMaterial({ map: fanTexture(), color: 0xf1e8d6, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+      fan.rotation.x = -Math.PI / 2;
+      fan.position.y = 0.15;
+      fan.renderOrder = 4;
+      root.add(fan);
+      wings.push({ s, fore, yaw, flap, mat, fan });
+    }
+  }
+}
+
+/* =====================================================================
+   5) COMPORTAMENTO: andar, voar até as flores, beber néctar
+   ===================================================================== */
+const state = {
+  yaw: 0.5, speed: 0, yawRate: 0, phase: 0, target: null,
+  mode: 'chao',          // chao | voando | pairando
+  ground: 0,             // altura do chão onde ela está (0 = terra, ou o miolo de uma flor)
+  flower: -1,            // flor onde está pousada
+  fly: 0, fl: null,      // quanto está no ar (0..1) e o voo em andamento
+  tongue: 0, drinkT: 0, pollen: 0,
+  wander: false, wait: 0, tongueBtn: false, hoverT: 0,
+  dust: 0, groomT: 0
+};
+const GROOM = 3.2;      // segundos se penteando
+const SWING = 0.42, STRIDE = 3.2;
+const fwd = new V3(), vel = new V3(), _w = new V3(), _l = new V3(), inv = new THREE.Matrix4();
+const _lvl = new THREE.Matrix4(), _lp = new V3(), _lq = new THREE.Quaternion(), _ls = new V3(), _a2 = new V3();
+function flightPose(leg, t, out) {
+  const C = leg.C, sw = Math.sin(t * 2.2 + leg.i + (leg.s > 0 ? 0 : 1.5));
+  if (leg.i === 0) out.set(C.x + 1.05, 1.15 + 0.05 * sw, C.z * 1.2);           // dianteiras: encolhidas
+  else if (leg.i === 1) out.set(C.x - 0.35, 0.35 + 0.08 * sw, C.z * 1.65);    // do meio: para baixo e para o lado
+  else out.set(C.x - 2.3 + 0.1 * sw, 0.15, C.z * 1.3);                         // traseiras: penduradas para trás
+  return out;
+}
+// guarda onde cada pata está (no corpo) para a decolagem começar dali
+function liftOff() {
+  legs.forEach((l) => l.lift.copy(l.cur));
+  state.hoverT = 0;
+}
+
+function flowerUnder(x, z) {
+  return FLORES.findIndex((F) => Math.hypot(x - F.x, z - F.z) < F.r * 0.3);
+}
+function plantFeet() {
+  bee.updateMatrixWorld(true);
+  legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(bee.matrixWorld); l.foot.y = state.ground + 0.05 * CA.escala; });
+}
+// voa da posição atual até "dest" (com altura); ao chegar pousa e chama onLand
+function flyTo(dest, flowerIdx) {
+  const S = bee.position.clone();
+  const dist = Math.hypot(dest.x - S.x, dest.z - S.z);
+  liftOff();
+  state.fl = { S, E: dest.clone(), k: 0, dur: Math.max(1.8, dist / 16) + 0.8, arc: clamp(dist * 0.3, 5, 16), flower: flowerIdx };
+  state.mode = 'voando'; state.target = null; state.flower = -1; state.drinkT = 0;
+}
+
+function updateBee(dt, t) {
+  const esc = CA.escala;
+  // ---------------- no ar ----------------
+  if (state.mode === 'voando' || state.mode === 'pairando') {
+    state.fly = Math.min(1, state.fly + dt * 3);
+    let p = bee.position;
+    if (state.mode === 'voando') {
+      const F = state.fl;
+      F.k = Math.min(1, F.k + dt / F.dur);
+      const kk = smooth(F.k, 0, 1);
+      const hx = F.S.x + (F.E.x - F.S.x) * kk, hz = F.S.z + (F.E.z - F.S.z) * kk;
+      const descend = smooth(F.k, 0.75, 1);
+      const cruise = Math.max(F.S.y, F.E.y) + F.arc;
+      let y = F.S.y + (cruise - F.S.y) * smooth(F.k, 0, 0.3);
+      y = y + (F.E.y - y) * descend;
+      p.set(hx, y + Math.sin(t * 9) * 0.15 * (1 - descend), hz);
+      const dx = F.E.x - F.S.x, dz = F.E.z - F.S.z;
+      if (Math.hypot(dx, dz) > 0.5 && F.k < 0.85) {
+        let diff = Math.atan2(-dz, dx) - state.yaw; diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+        state.yaw += clamp(diff, -3 * dt, 3 * dt);
+      }
+      if (F.k >= 1) {                         // pousou
+        state.mode = 'chao'; state.ground = F.E.y; state.fly = 0; state.fl = null;
+        p.y = state.ground; bee.rotation.z = 0;
+        state.flower = F.flower;
+        bee.rotation.y = state.yaw;
+        plantFeet();
+        if (F.flower >= 0) { state.drinkT = 4.5; }
+        else state.wait = 1;
+      }
+    } else {                                  // pairando no lugar
+      p.y += ((state.ground + 7 * esc) - p.y) * Math.min(1, dt * 2);
+      p.y += Math.sin(t * 2.3) * 0.02;
+      state.yaw += Math.sin(t * 0.7) * 0.4 * dt;
+    }
+    bee.rotation.y = state.yaw;
+    bee.rotation.z = state.mode === 'voando' ? 0.1 : 0.05;
+    bee.updateMatrixWorld(true);
+    inv.copy(bee.matrixWorld).invert();
+    // patas no voo: dianteiras encolhidas embaixo da cabeça, do meio para baixo,
+    // traseiras penduradas para trás. Na decolagem saem do chão; no pouso esticam para o chão.
+    const F = state.fl;
+    const tUp = F ? F.k * F.dur : state.hoverT;
+    const wUp = smooth(tUp, 0, 0.45);
+    const wLand = F ? smooth(F.k, 0.7, 0.93) : 0;
+    const landY = F ? (F.E.y - bee.position.y) / esc + 0.05 : 0;
+    for (const leg of legs) {
+      flightPose(leg, t, _w);
+      _l.copy(leg.lift).lerp(_w, wUp);
+      if (wLand > 0) { _a2.copy(leg.neutral); _a2.y = landY; _l.lerp(_a2, wLand); }
+      solveLeg(leg, _l);
+      leg.cur.copy(_l);
+    }
+    if (!F) state.hoverT += dt;
+    return;
+  }
+  state.fly = Math.max(0, state.fly - dt * 3);
+  bee.rotation.z = 0;
+
+  // ---------------- bebendo néctar na flor ----------------
+  if (state.drinkT > 0) {
+    state.drinkT -= dt;
+    if (CA.cesta) state.dust = Math.min(1, state.dust + dt * 0.35);         // pólen grudando nos pelos
+    if (state.drinkT <= 0) { if (CA.cesta && state.dust > 0.2) state.groomT = GROOM; state.wait = 1.2 + GROOM; }
+  }
+  if (state.groomT > 0) {                                                    // penteando: pólen vai para as cestinhas
+    state.groomT -= dt;
+    const moved = Math.min(state.dust, dt * 0.45);
+    state.dust -= moved;
+    state.pollen = Math.min(1, state.pollen + moved * 0.35);
+  }
+  // ---------------- passear pelas flores ----------------
+  if (state.wander && state.drinkT <= 0 && !state.target && (state.wait -= dt) <= 0) {
+    let next;
+    do { next = Math.floor(Math.random() * FLORES.length); } while (next === state.flower && FLORES.length > 1);
+    flyTo(FLORES[next].land, next);
+    return;
+  }
+  // ---------------- andando no chão ----------------
+  let wantSpeed = 0;
+  if (state.target) {
+    const dx = state.target.x - bee.position.x, dz = state.target.z - bee.position.z;
+    const dist = Math.hypot(dx, dz);
+    let diff = Math.atan2(-dz, dx) - state.yaw; diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    const turn = clamp(diff, -2.4 * dt, 2.4 * dt);
+    state.yaw += turn; state.yawRate = turn / dt;
+    wantSpeed = dist < 1 ? 0 : CA.velocidade * clamp(1 - Math.abs(diff) / 1.6, 0.12, 1) * clamp(dist / 3, 0.3, 1);
+    if (dist < 1) state.target = null;
+  } else state.yawRate = 0;
+  state.speed += (wantSpeed - state.speed) * Math.min(1, dt * 4);
+  fwd.set(Math.cos(state.yaw), 0, -Math.sin(state.yaw));
+  bee.position.addScaledVector(fwd, state.speed * dt);
+  bee.rotation.y = state.yaw;
+  vel.copy(fwd).multiplyScalar(state.speed);
+  bee.updateMatrixWorld(true);
+  const anySwing = legs.some((l) => l.swing);
+  const far = legs.some((l) => _w.copy(l.neutral).applyMatrix4(bee.matrixWorld).setY(0).distanceTo(_l.copy(l.foot).setY(0)) > 0.45 * esc);
+  const rate = Math.max(state.speed / (STRIDE * esc), Math.abs(state.yawRate) * 0.9, (anySwing || far) ? 1.6 : 0);
+  state.phase = (state.phase + dt * rate) % 1;
+  bee.position.y = state.ground + (state.speed > 0.5 ? 0.04 * esc * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0);
+  bee.updateMatrixWorld(true);
+  inv.copy(bee.matrixWorld).invert();
+  const swingTime = SWING / Math.max(rate, 0.01);
+  for (const leg of legs) {
+    const ph = (state.phase + leg.off) % 1;
+    const inSwing = rate > 0 && ph < SWING;
+    if (inSwing && !leg.swing) {
+      leg.swing = true; leg.start.copy(leg.foot);
+      leg.target.copy(leg.neutral).applyMatrix4(bee.matrixWorld).addScaledVector(vel, swingTime + (1 - SWING) / Math.max(rate, 0.01) * 0.5);
+      leg.target.y = state.ground + 0.05 * esc;
+    } else if (!inSwing && leg.swing) { leg.swing = false; leg.foot.copy(leg.target); }
+    if (leg.swing) {
+      leg.foot.lerpVectors(leg.start, leg.target, smooth(ph / SWING, 0, 1));
+      leg.foot.y = state.ground + (0.05 + 0.6 * Math.sin(Math.PI * ph / SWING)) * esc;
+    }
+    _l.copy(leg.foot).applyMatrix4(inv);
+    const gw = state.groomT > 0 ? smooth(state.groomT, 0, 0.4) * smooth(GROOM - state.groomT, 0, 0.4) : 0;
+    if (gw > 0 && leg.i !== 1) { groomPose(leg, t, _a2); _l.lerp(_a2, gw); }   // as do meio seguram o corpo
+    solveLeg(leg, _l);
+    leg.cur.copy(_l);
+  }
+}
+// pentear: as dianteiras esfregam a cabeça; as traseiras esfregam uma na outra embaixo do abdômen
+function groomPose(leg, t, out) {
+  const H = CA.cabeca, A0 = CA.abd[1], s = leg.s;
+  if (leg.i === 0) {
+    const a = t * 9 + (s > 0 ? 0 : Math.PI);
+    return out.set(H.x - 0.1 + 0.45 * Math.sin(a), H.y - 0.55 + 0.45 * Math.cos(a), 0.6 * s);
+  }
+  const a = t * 7 + (s > 0 ? 0 : Math.PI);
+  return out.set(A0[0] - 0.4 + 0.7 * Math.sin(a), 1.15 + 0.25 * Math.cos(a), 0.35 * s);
+}
+
+function updateParts(t, dt) {
+  // asas: dobradas para trás em cima do abdômen; no voo abrem e batem muito rápido
+  const fl = state.fly;
+  // Batida de verdade: a asa varre para a frente e para trás (quase na horizontal) e gira
+  // na ponta de cada batida. Mostramos em "câmera lenta" + o leque do borrão.
+  const ph = t * Math.PI * 2 * 9;
+  wings.forEach((w) => {
+    const rest = w.fore ? Math.PI - 0.06 : Math.PI - 0.1;                   // dobradas sobre o abdômen
+    const mid = (WING_FRONT + WING_BACK) / 2, amp = (WING_BACK - WING_FRONT) / 2 * 0.92;
+    const stroke = mid - amp * Math.sin(ph) + (w.fore ? 0 : 0.12);         // asas da frente e de trás presas juntas
+    const k = smooth(fl, 0, 0.7);
+    const ang = rest + (stroke - rest) * k;
+    w.yaw.rotation.y = -w.s * ang;                                            // (o sinal faz cada asa abrir para o seu lado)
+    w.flap.rotation.z = (w.fore ? 0.06 : 0.03) + k * (0.12 + 0.1 * Math.cos(2 * ph));          // sobe um pouco nas pontas
+    w.flap.rotation.x = k * 0.75 * Math.cos(ph) * w.s;                                         // gira (vira a asa) na volta
+    w.mat.opacity = 1 - 0.25 * k;
+    w.fan.material.opacity = 0.22 * k;
+  });
+  // língua
+  const want = state.drinkT > 0 || state.tongueBtn ? 1 : 0;
+  state.tongue += (want - state.tongue) * Math.min(1, dt * 3);
+  poseTongue(state.tongue, t);
+  // pólen nas patas de trás
+  pollenBalls.forEach((b) => b.scale.setScalar(Math.max(0.001, 0.4 * state.pollen)));
+  if (pollenDust) pollenDust.count = Math.round(pollenDust.userData.N * state.dust);
+  // antenas
+  antennae.forEach((g, i) => {
+    const busy = state.mode !== 'chao' || state.drinkT > 0 || state.speed > 0.5;
+    const f = busy ? 5 : 1.6, amp = busy ? 0.14 : 0.07;
+    g.rotation.y = Math.sin(t * f + i * Math.PI) * amp;
+    g.rotation.z = Math.sin(t * f * 0.7 + i) * amp * 0.8 - (state.drinkT > 0 ? 0.25 : 0);
+  });
+}
+
+/* =====================================================================
+   6) TOQUES E AÇÕES (o motor cuida da câmera, dos botões e da ficha)
+   ===================================================================== */
+const centerLocal = new V3(0, 3, 0);
+let radius = 10, hiveMode = false;
+let ring = null, ringT = 9;
+function marker(p) { ring.position.set(p.x, p.y + 0.05, p.z); ringT = 0; }
+function toqueCena(c, ray) {
+  if (hiveMode) return;
+  if (ray.intersectObject(bee, true).length) { state.tongueBtn = true; setTimeout(() => { state.tongueBtn = false; }, 1500); return; }
+  const fh = ray.intersectObjects(FLORES.map((F) => F.head), true)[0];
+  if (fh) {
+    let o = fh.object; while (o && o.userData.flower === undefined) o = o.parent;
+    const fi = o.userData.flower;
+    if (fi !== state.flower) flyTo(FLORES[fi].land, fi);
+    marker(FLORES[fi].land);
+    return;
+  }
+  const hit = ray.intersectObject(ground)[0];
+  if (hit) {
+    const p = hit.point.setY(0);
+    const dist = Math.hypot(p.x - bee.position.x, p.z - bee.position.z);
+    if (state.mode === 'chao' && state.ground === 0 && dist < 30) state.target = p;   // perto: vai andando
+    else flyTo(p, -1);                                                                // longe ou numa flor: vai voando
+    marker(p);
+  }
+}
+function voar(c) {
+  if (state.mode === 'pairando') {           // pousar onde está (numa flor, se houver uma embaixo)
+    const fi = flowerUnder(bee.position.x, bee.position.z);
+    flyTo(fi >= 0 ? FLORES[fi].land : bee.position.clone().setY(0), fi);
+    c.marcar('voar', false);
+  } else if (state.mode === 'chao') {
+    liftOff();
+    state.mode = 'pairando'; state.flower = -1; state.drinkT = 0; state.target = null;
+    c.marcar('voar', true);
+  }
+}
+function flores(c) {
+  state.wander = !state.wander; state.wait = 0;
+  c.marcar('flores', state.wander);
+  c.marcar('voar', false);
+  if (state.wander && state.mode === 'pairando') state.mode = 'chao';
+  if (state.wander) c.aviso('🌼 Ela vai visitar as flores sozinha.');
+}
+function lingua(c) {
+  state.tongueBtn = !state.tongueBtn;
+  c.marcar('lingua', state.tongueBtn);
+}
+
+
+/* =====================================================================
+   8) COLMEIA — cena à parte: caixa de colmeia aberta na frente, com o
+   favo (hexágonos de cera), mel, pólen, ovos, larvas, cria fechada,
+   realeira, a rainha com suas operárias, a dança e a entrada.
+   Unidades = mm, no tamanho real (célula de operária ≈ 5,4 mm).
+   ===================================================================== */
+const HIVE = {
+  comb: { x0: -80, x1: 80, y0: 15, y1: 115 },
+  CD: 10,                                     // profundidade das células
+  brood: { cx: 0, cy: 52, rx: 56, ry: 33 },
+  queen: { x: -36, y: 36 },
+  dance: { x: 26, y: 27, ang: 1.0 },
+  realeiras: [[-63, 30], [-52, 22]],
+  entrance: new V3(0, 2, 10)
+};
+const hive = { built: false, scene: null, agents: [], stop: -1, flight: null, labels: [] };
+
+function woodTexture() {
+  const W = 512, c = document.createElement('canvas'); c.width = c.height = W;
+  const g = c.getContext('2d');
+  g.fillStyle = '#b98a55'; g.fillRect(0, 0, W, W);
+  for (let i = 0; i < 160; i++) {
+    const y = Math.random() * W, a = rnd(0.5, 3);
+    g.strokeStyle = 'rgba(' + (Math.random() < 0.5 ? '120,80,40,' : '220,180,130,') + rnd(0.1, 0.35) + ')';
+    g.lineWidth = rnd(0.6, 2.4);
+    g.beginPath(); g.moveTo(0, y);
+    for (let x = 0; x <= W; x += 16) g.lineTo(x, y + a * Math.sin(x * 0.02 + i) + 3 * Math.sin(x * 0.005 + i * 0.3));
+    g.stroke();
+  }
+  for (let i = 0; i < 4; i++) {           // nós da madeira
+    const x = rnd(40, W - 40), y = rnd(40, W - 40);
+    for (let r = 18; r > 2; r -= 3) { g.strokeStyle = 'rgba(100,60,30,.35)'; g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, r * 2.2, r, 0, 0, 7); g.stroke(); }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding;
+  return t;
+}
+// textura de favo para o quadro de trás (só aparece ao fundo)
+function combBackTexture() {
+  const W = 1024, H = 640, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#6a4a1e'; g.fillRect(0, 0, W, H);
+  const a = 10, R = a / Math.cos(Math.PI / 6);
+  for (let j = 0, y = 6; y < H + R; j++, y += 1.5 * R) for (let x = (j % 2) * a; x < W + a; x += 2 * a) {
+    const v = y / H;
+    g.fillStyle = v < 0.3 ? 'hsl(' + rnd(38, 46) + ',70%,' + rnd(55, 66) + '%)' : (Math.random() < 0.7 ? 'hsl(' + rnd(30, 36) + ',45%,' + rnd(45, 55) + '%)' : 'hsl(' + rnd(20, 45) + ',70%,' + rnd(40, 55) + '%)');
+    g.beginPath();
+    for (let k = 0; k < 6; k++) { const an = Math.PI / 2 + k * Math.PI / 3; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(an) * R * 0.86, y + Math.sin(an) * R * 0.86); }
+    g.fill();
+  }
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+  return t;
+}
+
+// ---------- abelhinhas da colmeia: versão leve, com 4 poses de passada + voando ----------
+function mergeUV(parts) {
+  const pos = [], nor = [], uv = [];
+  parts.forEach(([geo, m]) => {
+    const g = geo.index ? geo.toNonIndexed() : geo.clone();
+    g.applyMatrix4(m);
+    pos.push(...g.attributes.position.array); nor.push(...g.attributes.normal.array); uv.push(...g.attributes.uv.array);
+  });
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  out.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  return out;
+}
+function bakeBee(name) {
+  const save = CA;
+  CA = CASTES[name];
+  const H = CA.cabeca, cHead = new THREE.Color(CA.cor.cabeca), cTor = new THREE.Color(CA.cor.torax), cFuzz = new THREE.Color(CA.cor.pelo);
+  const cAmb = new THREE.Color(CA.cor.ambar), cDark = new THREE.Color(CA.cor.escuro);
+  const headX = H.x - H.rx * 1.05, gx = CA.abd[0][0] + CA.abd[0][2];
+  const body = sdfMesh(sdfBee, new V3(...CA.min), new V3(...CA.max), 0.2, (x, y, z, n, c) => {
+    if (x > headX) c.copy(cHead).lerp(cFuzz, 0.15);
+    else if (x > gx - 0.15) c.copy(cTor).lerp(cFuzz, 0.55 + 0.2 * vnoise3(x * 5, y * 5, z * 5));   // tórax peludinho
+    else {
+      const b = abdBand(x);
+      c.copy(cDark).lerp(cAmb, b.u < CA.faixas[b.i] ? 1 : 0);
+      if (b.u < 0.2) c.lerp(cFuzz, 0.4);
+    }
+    const ao = clamp(sdfBee(x + n.x * 0.25, y + n.y * 0.25, z + n.z * 0.25) / 0.25, 0, 1);
+    c.multiplyScalar(0.5 + 0.5 * ao);
+  }, mBody);
+  const parts = [[body.geometry, new THREE.Matrix4(), null]];
+  const cLeg = new THREE.Color(CA.cor.pernas), cEye = new THREE.Color('#1e1915');
+  const tube = (a, b, r0, r1, out, col) => {
+    const len = a.distanceTo(b), g = new THREE.CylinderGeometry(r1, r0, len, 5, 1, true);
+    g.translate(0, len / 2, 0);
+    out.push([g, new THREE.Matrix4().compose(a, new THREE.Quaternion().setFromUnitVectors(UP, new V3().subVectors(b, a).normalize()), new V3(1, 1, 1)), col || cLeg]);
+  };
+  // olhos
+  for (const s of [1, -1]) {
+    const big = CA.olho.grande;
+    parts.push([new THREE.SphereGeometry(1, 10, 8), new THREE.Matrix4().compose(new V3(CA.olho.x, CA.olho.y, s * (big ? 0.62 : 0.95)),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(s * (big ? 0.45 : 0.12), 0, 0)), big ? new V3(0.62, 1.2, 0.58) : new V3(0.42, 0.88, 0.32)), cEye]);
+  }
+  // antenas
+  for (const s of [1, -1]) {
+    const b0 = new V3(H.x + H.rx * 0.82, H.y + 0.15, 0.24 * s), el = b0.clone().add(new V3(0.25, 0.95, 0.28 * s));
+    tube(b0, el, 0.07, 0.08, parts);
+    const A = CA.antena;
+    let p = el;
+    for (let q = 1; q <= 3; q++) { const t = q / 3, nx = el.clone().add(new V3(A.comp * 0.85 * t, 0.35 * Math.sin(Math.PI * t) - 0.45 * t * t, s * 0.45 * t)); tube(p, nx, 0.07, 0.075, parts); p = nx; }
+  }
+  // pernas
+  const L6 = [];
+  CA.pernas.forEach((L, i) => { for (const s of [1, -1]) {
+    const ang = L.ang * Math.PI / 180, dir = new V3(Math.cos(ang), 0, s * Math.sin(ang));
+    const C = COXA_END(i); C.z *= s;
+    const reach = 0.32 + L.f * 0.62 + L.t * 0.55 + L.ta * 0.75;
+    L6.push({ s, i, L, C, neutral: new V3(C.x + dir.x * reach, 0.05, C.z + dir.z * reach), group: ((s === 1) === (i % 2 === 0)) ? 0 : 1 });
+  } });
+  const legTubes = (lg, F, out) => {
+    const P = legPoints(lg, F), hind = lg.i === 2;
+    tube(P[0], P[1], 0.2, 0.18, out); tube(P[1], P[2], 0.2, 0.15, out);
+    tube(P[2], P[3], 0.14, hind ? 0.26 : 0.14, out); tube(P[3], P[4], 0.1, 0.06, out);
+  };
+  const geos = [];
+  for (let pose = 0; pose < 4; pose++) {
+    const out = parts.slice();
+    L6.forEach((lg) => {
+      const ph = (pose + lg.group * 2) % 4, F = lg.neutral.clone();
+      F.x += [0.8, 0, -0.8, 0][ph]; F.y = ph === 1 ? 0.6 : 0.05;
+      legTubes(lg, F, out);
+    });
+    geos.push(mergeColored(out));
+  }
+  { const out = parts.slice(); const F = new V3(); L6.forEach((lg) => { flightPose(lg, 0, F); legTubes(lg, F, out); }); geos.push(mergeColored(out)); }
+  // asas (dobradas e abertas)
+  const wingGeo = (open) => {
+    const parts2 = [];
+    for (const kind of ['frente', 'tras']) {
+      const A = CA.asas[kind], fore = kind === 'frente';
+      for (const s of [1, -1]) {
+        const g = new THREE.PlaneGeometry(A.comp, A.larg);
+        g.translate(A.comp / 2, -0.1 * A.larg, 0); g.rotateX(-Math.PI / 2);
+        const ang = open ? (fore ? 1.35 : 1.5) : (fore ? Math.PI - 0.06 : Math.PI - 0.1);
+        const m = new THREE.Matrix4().compose(new V3(A.base[0], A.base[1] + (fore ? 0.02 : 0), A.base[2] * s),
+          new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -s * ang, open ? 0.18 : 0.06, 'YZX')), new V3(1, 1, s));
+        parts2.push([g, m, fore]);
+      }
+    }
+    const fore = mergeUV(parts2.filter((p) => p[2])), back = mergeUV(parts2.filter((p) => !p[2]));
+    return { fore, back };
+  };
+  const r = { poses: geos, wFold: wingGeo(false), wOpen: wingGeo(true), len: CA.max[0] - CA.min[0] };
+  CA = save;
+  return r;
+}
+
+function larvaGeo() {
+  const parts = [], cBody = new THREE.Color('#f8f1e0');
+  const N = 10, R = 1.25;
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1), a = -0.3 * Math.PI + t * 1.55 * Math.PI, r = 0.45 + 0.35 * Math.sin(Math.PI * Math.pow(t, 0.8));
+    parts.push([new THREE.SphereGeometry(1, 10, 6), new THREE.Matrix4().compose(new V3(Math.cos(a) * R, Math.sin(a) * R, 0), new THREE.Quaternion(), new V3(r, r, r * 0.8)), cBody]);
+  }
+  return mergeColored(parts);
+}
+
+function buildHive() {
+  const S = new THREE.Scene();
+  S.background = new THREE.Color('#cfe3ef');
+  S.fog = new THREE.Fog('#cfe3ef', 400, 900);
+  S.environment = scene.environment;
+  const sun = new THREE.DirectionalLight(0xfff1dc, 1.3);
+  sun.position.set(80, 220, 260); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -160, right: 160, top: 200, bottom: -80, near: 10, far: 700 });
+  sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.4;
+  S.add(sun, new THREE.HemisphereLight(0xfff6e8, 0x6b5030, 0.45));
+  const warm = new THREE.PointLight(0xffc070, 0.5, 260);   // luz quentinha dentro da caixa
+  warm.position.set(0, 70, 60); S.add(warm);
+
+  // ---- chão e capim lá fora ----
+  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600), new THREE.MeshStandardMaterial({ map: ground.material.map.clone(), roughness: 0.95 }));
+  gnd.material.map.needsUpdate = true; gnd.material.map.repeat.set(40, 40);
+  gnd.rotation.x = -Math.PI / 2; gnd.position.y = -60; gnd.receiveShadow = true;
+  S.add(gnd);
+  const blade = new THREE.PlaneGeometry(1, 1, 1, 3); blade.translate(0, 0.5, 0);
+  { const p = blade.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) * (1 - y * 0.9)); p.setZ(i, 0.25 * y * y); } }
+  const grass = new THREE.InstancedMesh(blade, new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.8 }), 2200);
+  const o = new THREE.Object3D(), col = new THREE.Color();
+  for (let i = 0; i < 2200; i++) {
+    let x, z; do { x = rnd(-500, 500); z = rnd(-500, 400); } while (Math.abs(x) < 120 && z > -110 && z < 70);
+    o.position.set(x, -60, z); o.rotation.set(rnd(-0.2, 0.2), rnd(0, 6.3), 0); o.scale.set(rnd(3, 6), rnd(25, 80), 1);
+    o.updateMatrix(); grass.setMatrixAt(i, o.matrix); col.setHSL(rnd(0.2, 0.3), rnd(0.35, 0.6), rnd(0.2, 0.36)); grass.setColorAt(i, col);
+  }
+  S.add(grass);
+
+  // ---- caixa de madeira (frente cortada) ----
+  const wt = woodTexture();
+  const mWood = new THREE.MeshStandardMaterial({ map: wt, roughness: 0.8 });
+  const mWoodCut = new THREE.MeshStandardMaterial({ map: wt, color: '#d8b98e', roughness: 0.85 });   // madeira cortada (mais clara)
+  const box = (w, h, d, x, y, z, m) => { const b = shadowy(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m || mWood)); b.position.set(x, y, z); S.add(b); return b; };
+  box(6, 146, 84, -95, 70, -32);            // lateral esquerda
+  box(6, 146, 84, 95, 70, -32);             // lateral direita
+  box(196, 146, 6, 0, 70, -77);             // fundo
+  box(196, 6, 84, 0, -3, -32);              // piso
+  box(212, 8, 100, 0, 147, -32);            // tampa
+  box(196, 8, 4, 0, 8, 8, mWoodCut);        // frente: só a faixa de baixo, com a entrada
+  box(70, 5, 4, -63, 2.5, 8, mWoodCut); box(70, 5, 4, 63, 2.5, 8, mWoodCut);
+  box(110, 3, 22, 0, -1.5, 19);             // tábua de pouso
+  [[-85, -45], [85, -45], [-85, -20], [85, -20]].forEach(([x, z]) => box(8, 54, 8, x, -33, z));   // pés do suporte
+  // quadro de madeira em volta do favo
+  const C = HIVE.comb;
+  box(184, 8, 22, 0, C.y1 + 4, -6); box(170, 5, 22, 0, C.y0 - 3, -6);
+  box(6, C.y1 - C.y0 + 10, 22, C.x0 - 3, (C.y0 + C.y1) / 2, -6); box(6, C.y1 - C.y0 + 10, 22, C.x1 + 3, (C.y0 + C.y1) / 2, -6);
+  // favo de trás
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(160, 100), new THREE.MeshStandardMaterial({ map: combBackTexture(), roughness: 0.6, color: '#9a8a70' }));
+  back.position.set(0, 65, -45); back.receiveShadow = true; S.add(back);
+  // parede de cera atrás das células
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(C.x1 - C.x0, C.y1 - C.y0), new THREE.MeshStandardMaterial({ color: '#5e3f17', roughness: 0.7 }));
+  wall.position.set(0, (C.y0 + C.y1) / 2, -HIVE.CD - 0.2); S.add(wall);
+
+  // ---- células do favo ----
+  const a = 2.7, R = a / Math.cos(Math.PI / 6), CD = HIVE.CD;
+  const cells = [];
+  for (let j = 0, y = C.y0 + R; y < C.y1 - R * 0.5; j++, y += 1.5 * R)
+    for (let x = C.x0 + a + (j % 2) * a; x < C.x1 - a * 0.5; x += 2 * a) cells.push({ x, y });
+  const B = HIVE.brood;
+  const zoneOf = (c) => {
+    const e = Math.pow((c.x - B.cx) / B.rx, 2) + Math.pow((c.y - B.cy) / B.ry, 2);
+    const n = vnoise3(c.x * 0.15, c.y * 0.15, 3) * 0.25;
+    if (c.x > 52 && c.y < 36) return 'zangao';
+    if (e + n < 1) {
+      if (Math.random() < 0.06) return 'vazio';
+      const xx = c.x + (vnoise3(c.x * 0.2, c.y * 0.2, 9) - 0.5) * 14;
+      return xx < -20 ? 'ovo' : xx < 16 ? 'larva' : 'fechada';
+    }
+    if (e + n < 1.55) return Math.random() < 0.12 ? 'vazio' : 'polen';
+    if (c.y > 101 + 5 * vnoise3(c.x * 0.1, 1, 1)) return 'melTampado';
+    return Math.random() < 0.15 ? 'vazio' : 'mel';
+  };
+  cells.forEach((c) => { c.z = zoneOf(c); });
+  const count = (k) => cells.filter((c) => c.z === k);
+  const mWax = new THREE.MeshPhysicalMaterial({ side: THREE.DoubleSide, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.5, envMapIntensity: 0.4 });
+  const placeAll = (geo, mat, list, fill, shadow) => {
+    const m = new THREE.InstancedMesh(geo, mat, Math.max(1, list.length));
+    m.count = list.length;
+    list.forEach((c, i) => { fill(o, col, c, i); o.updateMatrix(); m.setMatrixAt(i, o.matrix); m.setColorAt(i, col); });
+    m.receiveShadow = true; m.castShadow = !!shadow;
+    S.add(m); return m;
+  };
+  const reset = () => { o.position.set(0, 0, 0); o.rotation.set(0, 0, 0); o.scale.set(1, 1, 1); };
+  const darkComb = (c) => c.z === 'ovo' || c.z === 'larva' || c.z === 'fechada' || c.z === 'zangao' || (c.z === 'vazio' && c.y < 85);
+  // paredes (tubinho hexagonal) + borda de cera + fundo
+  const wallGeo = new THREE.CylinderGeometry(R * 0.985, R * 0.985, CD, 6, 1, true); wallGeo.rotateX(Math.PI / 2); wallGeo.translate(0, 0, -CD / 2);
+  placeAll(wallGeo, mWax, cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, 0); col.set(darkComb(c) ? '#a97b3c' : '#e7c46a').offsetHSL(0, 0, rnd(-0.05, 0.04)); });
+  const rimGeo = new THREE.RingGeometry(R * 0.86, R * 1.0, 6, 1, Math.PI / 2);
+  placeAll(rimGeo, mWax, cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, 0.02); col.set(darkComb(c) ? '#c39a58' : '#f3d98a').offsetHSL(0, 0, rnd(-0.04, 0.04)); });
+  const baseGeo = new THREE.CircleGeometry(R, 6, Math.PI / 2);
+  placeAll(baseGeo, new THREE.MeshStandardMaterial({ roughness: 0.6 }), cells, (o, col, c) => { reset(); o.position.set(c.x, c.y, -CD + 0.05); col.set(darkComb(c) ? '#4a2f12' : c.z === 'mel' ? '#8a4f0c' : '#c99a3a'); });
+
+  // mel aberto: brilhante e transparente
+  const honeyMat = new THREE.MeshPhysicalMaterial({ roughness: 0.03, clearcoat: 1, clearcoatRoughness: 0.02, transparent: true, opacity: 0.95, emissive: '#5a2a00', envMapIntensity: 1.4 });
+  placeAll(new THREE.CircleGeometry(R * 0.9, 6, Math.PI / 2), honeyMat, count('mel'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -rnd(0.6, 2.5)); col.setHSL(rnd(0.075, 0.1), 0.95, rnd(0.36, 0.46)); });
+  // mel tampado: tampinha de cera clara
+  const capGeo = new THREE.SphereGeometry(1, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); capGeo.rotateX(Math.PI / 2);
+  const mCap = new THREE.MeshPhysicalMaterial({ roughness: 0.55, clearcoat: 0.2, envMapIntensity: 0.4 });
+  addCuticle(mCap, 0.03, 1.0);
+  placeAll(capGeo, mCap, count('melTampado'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.4); o.scale.set(R * 0.9, R * 0.9, 0.5); col.set('#f7e7b4').offsetHSL(0, 0, rnd(-0.04, 0.03)); });
+  // pólen: bolinho colorido no fundo da célula
+  const polGeo = new THREE.IcosahedronGeometry(1, 2);
+  { const p = polGeo.attributes.position, v = new V3(); for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k); v.multiplyScalar(1 + 0.18 * (vnoise3(v.x * 3, v.y * 3, v.z * 3) - 0.5)); p.setXYZ(k, v.x, v.y, v.z); } polGeo.computeVertexNormals(); }
+  const PAL = ['#f2a21b', '#e8c23a', '#d9631e', '#b85c2a', '#9fae3a', '#e88a2b', '#f5d04a', '#c2441f'];
+  const mPol = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+  addCuticle(mPol, 0.05, 1.5);
+  placeAll(polGeo, mPol, count('polen'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -rnd(4.5, 7.5)); o.scale.set(R * 0.82, R * 0.82, 1.6); col.set(PAL[Math.floor(Math.random() * PAL.length)]); });
+  // ovos: em pé no fundo da célula
+  const eggGeo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.2, 1.1, 4, 8) : new THREE.CylinderGeometry(0.2, 0.2, 1.4, 8);
+  eggGeo.rotateX(Math.PI / 2);
+  placeAll(eggGeo, new THREE.MeshPhysicalMaterial({ roughness: 0.2, clearcoat: 1, color: '#fffdf2' }), count('ovo'), (o, col, c) => {
+    reset(); o.position.set(c.x + rnd(-0.3, 0.3), c.y + rnd(-0.3, 0.3), -CD + 0.8); o.rotation.set(rnd(-0.3, 0.3), rnd(-0.3, 0.3), 0); col.set('#ffffff');
+  });
+  // larvas: enroladinhas em "C" no fundo, em cima da geleia
+  const lv = count('larva');
+  placeAll(new THREE.CircleGeometry(R * 0.85, 12), new THREE.MeshPhysicalMaterial({ roughness: 0.1, clearcoat: 1, transparent: true, opacity: 0.8, color: '#fffaf0' }), lv, (o, col, c) => { reset(); o.position.set(c.x, c.y, -CD + 0.3); col.set('#ffffff'); });
+  placeAll(larvaGeo(), new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.3, clearcoat: 0.7, sheen: 0.5 }), lv, (o, col, c) => {
+    reset(); const sc = rnd(0.6, 1.25); o.position.set(c.x, c.y, -CD + 1.1); o.rotation.set(0, 0, rnd(0, 6.3)); o.scale.set(sc, sc, sc); col.set('#ffffff');
+  });
+  // cria fechada (pupas lá dentro): tampinhas marrons, um pouco abauladas; zangões: bem mais estufadas
+  const mBroodCap = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+  addCuticle(mBroodCap, 0.06, 1.2);
+  placeAll(capGeo, mBroodCap, count('fechada'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.3); o.scale.set(R * 0.93, R * 0.93, 1.0); col.set('#c79b5b').offsetHSL(rnd(-0.01, 0.01), 0, rnd(-0.06, 0.04)); });
+  placeAll(capGeo, mBroodCap, count('zangao'), (o, col, c) => { reset(); o.position.set(c.x, c.y, -0.2); o.scale.set(R * 0.95, R * 0.95, 2.4); col.set('#b58a4e').offsetHSL(0, 0, rnd(-0.05, 0.03)); });
+
+  // realeiras: células compridas, penduradas, com a casca cheia de furinhos
+  const mRoyal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 });
+  addCuticle(mRoyal, 0.4, 2.5);
+  HIVE.realeiras.forEach(([x, y]) => {
+    const f = (px, py, pz) => {
+      const t = clamp((y - py) / 22, 0, 1);
+      const r = 4.2 * Math.sin(Math.PI * clamp(t * 0.95 + 0.05, 0, 1)) * (1 - 0.25 * t) + 0.3;
+      return Math.hypot(px - x, pz - 4.5) - r + 0.25 * (vnoise3(px * 1.6, py * 1.6, pz * 1.6) - 0.5);
+    };
+    const m = sdfMesh(f, new V3(x - 6, y - 24, -2), new V3(x + 6, y + 1, 11), 0.35, (px, py, pz, n, c) => c.set('#c49a5e').multiplyScalar(0.8 + 0.25 * vnoise3(px * 2, py * 2, pz * 2)), mRoyal);
+    S.add(m);
+  });
+
+  // ---- abelhas ----
+  hive.kinds = {};
+  const mBee = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.55 });
+  addCuticle(mBee, 0.03, 1.2);
+  const mkWingMat = (fore) => new THREE.MeshPhysicalMaterial({ map: beeWingTexture(fore), transparent: true, side: THREE.DoubleSide, depthWrite: false, roughness: 0.2, envMapIntensity: 0.5 });
+  const MAX = { operaria: 80, rainha: 2, zangao: 8 };
+  for (const k of ['operaria', 'rainha', 'zangao']) {
+    const bk = bakeBee(k);
+    const meshes = bk.poses.map((g) => { const m = new THREE.InstancedMesh(g, mBee, MAX[k]); m.castShadow = true; m.count = 0; S.add(m); return m; });
+    const wing = (geo, fore) => { const m = new THREE.InstancedMesh(geo, mkWingMat(fore), MAX[k]); m.count = 0; m.renderOrder = 3; S.add(m); return m; };
+    hive.kinds[k] = { meshes, fold: [wing(bk.wFold.fore, true), wing(bk.wFold.back, false)], open: [wing(bk.wOpen.fore, true), wing(bk.wOpen.back, false)] };
+  }
+
+  // agentes
+  const A = hive.agents = [];
+  const onComb = (x, y) => x > C.x0 + 6 && x < C.x1 - 6 && y > C.y0 + 5 && y < C.y1 - 6;
+  const rp = () => { let x, y; do { x = rnd(C.x0 + 8, C.x1 - 8); y = rnd(C.y0 + 8, C.y1 - 8); } while (Math.hypot(x - HIVE.queen.x, y - HIVE.queen.y) < 16); return [x, y]; };
+  for (let i = 0; i < 30; i++) { const [x, y] = rp(); A.push({ k: 'operaria', type: 'anda', x, y, ang: rnd(0, 6.3), sp: rnd(3, 6), ph: rnd(0, 4), pause: 0 }); }
+  for (let i = 0; i < 3; i++) A.push({ k: 'zangao', type: 'anda', x: rnd(45, 72), y: rnd(70, 100), ang: rnd(0, 6.3), sp: 2.2, ph: rnd(0, 4), pause: 0, box: [42, 75, 66, 104] });
+  // rainha e a corte (operárias viradas para ela)
+  A.push({ k: 'rainha', type: 'rainha', x: HIVE.queen.x, y: HIVE.queen.y, ang: 1.2, ph: 0 });
+  for (let i = 0; i < 8; i++) {
+    const t = i / 8 * Math.PI * 2;
+    A.push({ k: 'operaria', type: 'corte', i, t, ph: rnd(0, 4) });
+  }
+  // babás com a cabeça dentro das células das larvas
+  lv.filter((c, i) => i % 9 === 0).slice(0, 4).forEach((c, i) => A.push({ k: 'operaria', type: 'baba', cx: c.x, cy: c.y, ang: 0.6 + i * 1.7, ph: rnd(0, 4) }));
+  // a dançarina e as seguidoras
+  A.push({ k: 'operaria', type: 'danca', t: 0, ph: 0 });
+  for (let i = 0; i < 4; i++) A.push({ k: 'operaria', type: 'segue', i, ph: rnd(0, 4) });
+  // na entrada: guardas na tábua de pouso, e abelhas voando para fora e para dentro
+  for (let i = 0; i < 3; i++) A.push({ k: 'operaria', type: 'guarda', x: -22 + i * 22, z: 18, ang: Math.PI / 2 + rnd(-0.3, 0.3), ph: rnd(0, 4) });
+  for (let i = 0; i < 7; i++) {
+    const side = i % 2 ? 1 : -1, far = new V3(side * rnd(60, 160), rnd(30, 90), rnd(140, 260));
+    const curve = new THREE.CatmullRomCurve3([new V3(rnd(-15, 15), 1, 22), new V3(side * rnd(10, 30), rnd(12, 25), 60), far.clone().lerp(new V3(0, 40, 80), 0.4), far]);
+    A.push({ k: 'operaria', type: 'voa', curve, u: Math.random(), dir: i < 4 ? 1 : -1, sp: rnd(0.07, 0.11) });
+  }
+  hive.cells = cells;
+  hive.scene = S;
+
+  // ---- etiquetas e passeio ----
+  const Q = HIVE.queen, D = HIVE.dance;
+  hive.stops = [
+    { em: '🏠', t: 'A colmeia', p: new V3(0, 60, 0), cam: new V3(0, 95, 330), txt: 'Esta é a casa das abelhas. A frente está aberta para a gente olhar lá dentro!' },
+    { em: '⬡', t: 'Favo', lp: new V3(-60, 112, 2), p: new V3(-58, 102, 0), cam: new V3(-48, 108, 52), txt: 'O favo é feito de cera. Ele tem casinhas de seis lados: os hexágonos!' },
+    { em: '🍯', t: 'Mel', lp: new V3(48, 106, 2), p: new V3(48, 96, -1), cam: new V3(54, 99, 40), txt: 'Lá em cima as abelhas guardam o mel. Quando fica pronto, tampam com cera.' },
+    { em: '🌼', t: 'Pólen', lp: new V3(-2, 93, 2), p: new V3(0, 87, 0), cam: new V3(6, 90, 42), txt: 'O pólen colorido das flores fica perto dos bebês: é a comida deles.' },
+    { em: '🥚', t: 'Ovos', lp: new V3(-40, 66, 2), p: new V3(-40, 58, -4), cam: new V3(-38, 60, 26), txt: 'A rainha bota um ovinho em cada casinha. Olhe lá no fundo!' },
+    { em: '🐛', t: 'Larvas', lp: new V3(-2, 66, 2), p: new V3(-2, 58, -4), cam: new V3(0, 60, 26), txt: 'Do ovo nasce a larva. As abelhas babás dão comida para ela crescer.' },
+    { em: '🟫', t: 'Pupas', lp: new V3(36, 66, 2), p: new V3(36, 58, 0), cam: new V3(40, 61, 32), txt: 'Depois a casinha é fechada com cera. Lá dentro a larva vira abelha!' },
+    { em: '👑', t: 'Rainha', lp: new V3(Q.x, Q.y + 13, 6), p: new V3(Q.x, Q.y, 2), cam: new V3(Q.x + 4, Q.y + 6, 40), txt: 'A rainha é a mãe de todas as abelhas. As operárias ficam em volta cuidando dela.' },
+    { em: '🥜', t: 'Realeira', lp: new V3(-58, 38, 10), p: new V3(-58, 18, 4), cam: new V3(-50, 24, 48), txt: 'Nestas casinhas compridas nascem novas rainhas!' },
+    { em: '💃', t: 'Dança', lp: new V3(D.x, D.y + 14, 6), p: new V3(D.x, D.y, 2), cam: new V3(D.x + 4, D.y + 6, 42), txt: 'Esta abelha está dançando! A dança conta para as outras onde ficam as flores.' },
+    { em: '🚪', t: 'Entrada', lp: new V3(0, 16, 22), p: new V3(0, 4, 18), cam: new V3(30, 28, 90), txt: 'Pela porta as abelhas entram e saem. As guardas vigiam quem chega.' },
+    { em: '👀', t: 'Zangões', lp: new V3(64, 80, 6), p: new V3(58, 88, 2), cam: new V3(62, 92, 48), txt: 'Os zangões são os machos: maiores, com olhos enormes e sem ferrão.' }
+  ];
+  hive.built = true;
+}
+
+// coloca uma abelha em cima do favo: costas para fora (+z), andando no plano XY
+const _bm = new THREE.Matrix4(), _bx = new V3(), _by = new V3(0, 0, 1), _bz = new V3(), _bp = new V3(), _pitch = new THREE.Matrix4();
+function combMatrix(x, y, ang, pitch, z) {
+  _bx.set(Math.cos(ang), Math.sin(ang), 0); _bz.crossVectors(_bx, _by);
+  _bm.makeBasis(_bx, _by, _bz).setPosition(x, y, z || 0.1);
+  if (pitch) _bm.multiply(_pitch.makeRotationZ(pitch));
+  return _bm;
+}
+const _q = new THREE.Quaternion(), _s1 = new V3(1, 1, 1), _fm = new THREE.Matrix4();
+function updateHive(dt, t) {
+  const C = HIVE.comb, K = hive.kinds, Q = HIVE.queen, D = HIVE.dance;
+  const cnt = {};
+  for (const k in K) cnt[k] = { p: [0, 0, 0, 0, 0], f: 0, o: 0 };
+  const put = (a, m, pose, open) => {
+    const c = cnt[a.k], kk = K[a.k];
+    kk.meshes[pose].setMatrixAt(c.p[pose]++, m);
+    const w = open ? kk.open : kk.fold;
+    const idx = open ? c.o++ : c.f++;
+    w[0].setMatrixAt(idx, m); w[1].setMatrixAt(idx, m);
+  };
+  for (const a of hive.agents) {
+    let m, pose = 0, open = false, moving = 0;
+    if (a.type === 'anda') {
+      if (a.pause > 0) a.pause -= dt;
+      else {
+        a.ang += (vnoise3(a.x * 0.08, a.y * 0.08, t * 0.3) - 0.5) * 3 * dt;
+        const nx = a.x + Math.cos(a.ang) * a.sp * dt, ny = a.y + Math.sin(a.ang) * a.sp * dt;
+        const bx = a.box || [C.x0 + 7, C.y0 + 6, C.x1 - 7, C.y1 - 7];
+        const nearQ = Math.hypot(nx - Q.x, ny - Q.y) < 15 || Math.hypot(nx - D.x, ny - D.y) < 13;
+        if (nx < bx[0] || nx > bx[2] || ny < bx[1] || ny > bx[3] || nearQ) a.ang += Math.PI * 0.6 + rnd(0, 0.8);
+        else { a.x = nx; a.y = ny; moving = a.sp; }
+        if (Math.random() < dt * 0.15) a.pause = rnd(0.8, 3);
+      }
+      m = combMatrix(a.x, a.y, a.ang);
+    } else if (a.type === 'rainha') {
+      a.ang = 1.2 + 0.25 * Math.sin(t * 0.3);
+      m = combMatrix(Q.x + Math.sin(t * 0.25) * 1.2, Q.y + Math.cos(t * 0.21) * 0.8, a.ang);
+      moving = 0.6;
+    } else if (a.type === 'corte') {
+      const qa = 1.2 + 0.25 * Math.sin(t * 0.3), r = 11 + 0.6 * Math.sin(t * 0.8 + a.i);
+      const x = Q.x + Math.cos(a.t + qa) * r * 1.15, y = Q.y + Math.sin(a.t + qa) * r * 0.85;
+      m = combMatrix(x, y, Math.atan2(Q.y - y, Q.x - x) + 0.15 * Math.sin(t * 1.3 + a.i));
+      moving = 0.4 * Math.abs(Math.sin(t * 0.8 + a.i));
+    } else if (a.type === 'baba') {
+      // cabeça dentro da célula da larva (corpo inclinado, abdômen para fora)
+      const pitch = -0.75;
+      combMatrix(0, 0, a.ang, pitch, 0);
+      _bp.set(4.4, 2.6, 0).applyMatrix4(_bm);
+      m = combMatrix(a.cx - _bp.x, a.cy - _bp.y, a.ang, pitch, -2.2 - _bp.z + 0.4 * Math.sin(t * 2 + a.ang));
+    } else if (a.type === 'danca') {
+      // dança do requebrado: corrida reta balançando o corpo e volta em semicírculo, alternando os lados
+      const T = 3.2, k = (t % (2 * T)) / T, side = k < 1 ? 1 : -1, u = k % 1;
+      const ux = Math.cos(D.ang + Math.PI / 2), uy = Math.sin(D.ang + Math.PI / 2), len = 13;
+      let x, y, ang;
+      if (u < 0.55) {
+        const s = u / 0.55;
+        x = D.x + ux * len * (s - 0.5); y = D.y + uy * len * (s - 0.5);
+        ang = D.ang + Math.PI / 2 + 0.38 * Math.sin(t * Math.PI * 2 * 13);
+        x += -uy * 0.5 * Math.sin(t * Math.PI * 2 * 13); y += ux * 0.5 * Math.sin(t * Math.PI * 2 * 13);
+      } else {
+        // volta em semicírculo (uma vez por um lado, outra pelo outro)
+        const s = (u - 0.55) / 0.45, th = Math.PI * s, r = len / 2, nx = -uy, ny = ux;
+        x = D.x + ux * r * Math.cos(th) + side * nx * r * Math.sin(th);
+        y = D.y + uy * r * Math.cos(th) + side * ny * r * Math.sin(th);
+        const tx = -ux * Math.sin(th) + side * nx * Math.cos(th), ty = -uy * Math.sin(th) + side * ny * Math.cos(th);
+        ang = Math.atan2(ty, tx);
+      }
+      a.x = x; a.y = y;
+      m = combMatrix(x, y, ang);
+      moving = 5;
+      open = true;                                // asas um pouco abertas, vibrando
+    } else if (a.type === 'segue') {
+      const dz = hive.agents.find((b) => b.type === 'danca');
+      const ang0 = a.i * Math.PI / 2 + 0.6 + 0.2 * Math.sin(t + a.i);
+      const x = dz.x + Math.cos(ang0) * 8.5, y = dz.y + Math.sin(ang0) * 8.5;
+      m = combMatrix(x, y, Math.atan2(dz.y - y, dz.x - x));
+      moving = 1.5;
+    } else if (a.type === 'guarda') {
+      // em pé na tábua de pouso (no chão de verdade: costas para cima)
+      _q.setFromAxisAngle(UP, a.ang + 0.2 * Math.sin(t * 0.9 + a.x));
+      m = _fm.compose(_bp.set(a.x, 0.05, a.z), _q, _s1);
+      moving = 0.3;
+    } else if (a.type === 'voa') {
+      a.u += a.dir * a.sp * dt;
+      if (a.u > 1) a.u -= 1; if (a.u < 0) a.u += 1;
+      const p = a.curve.getPointAt(a.u), tg = a.curve.getTangentAt(a.u).multiplyScalar(a.dir);
+      _q.setFromUnitVectors(new V3(1, 0, 0), tg.setY(tg.y * 0.3).normalize());
+      p.y += Math.sin(t * 6 + a.sp * 50) * 0.6;
+      m = _fm.compose(p, _q, _s1);
+      pose = 4; open = true;
+    }
+    if (a.type !== 'voa') { a.ph = (a.ph + dt * (0.5 + moving * 0.7)) % 4; pose = moving > 0.2 ? Math.floor(a.ph) : 1; }
+    put(a, m, pose, open);
+  }
+  for (const k in K) {
+    const c = cnt[k], kk = K[k];
+    kk.meshes.forEach((mm, i) => { mm.count = c.p[i]; mm.instanceMatrix.needsUpdate = true; });
+    kk.fold.forEach((mm) => { mm.count = c.f; mm.instanceMatrix.needsUpdate = true; });
+    kk.open.forEach((mm) => { mm.count = c.o; mm.instanceMatrix.needsUpdate = true; mm.material.opacity = 0.55 + 0.3 * Math.sin(t * 60); });
+  }
+  if (hive.flight) {
+    const F = hive.flight; F.k = Math.min(1, F.k + dt / 1.4);
+    const e = smooth(F.k, 0, 1);
+    camera.position.lerpVectors(F.p0, F.p1, e); controls.target.lerpVectors(F.t0, F.t1, e);
+    if (F.k >= 1) hive.flight = null;
+  }
+  camera.updateMatrixWorld();
+
+  // a câmera não entra nas paredes da caixa
+  const c = camera.position;
+  if (c.z < 14 && c.z > -84 && Math.abs(c.x) < 104 && c.y > -8 && c.y < 155) {
+    if (c.z > -8 && Math.abs(c.x) < 92 && c.y < 140) { /* dentro da caixa, na frente do favo: tudo bem */ if (c.z < 4) c.z = 4; }
+    else c.z = 14;
+  }
+  if (c.y < -55) c.y = -55;
+}
+// em tela em pé (celular) a câmera se afasta para caber tudo na largura
+function fitPortrait(cam, target) {
+  const f = Math.max(1, 1 / (camera.aspect * 1.25));
+  return cam.clone().sub(target).multiplyScalar(f).add(target);
+}
+function goHiveStop(i) {
+  const st = hive.stops[i];
+  hive.stop = i;
+  hive.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: fitPortrait(st.cam, st.p), t1: st.p.clone() };
+}
+const beeView = { p: new V3(), t: new V3() };
+function enterHive() {
+  return new Promise((res) => {
+    const go = () => {
+      Progresso.marcar('abelha', 'casa');
+      if (!hive.built) buildHive();
+      if (!hiveMode) { beeView.p.copy(camera.position); beeView.t.copy(controls.target); }
+      hiveMode = true;
+      ctx.cenaAtiva = hive.scene;
+      controls.autoRotate = false;
+      Object.assign(controls, { maxDistance: 600, minDistance: 6, maxPolarAngle: Math.PI * 0.6, minAzimuthAngle: -1.15, maxAzimuthAngle: 1.15 });
+      camera.far = 2000; camera.updateProjectionMatrix();
+      hive.stop = -1;
+      camera.position.set(-120, 160, 420); controls.target.set(0, 50, 0);
+      ctx.carregando(false);
+      ctx.mostrarPartes(true);
+      res();
+    };
+    if (hive.built) go();
+    else { ctx.carregando('🍯 Montando a colmeia…'); setTimeout(go, 50); }
+  });
+}
+function leaveHive() {
+  hiveMode = false;
+  ctx.cenaAtiva = null;
+  Object.assign(controls, { minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity });
+  camera.far = 3000; camera.updateProjectionMatrix();
+  camera.position.copy(beeView.p); controls.target.copy(beeView.t);
+}
+
+
+/* =====================================================================
+   7) TROCA DE CASTA
+   ===================================================================== */
+const built = {};
+function buildCaste(name) {
+  CA = CASTES[name]; seed = 7;
+  G = new THREE.Group(); legs = []; antennae = []; wings = []; pollenBalls = []; pollenDust = null;
+  const mLeg = new THREE.MeshPhysicalMaterial({ color: CA.cor.pernas, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.6 });
+  addCuticle(mLeg, 0.02, 2.0);
+  const t0 = performance.now();
+  buildBody(); buildEyes(); buildAntennae(mLeg, {}); buildMouth(); buildLegs(mLeg); buildWings();
+  legs.forEach((l) => solveLeg(l, l.neutral));
+  const box = new THREE.Box3().setFromObject(G);
+  console.log(CA.nome + ' pronta em ' + Math.round(performance.now() - t0) + ' ms');
+  return (built[name] = { G, legs, antennae, wings, tongue, pollenBalls, pollenDust, center: box.getCenter(new V3()), radius: box.getSize(new V3()).length() / 2 });
+}
+let current = null;
+function vestir(name) {
+  const old = current ? built[current].G : null;
+  const m = built[name] || buildCaste(name);
+  CA = CASTES[name];
+  if (old) bee.remove(old);
+  ({ G, legs, antennae, wings, tongue, pollenBalls, pollenDust } = m);
+  bee.add(G);
+  current = name;
+  Ficha.casta(name);
+  bee.scale.setScalar(CA.escala);
+  if (!CA.cesta) { state.pollen = 0; state.dust = 0; }
+  centerLocal.copy(m.center);
+  radius = m.radius * CA.escala;
+  if (state.mode === 'chao') { bee.position.y = state.ground; plantFeet(); legs.forEach((l) => solveLeg(l, l.neutral)); }
+}
+function switchCaste(name) {
+  return new Promise((res) => {
+    const go = () => {
+      if (name !== current) vestir(name);
+      ctx.carregando(false);
+      ctx.foco(bee.localToWorld(centerLocal.clone()), radius);
+      res();
+    };
+    if (built[name] || name === current) go();
+    else { ctx.carregando('🐝 Esculpindo ' + (name === 'zangao' ? 'o zangão' : 'a ' + CASTES[name].nome) + '…'); setTimeout(go, 40); }
+  });
+}
+
+/* =====================================================================
+   9) PARTES DA ABELHA (etiquetas do botão 🔎 Partes)
+   ===================================================================== */
+const noCorpo = (x, y, z) => () => bee.localToWorld(new V3(x, y, z));
+function partesAbelha() {
+  const H = CA.cabeca, E = CA.olho, T = CA.torax, Lb = CA.abd[CA.abd.length - 1], W = CA.asas.frente.base;
+  const l = [
+    E.grande
+      ? { nome: 'Olhos enormes', curto: 'Olhos', emoji: '👀', ponto: noCorpo(E.x, E.y + 0.6, 0.9), texto: 'Os olhos do zangão são tão grandes que se encontram no alto da cabeça. Ele também tem 3 olhinhos simples.', pequeno: 'Olha que olhos grandes!' }
+      : { nome: 'Olhos', emoji: '👀', ponto: noCorpo(E.x, E.y + 0.3, 1.0), texto: 'Dois olhos grandes, feitos de milhares de olhinhos, e mais 3 olhinhos simples no alto da cabeça.', pequeno: 'Ela tem 5 olhos: 2 grandes e 3 pequenininhos!' },
+    { nome: 'Antenas', emoji: '📡', ponto: noCorpo(H.x + 1.3, H.y + 1.5, 0.6), texto: 'Servem para sentir cheiros e tocar. É assim que a abelha reconhece as flores e as companheiras da colmeia.', pequeno: 'Com as antenas ela sente o cheiro das flores!' },
+    { nome: 'Língua', emoji: '👅', ponto: noCorpo(H.x + 0.5, H.y - 1.7, 0), texto: 'Um canudinho comprido que ela estica para beber o néctar das flores. Toque na abelha para ver!', pequeno: 'Um canudinho para beber néctar!' },
+    { nome: 'Asas', emoji: '🪽', ponto: noCorpo(W[0] - 3, W[1] + 0.6, 1.8), texto: 'São 4 asas. No voo, as da frente e as de trás ficam presas por ganchinhos e batem juntas, muito rápido.', pequeno: '4 asas que batem muito rápido!' },
+    { nome: 'Pelos', emoji: '🧶', ponto: noCorpo(T[0], T[1] + T[3] + 0.2, 0), texto: 'O corpo é coberto de pelos. Quando ela visita as flores, o pólen gruda neles.', pequeno: 'O pólen gruda nos pelinhos!' }
+  ];
+  if (CA.cesta) l.push({ nome: 'Cesta de pólen', curto: 'Cestinha', emoji: '🧺', ponto: () => { const g = legs.find((k) => k.i === 2 && k.s === 1); return g ? g.tibia.getWorldPosition(new V3()) : bee.position.clone(); }, texto: 'Nas patas de trás, a operária leva bolinhas de pólen para a colmeia.', pequeno: 'Ela carrega pólen nas patas de trás!' });
+  if (CA.ferrao) l.push({ nome: 'Ferrão', emoji: '⚠️', ponto: noCorpo(Lb[0] - Lb[2] - 0.2, Lb[1] - 0.15, 0), texto: 'Só as fêmeas (operárias e rainha) têm ferrão. Elas usam para se defender. Observe sem tocar!', pequeno: 'O ferrão é para se defender. Observe sem tocar!' });
+  else l.push({ nome: 'Sem ferrão', emoji: '🚫', ponto: noCorpo(Lb[0] - Lb[2], Lb[1], 0), texto: 'O zangão é o macho e não tem ferrão.', pequeno: 'O zangão não tem ferrão!' });
+  return l;
+}
+function partesColmeia() {
+  return hive.stops.slice(1).map((st, k) => ({ nome: st.t, emoji: st.em, texto: st.txt, ponto: () => st.lp || st.p, ir: () => goHiveStop(k + 1) }));
+}
+
+/* =====================================================================
+   10) REGISTRO NO MOTOR
+   ===================================================================== */
+Modelos3D.abelha = {
+  cena: 'chao',
+  cenario: 'proprio',
+  formas: [
+    { id: 'operaria', nome: 'Operária' },
+    { id: 'rainha', nome: 'Rainha' },
+    { id: 'zangao', nome: 'Zangão' },
+    { id: 'colmeia', nome: '🍯 Colmeia', ocultar: ['voar', 'flores', 'lingua', 'tam', 'limpo'] }
+  ],
+  acoes: [
+    { id: 'voar', ico: '🪽', rotulo: 'Voar', fn: voar },
+    { id: 'flores', ico: '🌼', rotulo: 'Flores', fn: flores },
+    { id: 'lingua', ico: '👅', rotulo: 'Língua', fn: lingua }
+  ],
+  construir(c) {
+    ctx = c; scene = c.scene; renderer = c.renderer; camera = c.camera; controls = c.controls; MOBILE = c.MOBILE;
+    scene.background = new THREE.Color('#cfe3ef');
+    scene.fog = new THREE.Fog('#cfe3ef', 90, 260);
+    ground = new THREE.Mesh(new THREE.PlaneGeometry(520, 520), new THREE.MeshStandardMaterial({ map: gardenTexture(), roughness: 0.95, envMapIntensity: 0.4 }));
+    ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+    scene.add(ground);
+    buildGarden();
+    ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1.25, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false }));
+    ring.rotation.x = -Math.PI / 2;
+    scene.add(ring);
+    scene.add(bee);
+    bee.position.set(0, 0, 6);
+    state.yaw = 0.6;
+    bee.rotation.y = state.yaw;
+    vestir('operaria');
+    c.seguir = bee;
+    setTimeout(() => c.aviso('🌼 Toque numa flor e ela voa até lá!'), 1800);
+    window.__abelha = { state, bee, flyTo, FLORES, hive, goHiveStop, CASTES };   // para testes
+    return { grupo: bee, raio: radius, centro: bee.localToWorld(centerLocal.clone()) };
+  },
+  forma(id) {
+    if (id === 'colmeia') return enterHive();
+    if (hiveMode) leaveHive();
+    return switchCaste(id);
+  },
+  centroAtual: () => bee.localToWorld(centerLocal.clone()),
+  home(c) {
+    if (!hiveMode) return false;
+    goHiveStop(0);
+    c.cartao(hive.stops[0].em + ' ' + hive.stops[0].t, hive.stops[0].txt);
+    return true;
+  },
+  partesAtuais: () => (hiveMode ? partesColmeia() : partesAbelha()),
+  toqueCena,
+  update(dt, t) {
+    dt = Math.min(dt, 0.05);
+    if (hiveMode) { updateHive(dt, t); return; }
+    if (G) { updateBee(dt, t); updateParts(t, dt); }
+    if (camera.position.y < 1) camera.position.y = 1;
+    if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
+  }
+};
+})();
