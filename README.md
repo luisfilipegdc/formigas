@@ -34,6 +34,15 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 
 Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR ficam em `vendor/` e as fotos em `img/animais/`. Fora do site só ficam a fonte (se não carregar, aparece a fonte do aparelho) e os dados extras da aba 📷 Real.
 
+## Domínio encontreumbicho.com.br
+1. Pague o boleto do registro.br quando chegar (o domínio só funciona depois do pagamento).
+2. Na Vercel: projeto › **Settings › Domains** › adicione `encontreumbicho.com.br` e `www.encontreumbicho.com.br`. A Vercel mostra os registros de DNS que precisa.
+3. No registro.br: domínio › **DNS** › use os valores que a Vercel mostrou (registro A para `encontreumbicho.com.br` e CNAME para `www`), ou troque os servidores DNS para os da Vercel.
+4. Espere a Vercel mostrar "Valid Configuration" (de minutos a algumas horas). O certificado de segurança é criado sozinho.
+5. Na Vercel, faça `formigas-beta.vercel.app` redirecionar para o domínio novo.
+6. Abra `https://encontreumbicho.com.br/qr.html` e imprima o QR novo (ele usa o endereço onde a página foi aberta).
+7. Nos iPads: instale de novo o app pelo domínio novo (o app antigo fica preso ao endereço antigo, com as descobertas dele). Peça à TI da escola para liberar `encontreumbicho.com.br`.
+
 ## Usar sem internet (app na Tela de Início)
 O site funciona como um app (PWA). Na primeira vez que abre com internet, ele guarda tudo no aparelho: páginas, 3D e fotos (cerca de 4 MB). Depois abre mesmo sem internet, ou num Wi-Fi que bloqueia o endereço.
 - **iPad/iPhone:** abra no Safari (no 4G ou em casa) › **Compartilhar** › **Adicionar à Tela de Início**. O ícone 🐜🐝 3D abre o app em tela cheia.
