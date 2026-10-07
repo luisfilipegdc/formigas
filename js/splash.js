@@ -1,6 +1,6 @@
 /* =====================================================================
    splash.js — abertura e boas-vindas da página inicial
-   • 1º acesso: splash de ~3 s e depois "Olá, explorador!".
+   • 1º acesso: splash de ~4 s, com bichos passando, e depois "Olá, explorador!".
    • Próximos acessos: splash curta, com saudação e bichos encontrados.
    • Na mesma sessão (voltando de uma tela 3D): sem splash.
    Tocar na splash pula. Tudo fica só neste aparelho.
@@ -16,6 +16,8 @@
   const aberturas = +(guarda('eub-aberturas') || 0);
   guarda('eub-aberturas', aberturas + 1);
   const primeira = aberturas === 0;
+  // bichos que passam pela tela (js/splash-bichos.js)
+  if (typeof SplashBichos !== 'undefined') el.querySelector('.splash-centro').insertAdjacentHTML('beforebegin', SplashBichos.html(!primeira));
 
   // saudação: quantos bichos já foram encontrados neste aparelho (js/progresso.js)
   let encontrados = 0;
@@ -37,7 +39,7 @@
     setTimeout(() => { el.remove(); if (primeira) boasVindas(); }, 450);
   }
   el.addEventListener('click', fechar);
-  setTimeout(fechar, primeira ? 3400 : 1300);
+  setTimeout(fechar, primeira ? 4400 : 1500);
 
   function boasVindas() {
     const bv = document.createElement('div');

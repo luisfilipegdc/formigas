@@ -6,9 +6,9 @@
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden;
   background: radial-gradient(circle at 50% 40%, #2E7D32 0, #1B5E20 55%, #12451A 100%); color: #fff;
-  animation: sai .5s ease 3.6s forwards; cursor: pointer;
+  animation: sai .5s ease 4.6s forwards; cursor: pointer;
 }
-.splash.rapida { animation-delay: 1.2s; }
+.splash.rapida { animation-delay: 1.5s; }
 .splash.saindo { animation: sai .45s ease forwards; }
 @keyframes sai { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 
@@ -32,14 +32,101 @@
 .splash-folha:nth-of-type(4) { bottom: 8%; right: -10px; transform: rotate(-50deg); --dx: 60px; --dy: 40px; animation-delay: .2s; color: #7CC576; width: 90px; height: 90px; }
 @keyframes entra { from { opacity: 0; translate: var(--dx) var(--dy); } }
 
-/* joaninha que atravessa a tela */
-.splash-joaninha { position: absolute; z-index: 1; top: 22%; left: -60px; width: 44px; height: 44px; animation: voa 2.6s ease-in-out .5s both; }
-@keyframes voa {
-  0% { transform: translate(0, 0) rotate(20deg); opacity: 0; }
-  10% { opacity: 1; }
-  50% { transform: translate(55vw, -6vh) rotate(-10deg); }
-  100% { transform: translate(115vw, 4vh) rotate(25deg); opacity: 1; }
+/* ---------- bichos que passam (js/splash-bichos.js) ----------
+   .voo = caminho pela tela · .bal = balanço · partes = asas, pernas… */
+.voo { position: absolute; z-index: 1; left: 0; top: 0; will-change: transform; pointer-events: none; }
+.voo svg, .voo img { display: block; width: 100%; height: auto; overflow: visible; }
+.voo svg g { transform-box: fill-box; }
+.bal { will-change: transform; }
+
+/* girafa: caminha da direita para a esquerda, no chão */
+.voo-girafa { width: min(31vh, 270px); top: auto; bottom: -1vh; animation: girafa-caminho 4.8s linear both; }
+@keyframes girafa-caminho { from { transform: translateX(100vw); } to { transform: translateX(calc(100vw - min(31vh, 270px) - 10vw)); } }
+@media (max-width: 600px) {
+  .voo-girafa { width: min(24vh, 190px); animation-name: girafa-caminho-cel; }
+  @keyframes girafa-caminho-cel { from { transform: translateX(100vw); } to { transform: translateX(calc(100vw - min(24vh, 190px) * .78)); } }
 }
+.bal-girafa { animation: girafa-bal .45s ease-in-out infinite alternate; }
+@keyframes girafa-bal { to { transform: translateY(-3px); } }
+.sb-perna { transform-origin: 50% 0; animation: passo .9s ease-in-out infinite alternate; }
+.sb-perna-a, .sb-perna-b { animation-delay: -.9s; }
+@keyframes passo { from { transform: rotate(-13deg); } to { transform: rotate(13deg); } }
+.sb-pescoco { transform-origin: 100% 100%; animation: pescoco 1.8s ease-in-out infinite alternate; }
+@keyframes pescoco { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
+
+/* bem-te-vi: bate as asas, plana e ondula pelo alto */
+.voo-passaro { width: min(32vw, 160px); animation: passaro-caminho 3.2s ease-in-out .2s both; }
+.splash.rapida .voo-passaro { animation-duration: 1.6s; animation-delay: 0s; }
+@keyframes passaro-caminho {
+  0% { transform: translate(-30vw, 14vh) rotate(-6deg); }
+  30% { transform: translate(22vw, 8vh) rotate(4deg); }
+  55% { transform: translate(52vw, 13vh) rotate(-3deg); }
+  80% { transform: translate(84vw, 6vh) rotate(5deg); }
+  100% { transform: translate(125vw, 3vh) rotate(-4deg); }
+}
+.sb-asa { transform-origin: 90% 88%; animation: asa-passaro 1s ease-in-out infinite; }
+.sb-asa-fundo { animation-delay: -.04s; }
+@keyframes asa-passaro {
+  0%, 100% { transform: rotate(18deg); } 10% { transform: rotate(-62deg); } 20% { transform: rotate(18deg); }
+  30% { transform: rotate(-62deg); } 40% { transform: rotate(18deg); } 50% { transform: rotate(-58deg); }
+  62%, 90% { transform: rotate(-22deg); }
+}
+.bal-passaro { animation: bal-passaro 1s ease-in-out infinite; }
+@keyframes bal-passaro { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } 70% { transform: translateY(4px); } }
+
+/* borboleta: sobe da direita para a esquerda, em voo irregular */
+.voo-borboleta { width: min(26vw, 124px); animation: borboleta-caminho 4.6s ease-in-out both; }
+.splash.rapida .voo-borboleta { animation-duration: 1.8s; }
+@keyframes borboleta-caminho {
+  0% { transform: translate(100vw, 76vh) rotate(-25deg); }
+  16% { transform: translate(82vw, 60vh) rotate(-40deg); }
+  28% { transform: translate(76vw, 66vh) rotate(-12deg); }
+  44% { transform: translate(56vw, 46vh) rotate(-45deg); }
+  56% { transform: translate(49vw, 53vh) rotate(-15deg); }
+  74% { transform: translate(26vw, 32vh) rotate(-40deg); }
+  86% { transform: translate(16vw, 36vh) rotate(-18deg); }
+  100% { transform: translate(-25vw, 14vh) rotate(-35deg); }
+}
+.sb-asa-e { transform-origin: 100% 50%; animation: borboleta-asa .19s ease-in-out infinite alternate; }
+.sb-asa-d { transform-origin: 0% 50%; animation: borboleta-asa .19s ease-in-out infinite alternate; }
+@keyframes borboleta-asa { from { transform: scaleX(1); } to { transform: scaleX(.22); } }
+.bal-borboleta { animation: bal-borboleta .7s ease-in-out infinite; }
+@keyframes bal-borboleta { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(3px, -7px); } 60% { transform: translate(-3px, 5px); } }
+
+/* abelha: zigue-zague com paradas no ar, como quem procura flores */
+.voo-abelha { width: min(19vw, 88px); animation: abelha-caminho 4.4s ease-in-out .3s both; }
+@keyframes abelha-caminho {
+  0% { transform: translate(-15vw, 40vh); }
+  18% { transform: translate(16vw, 33vh) rotate(-8deg); }
+  26% { transform: translate(19vw, 37vh) rotate(6deg); }
+  34% { transform: translate(15vw, 35vh) rotate(-4deg); }
+  42% { transform: translate(18vw, 34vh) rotate(4deg); }
+  58% { transform: translate(52vw, 26vh) rotate(-10deg); }
+  66% { transform: translate(55vw, 30vh) rotate(6deg); }
+  74% { transform: translate(51vw, 28vh) rotate(-4deg); }
+  100% { transform: translate(118vw, 20vh) rotate(-8deg); }
+}
+.sb-asa-abelha { transform-origin: 15% 95%; animation: zumbe .05s linear infinite alternate; }
+@keyframes zumbe { from { transform: rotate(-16deg); opacity: .95; } to { transform: rotate(18deg); opacity: .55; } }
+.bal-abelha { animation: bal-abelha .24s ease-in-out infinite alternate; }
+@keyframes bal-abelha { to { transform: translateY(-3px); } }
+
+/* joaninha: anda um pouco, abre a carapaça e sai voando */
+.voo-joaninha { width: min(15vw, 68px); animation: joaninha-caminho 4.4s ease-in both; }
+@keyframes joaninha-caminho {
+  0% { transform: translate(5vw, 82vh) rotate(-12deg); }
+  52% { transform: translate(19vw, 77vh) rotate(-18deg); }
+  60% { transform: translate(20vw, 76vh) rotate(-25deg); }
+  100% { transform: translate(72vw, 18vh) rotate(-42deg); }
+}
+.sb-pernas { animation: pernas .16s linear infinite alternate; }
+@keyframes pernas { to { transform: translateX(1.5px) skewX(6deg); } }
+.sb-elitro-a { transform-origin: 100% 100%; animation: elitro-a 4.4s ease both; }
+.sb-elitro-b { transform-origin: 100% 0%; animation: elitro-b 4.4s ease both; }
+@keyframes elitro-a { 0%, 54% { transform: rotate(0); } 62%, 100% { transform: rotate(-30deg); } }
+@keyframes elitro-b { 0%, 54% { transform: rotate(0); } 62%, 100% { transform: rotate(30deg); } }
+.sb-asas-voo { opacity: 0; animation: asas-joaninha 4.4s linear both; }
+@keyframes asas-joaninha { 0%, 57% { opacity: 0; } 60%, 100% { opacity: 1; } }
 
 /* boas-vindas do primeiro acesso */
 .boas-vindas { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(18, 69, 26, .55); }
@@ -55,5 +142,5 @@
 @media (prefers-reduced-motion: reduce) {
   .splash, .splash.rapida { animation: sai .3s ease .8s forwards; }
   .splash *, .boas-vindas .caixa { animation: none !important; }
-  .splash-joaninha { display: none; }
+  .voo { display: none; }
 }
