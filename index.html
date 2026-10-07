@@ -15,111 +15,140 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink: #4a2a12; }
+  :root {
+    --ink: #4a2a12; --ink2: rgba(74,42,18,.72); --mel: #ffd23f; --papel: #fffaf0;
+    --sombra: 0 8px 0 rgba(74,42,18,.10), 0 14px 26px rgba(74,42,18,.12);
+    --raio: 26px;
+  }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; min-height: 100%;
     font-family: 'Baloo 2', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; color: var(--ink);
-    background:
-      radial-gradient(circle at 10% 8%, rgba(255,255,255,.75) 0 60px, transparent 62px),
-      radial-gradient(circle at 92% 5%, rgba(255,255,255,.6) 0 44px, transparent 46px),
-      linear-gradient(#fff6d6, #ffe0ad);
-    background-attachment: fixed;
+    background: linear-gradient(#fff6d6, #ffe7b8 60%, #ffdca6); background-attachment: fixed;
   }
   main {
     max-width: 1180px; margin: 0 auto;
-    padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    display: flex; flex-direction: column; min-height: 100vh;
+    padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   }
-  header { text-align: center; }
-  h1 { margin: 4px 0 0; font-size: clamp(30px, 6vw, 60px); font-weight: 800; line-height: 1.05; }
-  h1 .bug { display: inline-block; animation: anda 2.6s ease-in-out infinite; }
-  @keyframes anda { 0%,100% { transform: translateX(-5px) rotate(-8deg); } 50% { transform: translateX(5px) rotate(8deg); } }
-  .sub { margin: 2px 0 14px; font-size: clamp(16px, 2.3vw, 22px); font-weight: 600; opacity: .8; }
-  .search { display: flex; justify-content: center; margin-bottom: 10px; }
-  .search input {
-    width: min(560px, 100%); font: inherit; font-size: 18px; padding: 10px 20px; border-radius: 999px;
-    border: 4px solid #fff; background: rgba(255,255,255,.85); color: var(--ink); outline: none;
-    box-shadow: 0 6px 0 rgba(74,42,18,.1);
+  /* ---------- topo ---------- */
+  .topo { display: flex; align-items: center; gap: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+  .marca .ic { width: 52px; height: 52px; border-radius: 16px; flex: none; box-shadow: 0 4px 0 rgba(74,42,18,.12); }
+  .marca h1 { margin: 0; font-size: clamp(22px, 3.4vw, 34px); line-height: 1; font-weight: 800; }
+  .marca p { margin: 2px 0 0; font-size: clamp(14px, 1.7vw, 17px); font-weight: 600; color: var(--ink2); line-height: 1.2; }
+  .acoes { display: flex; gap: 8px; flex: none; }
+  .pilula { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; font-weight: 800; font-size: 16px; box-shadow: 0 4px 0 rgba(74,42,18,.10); white-space: nowrap; }
+  .pilula.suave { background: rgba(255,255,255,.6); }
+  /* ---------- seções ---------- */
+  h2 { margin: 22px 4px 10px; font-size: clamp(20px, 2.6vw, 26px); line-height: 1.1; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 small { font-size: 15px; font-weight: 600; color: var(--ink2); }
+  /* ---------- destaque 3D ---------- */
+  .destaque { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+  .exp {
+    position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: clamp(250px, 32vw, 340px);
+    border-radius: 30px; overflow: hidden; color: #fff; text-decoration: none; isolation: isolate;
+    border: 5px solid #fff; box-shadow: var(--sombra); background: #6b4a2a; transition: transform .15s ease;
   }
-  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: none; justify-content: safe center; }
+  .exp:active { transform: scale(.97); }
+  .exp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .exp::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(30,15,5,.45) 55%, rgba(30,15,5,.85) 100%); }
+  .exp .selo { position: absolute; top: 14px; left: 14px; background: var(--mel); color: var(--ink); font-weight: 800; font-size: 15px; border-radius: 999px; padding: 3px 12px; }
+  .exp .corpo { padding: 16px 18px 18px; }
+  .exp h3 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+  .exp i { display: block; font-size: 15px; opacity: .85; margin-top: 2px; }
+  .exp ul { list-style: none; margin: 10px 0 12px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .exp li { background: rgba(255,255,255,.2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: 999px; padding: 1px 10px; font-size: 14px; font-weight: 800; }
+  .exp .bts { display: flex; gap: 8px; align-items: center; }
+  .exp .ir { flex: 1; text-align: center; background: var(--mel); color: var(--ink); border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 19px; box-shadow: 0 4px 0 rgba(0,0,0,.2); }
+  .exp .fi { flex: none; width: 50px; height: 50px; border-radius: 50%; border: 0; background: #fff; font-size: 22px; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.2); }
+  .exp .prog { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,.92); color: var(--ink); border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: 14px; }
+  /* ---------- filtros ---------- */
+  .filtros { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .filtros input {
+    flex: 1 1 260px; min-width: 0; font: inherit; font-size: 17px; padding: 9px 18px; min-height: 48px; border-radius: 999px;
+    border: 3px solid #fff; background: rgba(255,255,255,.85); color: var(--ink); outline: none;
+  }
+  .filtros input:focus { border-color: var(--mel); }
+  .chips { flex: 1 1 100%; display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chips button {
-    flex: none; font: inherit; font-size: 17px; font-weight: 800; color: var(--ink); cursor: pointer;
-    border: 3px solid #fff; background: rgba(255,255,255,.7); border-radius: 999px; padding: 4px 14px;
+    flex: none; font: inherit; font-size: 16px; font-weight: 800; color: var(--ink); cursor: pointer; min-height: 44px;
+    border: 3px solid #fff; background: rgba(255,255,255,.6); border-radius: 999px; padding: 0 14px;
   }
-  .chips button.on { background: #ffd23f; }
-  .grid { display: grid; gap: clamp(12px, 2vw, 22px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); }
+  .chips button.on { background: var(--mel); border-color: var(--mel); }
+  @media (min-width: 900px) { .chips { flex: 0 1 auto; } .filtros input { flex: 0 1 300px; } }
+  /* ---------- galeria de fichas ---------- */
+  .grid { display: grid; gap: clamp(10px, 1.6vw, 18px); grid-template-columns: repeat(auto-fill, minmax(min(46%, 210px), 1fr)); }
   .card {
-    position: relative; display: flex; flex-direction: column; border-radius: 32px; border: 5px solid #fff;
-    background: var(--bg); color: var(--ink); text-decoration: none; overflow: hidden; cursor: pointer;
-    box-shadow: 0 10px 0 rgba(74,42,18,.12), 0 16px 28px rgba(74,42,18,.14); transition: transform .14s ease; text-align: left;
-    font: inherit; padding: 0;
+    position: relative; display: flex; flex-direction: column; text-align: left; padding: 0; font: inherit; color: var(--ink); cursor: pointer;
+    border-radius: var(--raio); border: 4px solid #fff; background: var(--papel); overflow: hidden; box-shadow: var(--sombra); transition: transform .14s ease;
   }
   .card:active { transform: scale(.96); }
-  .card .pic { height: 170px; display: grid; place-items: center; position: relative; overflow: hidden; }
-  .card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s; }
+  .card .pic { position: relative; aspect-ratio: 4 / 3; background: var(--bg); display: grid; place-items: center; overflow: hidden; }
+  .card .pic span { font-size: 64px; line-height: 1; }
+  .card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
   .card .pic.foto img { opacity: 1; }
-  .card .pic.foto span { position: absolute; left: 8px; bottom: 6px; font-size: 40px; animation: none; z-index: 1; }
-  .card .pic small { position: absolute; right: 0; bottom: 0; max-width: 100%; font-size: 10px; line-height: 1.2; padding: 2px 8px; background: rgba(0,0,0,.45); color: #fff; border-top-left-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; display: none; }
-  .card .pic.foto small { display: block; }
-  .card .pic span { font-size: 108px; line-height: 1; filter: drop-shadow(0 8px 8px rgba(0,0,0,.18)); animation: flutua 3s ease-in-out infinite; }
-  @keyframes flutua { 50% { transform: translateY(-8px) rotate(4deg); } }
-  .card .txt { background: rgba(255,255,255,.72); padding: 10px 16px 14px; flex: 1; display: flex; flex-direction: column; }
-  .card .nm { font-size: 27px; font-weight: 800; line-height: 1.05; }
-  .card .sci { font-size: 15px; font-style: italic; opacity: .7; }
-  .card .res { font-size: 16px; line-height: 1.3; margin: 6px 0 8px; }
-  .card .facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
-  .card .facts b { background: #fff; border-radius: 999px; padding: 1px 10px; font-size: 14px; }
-  .card .go { position: absolute; top: 12px; right: 12px; background: #fff; border-radius: 999px; padding: 2px 12px; font-weight: 800; font-size: 15px; }
-  .card .go.d3 { background: #ffd23f; }
-  .card .stars { font-size: 13px; letter-spacing: 1px; margin-top: 6px; opacity: .85; }
-  .card .fi { position: absolute; top: 10px; left: 10px; z-index: 2; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,.15); }
-  .top { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
-  .top a, .top span { font-weight: 800; font-size: 17px; color: var(--ink); text-decoration: none; background: #fff; border-radius: 999px; padding: 6px 16px; box-shadow: 0 4px 0 rgba(74,42,18,.1); }
-  .top span { background: rgba(255,255,255,.6); }
-  .offline { background: rgba(255,255,255,.75); border-radius: 18px; padding: 8px 14px; margin: 0 auto 12px; max-width: 560px; font-size: 16px; opacity: 1; }
-  .offline button { font: inherit; font-weight: 800; background: #ffd23f; border: 0; border-radius: 999px; padding: 6px 16px; cursor: pointer; text-decoration: none; }
-  footer button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
-  .empty { text-align: center; font-size: 20px; padding: 30px; opacity: .7; }
-  footer { margin-top: auto; padding-top: 26px; font-size: 15px; opacity: .75; text-align: center; line-height: 1.5; }
+  .card .tag { position: absolute; top: 8px; left: 8px; border-radius: 999px; padding: 1px 9px; font-size: 13px; font-weight: 800; background: rgba(255,255,255,.92); }
+  .card .tag.d3 { background: var(--mel); }
+  .card .estrela { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 1px 8px; font-size: 13px; font-weight: 800; background: rgba(255,255,255,.92); }
+  .card .txt { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 2px; flex: 1; background: linear-gradient(var(--bg), var(--papel) 70%); }
+  .card .nm { font-size: clamp(18px, 2.2vw, 22px); font-weight: 800; line-height: 1.1; }
+  .card .sci { font-size: 13px; font-style: italic; color: var(--ink2); line-height: 1.2; }
+  .card .res { font-size: 15px; line-height: 1.3; margin: 4px 0 6px; }
+  .card .facts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; font-size: 13px; font-weight: 800; color: var(--ink2); }
+  .empty { text-align: center; font-size: 19px; padding: 26px; color: var(--ink2); }
+  /* ---------- rodapé ---------- */
+  footer { margin-top: 30px; text-align: center; font-size: 15px; line-height: 1.5; color: var(--ink2); }
   footer a { color: inherit; }
-  @media (max-width: 520px) {
-    h1 { font-size: 27px; }
-    h1 .bug:first-child { display: none; }
-    .sub { font-size: 15px; margin-bottom: 10px; }
-    .search input { font-size: 17px; padding: 7px 16px; }
-    .top { flex-wrap: nowrap; }
-    .top a, .top span { font-size: 15px; padding: 4px 12px; white-space: nowrap; }
-    .card { flex-direction: row; border-radius: 24px; min-height: 0; }
-    .card .pic { height: auto; min-height: 128px; width: 118px; flex: none; }
-    .card .pic span { font-size: 62px; }
-    .card .pic.foto span { font-size: 30px; left: 4px; bottom: 4px; }
-    .card .pic small { display: none !important; }
-    .card .fi { top: auto; bottom: 8px; left: auto; right: 8px; width: 40px; height: 40px; }
-    .card .facts b:nth-child(2) { display: none; }
-    .card .nm { font-size: 22px; }
-    .card .res { font-size: 15px; margin: 2px 0 6px; }
-    .card .go { position: static; align-self: flex-start; margin-bottom: 4px; font-size: 13px; }
+  footer button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
+  .offline { background: rgba(255,255,255,.75); border-radius: 18px; padding: 8px 14px; margin: 0 auto 12px; max-width: 560px; font-size: 16px; color: var(--ink); }
+  .offline button { font: inherit; font-weight: 800; background: var(--mel); border: 0; border-radius: 999px; padding: 6px 16px; cursor: pointer; text-decoration: none; }
+  .creditos { max-width: 760px; margin: 10px auto 0; text-align: left; background: rgba(255,255,255,.55); border-radius: 18px; padding: 8px 14px; }
+  .creditos summary { cursor: pointer; font-weight: 800; text-align: center; }
+  .creditos ul { columns: 2 260px; margin: 8px 0 4px; padding-left: 18px; font-size: 13px; line-height: 1.35; }
+  /* ---------- celular ---------- */
+  @media (max-width: 600px) {
+    .marca .ic { width: 44px; height: 44px; border-radius: 13px; }
+    .marca p { display: none; }
+    .pilula { padding: 0 12px; font-size: 15px; }
+    .pilula .longo { display: none; }
+    .exp { min-height: 210px; border-radius: 26px; }
+    .exp ul li:nth-child(n+4) { display: none; }
+    .card .res { display: none; }
+    .card .pic span { font-size: 48px; }
+    .card .txt { padding: 6px 10px 10px; }
   }
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <h1><span class="bug">🐜</span> Catálogo 3D de Animais <span class="bug">🐝</span></h1>
-    <p class="sub">Escolha um animal para explorar em 3D e conhecer a vida dele!</p>
+  <header class="topo">
+    <div class="marca">
+      <img class="ic" src="img/icone/icone-192.png" alt="">
+      <div><h1>Catálogo 3D de Animais</h1><p>Explore em 3D, veja fotos reais e conheça a vida dos animais.</p></div>
+    </div>
+    <nav class="acoes">
+      <a class="pilula" href="comparar.html">⚖️<span class="longo"> Comparar</span></a>
+      <span class="pilula suave" id="album" aria-live="polite">🏅 0</span>
+    </nav>
   </header>
-  <div class="search"><input id="q" type="search" placeholder="🔎 Procurar animal…" aria-label="Procurar animal"></div>
-  <div class="top"><a href="comparar.html">⚖️ Comparar bichos</a><span id="album">🏅 0 descobertas</span></div>
-  <div class="chips" id="chips"></div>
+
+  <h2>🧊 Explore em 3D <small>Gire com um dedo, dê zoom com dois.</small></h2>
+  <section class="destaque" id="destaque"></section>
+
+  <h2>📋 Fichas dos animais <small>Fotos reais, ciclo de vida e curiosidades.</small></h2>
+  <div class="filtros">
+    <input id="q" type="search" placeholder="🔎 Procurar animal…" aria-label="Procurar animal">
+    <div class="chips" id="chips" role="group" aria-label="Grupos de animais"></div>
+  </div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" hidden>Nenhum animal encontrado 🐾</div>
+
   <footer>
     <p id="offline" class="offline" hidden></p>
-    Grátis, sem anúncios e sem coleta de dados. Gire com um dedo e dê zoom com dois.<br>
-    Fotos reais do <b>iNaturalist</b>, com o nome de cada fotógrafo e licença Creative Commons (CC0, CC BY, CC BY-SA).<br>
+    Grátis, sem anúncios e sem coleta de dados.<br>
     <a href="qr.html">🖨️ QR code para imprimir</a> · <button id="apagar">apagar minhas descobertas</button>
+    <details class="creditos"><summary>📷 Créditos das fotos (iNaturalist)</summary><ul id="creditos"></ul></details>
   </footer>
 </main>
 <script src="js/catalogo.js"></script>
@@ -129,79 +158,79 @@
 <script>
 (function () {
   let grupo = 'todos';
-  const q = document.getElementById('q'), grid = document.getElementById('grid'), chips = document.getElementById('chips');
+  const $ = (s) => document.getElementById(s);
+  const q = $('q'), grid = $('grid'), chips = $('chips');
   const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const foto = (A, el, grande) => Dados.foto(A).then((f) => {
+    const img = el.querySelector('img');
+    img.onload = () => el.classList.add('foto');
+    img.alt = 'Foto de ' + A.nome;
+    img.src = grande ? f.url : (f.mini || f.url);
+  }).catch(() => {});
+
+  // destaque: as experiências 3D, grandes, no topo
+  ANIMAIS.filter((A) => A.pagina).forEach((A) => {
+    const el = document.createElement('a');
+    el.className = 'exp'; el.href = A.pagina; el.dataset.id = A.id;
+    el.setAttribute('aria-label', A.nome + ': explorar em 3D');
+    el.innerHTML = '<img alt=""><span class="selo">🧊 3D</span><span class="prog" hidden></span><div class="corpo"><h3>' + A.nome + '</h3><i>' + A.cientifico + '</i>' +
+      '<ul>' + (A.destaques || []).map((d) => '<li>' + d + '</li>').join('') + '</ul>' +
+      '<div class="bts"><span class="ir">▶ Explorar em 3D</span><button class="fi" type="button" aria-label="Ficha: ' + A.nome + '">ℹ️</button></div></div>';
+    el.querySelector('.fi').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); Ficha.abrir(A.id); });
+    $('destaque').appendChild(el);
+    foto(A, el, true);
+  });
+
   GRUPOS.forEach((g) => {
     const b = document.createElement('button');
-    b.textContent = g.emoji + ' ' + g.nome;
-    b.dataset.g = g.id;
+    b.type = 'button'; b.textContent = g.emoji + ' ' + g.nome; b.dataset.g = g.id;
     b.addEventListener('click', () => { grupo = g.id; render(); });
     chips.appendChild(b);
   });
-  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-  function estrelas(A) {
-    const c = Progresso.conta(A);
-    return '⭐'.repeat(c.feitas) + '☆'.repeat(c.total - c.feitas);
-  }
-  function abrirCard(A) {
-    if (A.pagina) location.href = A.pagina;
-    else Ficha.abrir(A.id);
-  }
+
+  // galeria: todos os animais; tocar abre a ficha
   function render() {
     chips.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.g === grupo));
     const t = norm(q.value.trim());
     const list = ANIMAIS.filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
       (!t || norm(a.nome + ' ' + a.cientifico + ' ' + (a.resumo || '')).includes(t)));
-    list.sort((a, b) => (b.pagina ? 1 : 0) - (a.pagina ? 1 : 0));
     grid.innerHTML = '';
     list.forEach((a) => {
-      const el = document.createElement(a.pagina ? 'a' : 'button');
-      el.className = 'card';
-      el.dataset.id = a.id;
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'card'; el.dataset.id = a.id;
       el.style.setProperty('--bg', a.cor);
-      if (a.pagina) el.href = a.pagina; else el.type = 'button';
-      el.setAttribute('aria-label', a.nome + (a.pagina ? ': ver em 3D' : ': ver ficha'));
-      const r = a.rapido;
-      el.innerHTML = '<div class="pic"><img alt=""><span>' + a.emoji + '</span><small></small></div><div class="txt">' +
-        '<span class="go' + (a.pagina ? ' d3' : '') + '">' + (a.pagina ? '▶ ver em 3D' : '📋 ver ficha · 3D em breve') + '</span>' +
-        '<div class="nm">' + a.nome + '</div><div class="sci">' + a.cientifico + '</div>' +
+      el.setAttribute('aria-label', a.nome + ': ver ficha');
+      const r = a.rapido || {};
+      el.innerHTML = '<div class="pic"><img alt=""><span>' + a.emoji + '</span>' +
+        (a.pagina ? '<b class="tag d3">🧊 3D</b>' : '') + '<b class="estrela" hidden></b></div>' +
+        '<div class="txt"><div class="nm">' + a.nome + '</div><div class="sci">' + a.cientifico + '</div>' +
         '<div class="res">' + (a.resumo || '') + '</div>' +
-        (r ? '<div class="facts"><b>📏 ' + r.tamanho + '</b><b>📍 ' + r.onde + '</b><b>🍽️ ' + r.come + '</b></div>' : '') +
-        '<div class="stars" aria-label="Descobertas">' + estrelas(a) + '</div></div>';
-      if (a.pagina) {
-        // nas páginas 3D, o botão ℹ️ abre a ficha sem sair do catálogo
-        const fi = document.createElement('button');
-        fi.className = 'fi'; fi.type = 'button'; fi.textContent = 'ℹ️'; fi.setAttribute('aria-label', 'Ficha: ' + a.nome);
-        fi.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); Ficha.abrir(a.id); });
-        el.appendChild(fi);
-      } else el.addEventListener('click', () => abrirCard(a));
+        '<div class="facts"><span>📏 ' + (r.tamanho || '') + '</span><span>🍽️ ' + (r.come || '') + '</span></div></div>';
+      el.addEventListener('click', () => Ficha.abrir(a.id));
       grid.appendChild(el);
-      Dados.foto(a).then((f) => {
-        const pic = el.querySelector('.pic'), img = pic.querySelector('img');
-        img.onload = () => pic.classList.add('foto');
-        img.alt = 'Foto de ' + a.nome;
-        img.src = f.mini || f.url;
-        pic.querySelector('small').textContent = '📷 ' + f.autor;
-      }).catch(() => {});
+      foto(a, el.querySelector('.pic'));
     });
-    document.getElementById('empty').hidden = list.length > 0;
-    album();
+    $('empty').hidden = list.length > 0;
+    atualizar();
   }
-  function album() {
-    const n = Progresso.total();
-    document.getElementById('album').textContent = '🏅 ' + n + (n === 1 ? ' descoberta' : ' descobertas');
-  }
-  document.getElementById('apagar').addEventListener('click', () => {
-    if (confirm('Apagar todas as descobertas deste aparelho?')) { Progresso.apagar(); render(); }
-  });
-  // ao fechar a ficha (ou voltar de uma página 3D), atualiza as estrelas
+  // progresso: só aparece quando já tem alguma descoberta (nada de estrelas vazias)
   function atualizar() {
-    grid.querySelectorAll('.card').forEach((el) => {
-      const a = ANIMAIS.find((x) => x.id === el.dataset.id);
-      el.querySelector('.stars').textContent = estrelas(a);
+    document.querySelectorAll('[data-id]').forEach((el) => {
+      const a = ANIMAIS.find((x) => x.id === el.dataset.id), c = Progresso.conta(a);
+      const s = el.querySelector('.estrela, .prog');
+      s.hidden = !c.feitas; s.textContent = '⭐ ' + c.feitas + '/' + c.total;
     });
-    album();
+    const n = Progresso.total();
+    $('album').textContent = '🏅 ' + n;
+    $('album').title = n + (n === 1 ? ' descoberta' : ' descobertas');
+    $('album').setAttribute('aria-label', $('album').title);
   }
+  $('creditos').innerHTML = ANIMAIS.flatMap((a) => (a.fotos || []).map((f) =>
+    '<li>' + esc(a.nome) + ' (<i>' + esc(f.especie) + '</i>): ' + esc(f.autor) + ', ' + esc(f.lic) + '</li>')).join('');
+  $('apagar').addEventListener('click', () => {
+    if (confirm('Apagar todas as descobertas deste aparelho?')) { Progresso.apagar(); atualizar(); }
+  });
   document.addEventListener('ficha-fechou', atualizar);
   window.addEventListener('pageshow', (e) => { if (e.persisted) atualizar(); });
   q.addEventListener('input', render);

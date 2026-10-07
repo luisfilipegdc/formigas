@@ -11,6 +11,7 @@
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
                   pequena "-1p.jpg" para os cartões); autor e licença aparecem no site
+     destaques  → (só animais com 3D) o que dá para explorar, no destaque do catálogo
      busca      → nome usado para buscar foto e dados reais no iNaturalist
      wiki       → título do artigo na Wikipédia em português
      comp       → dados do comparador (mm = tamanho típico em milímetros,
@@ -38,6 +39,7 @@ const ANIMAIS = [
       { arquivo: 'img/animais/formiga-3.jpg', autor: 'Eduardo A. Bolaños Vargas', lic: 'CC BY', especie: 'Atta cephalotes', inat: 97972791 }
     ],
     busca: 'Atta', wiki: 'Saúva', visita: ['🏠', 'Visitou o formigueiro'],
+    destaques: ['🐜 operária', '👑 rainha', '🪽 zangão', '🏠 formigueiro por dentro'],
     rapido: { tamanho: '2 a 15 mm', onde: 'Américas', come: 'Fungo' },
     comp: { mm: 10, tam: '2 a 15 mm (operária)', igual: 'um grão de arroz', dieta: 'fungo', come: 'Um fungo que elas plantam em pedaços de folha.', vive: 'Operária: meses · Rainha: mais de 10 anos', social: 'Colônias de milhões', casa: 'Formigueiro debaixo da terra', tax: ['Arthropoda', 'Insecta', 'Hymenoptera', 'Formicidae'], iucn: null },
     ficha: [
@@ -90,6 +92,7 @@ const ANIMAIS = [
       { arquivo: 'img/animais/abelha-3.jpg', autor: 'Michel Langeveld', lic: 'CC BY-SA', especie: 'Apis mellifera', inat: 96754126 }
     ],
     busca: 'Apis mellifera', wiki: 'Apis mellifera', visita: ['🍯', 'Visitou a colmeia'],
+    destaques: ['🐝 operária', '👑 rainha', '👀 zangão', '🍯 colmeia por dentro', '🌼 voa nas flores'],
     rapido: { tamanho: '12 a 20 mm', onde: 'Mundo todo', come: 'Néctar e pólen' },
     comp: { mm: 13, tam: '12 a 20 mm', igual: 'uma unha de adulto', dieta: 'nectar', come: 'Néctar (que vira mel) e pólen das flores.', vive: 'Operária: 6 semanas · Rainha: 2 a 5 anos', social: 'Colmeias de 20 a 80 mil', casa: 'Colmeia com favos de cera', tax: ['Arthropoda', 'Insecta', 'Hymenoptera', 'Apidae'], iucn: null },
     ficha: [

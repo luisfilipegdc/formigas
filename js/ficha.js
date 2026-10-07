@@ -55,6 +55,7 @@ const Ficha = (function () {
   .ficha .arvore small { font-size: 13px; font-weight: 800; opacity: .6; width: 62px; flex: none; }
   .ficha .arvore span { font-size: 16px; line-height: 1.25; }
   .ficha .arvore i { opacity: .7; }
+  .ficha .btn:first-child { margin-top: 2px; }
   .ficha .btn { display: block; text-align: center; text-decoration: none; background: #ffd23f; color: #4a2a12; border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 18px; margin: 14px 0 6px; }
   .ficha details { background: #fff; border-radius: 18px; padding: 10px 14px; margin-top: 12px; box-shadow: 0 3px 0 #f0e2c4; }
   .ficha summary { font-weight: 800; font-size: 16px; cursor: pointer; }
@@ -129,6 +130,8 @@ const Ficha = (function () {
     let h = '';
     if (aba === 'ficha') {
       const C = A.castas && casta && A.castas[casta];
+      // no catálogo, leva para a experiência 3D (dentro dela, não precisa)
+      if (A.pagina && !location.pathname.endsWith('/' + A.pagina)) h += '<a class="btn" href="' + A.pagina + '">▶ Explorar ' + A.nome + ' em 3D</a>';
       if (C) h += '<div class="casta"><h3>' + C.emoji + ' ' + C.nome + '</h3>' + linhas(C.linhas) + '</div>';
       h += linhas(A.ficha);
     } else if (aba === 'vida') {

@@ -3,7 +3,7 @@
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
 ## Páginas
-- `index.html`: catálogo com busca, filtros por grupo, **fotos reais** e álbum de descobertas (⭐). Todo cartão abre a ficha; os que têm 3D abrem a tela 3D (ℹ️ abre a ficha sem sair do catálogo).
+- `index.html`: catálogo. No topo, o destaque **🧊 Explore em 3D** (formiga e abelha); embaixo, a galeria de **fichas** com fotos reais, busca e filtros. Tocar num cartão abre a ficha; bichos com 3D têm o botão "▶ Explorar em 3D" na ficha. Créditos das fotos no rodapé.
 - `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
 - `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
@@ -13,6 +13,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - `img/animais/`: **fotos reais** de cada bicho (3 por animal), tiradas do iNaturalist, só com licenças que permitem qualquer uso (CC0, CC BY e CC BY-SA). O nome do fotógrafo e a licença aparecem no site e estão em `fotos` no `catalogo.js`. Como ficam no próprio site, aparecem sempre, mesmo sem internet.
 - `js/dados.js`: fotos e dados reais do **iNaturalist** e da **Wikipédia** (sem chave, sem cadastro). Fica guardado no aparelho por 14 dias; sem internet, o site usa os emojis.
 - `js/progresso.js`: álbum de descobertas, guardado só no aparelho (dá para apagar no rodapé do catálogo).
+- `docs/PILOTO.md`: kit para testar com turmas e propor um piloto pago (roteiro de aula, perguntas para o professor, autorizações).
 - `docs/ESTRATEGIA.md`: design comportamental, crítica de UX/UI, APIs, monetização ética e recomendações de tecnologia 3D.
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
@@ -59,3 +60,12 @@ No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a veloc
 
 ## Celular
 Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra embaixo) e o 3D fica mais leve (menos pelos e sombras menores).
+
+## Organização do código da formiga
+
+- `formiga.html`: somente estrutura da tela e carregamento dos scripts.
+- `css/formiga.css`: estilos exclusivos da experiência da saúva.
+- `js/formiga.js`: lógica da experiência 3D da saúva (modelo, animações, formigueiro e controles).
+- `js/core3d.js`: utilidades 3D compartilhadas pelas experiências que já usam o núcleo comum.
+
+A separação é estática: não exige npm, build ou backend e continua adequada para deploy direto na Vercel.

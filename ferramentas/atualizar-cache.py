@@ -9,7 +9,7 @@ qualquer mudança faz os aparelhos baixarem a versão nova.
 import hashlib, pathlib, re
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-INCLUIR = ['*.html', 'manifest.webmanifest', 'js/*.js', 'vendor/**/*.js', 'img/**/*.png', 'img/**/*.jpg']
+INCLUIR = ['*.html', 'manifest.webmanifest', 'css/*.css', 'js/*.js', 'vendor/**/*.js', 'img/**/*.png', 'img/**/*.jpg']
 arquivos = sorted({p.relative_to(RAIZ).as_posix() for pad in INCLUIR for p in RAIZ.glob(pad) if p.is_file()})
 h = hashlib.sha1()
 for a in arquivos:
