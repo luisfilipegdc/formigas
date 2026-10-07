@@ -41,7 +41,7 @@ const ANIMAIS = [
     id: 'formiga', nome: 'Formiga-saúva', cientifico: 'Atta spp.', grupo: 'insetos', emoji: '🐜', cor: '#ffd3c2',
     silencio: 'Formigas quase não fazem som: elas conversam pelo cheiro!',
     curto: 'formiga', pista: 'Eu ando em fila carregando pedacinhos de folha.', procurar: 'Trilhas no chão do jardim ou da calçada.',
-    pagina: 'formiga.html',
+    pagina: 'bicho3d.html?id=formiga',
     resumo: 'A cortadeira que planta um jardim de fungo debaixo da terra.',
     fotos: [
       { arquivo: 'img/animais/formiga-1.jpg', autor: 'Juan Cruzado Cortés', lic: 'CC BY-SA', especie: 'Atta mexicana', inat: 2911140 },
@@ -95,7 +95,7 @@ const ANIMAIS = [
   {
     id: 'abelha', nome: 'Abelha-europeia', cientifico: 'Apis mellifera', grupo: 'insetos', emoji: '🐝', cor: '#ffe58a',
     curto: 'abelha', pista: 'Eu visito flores e faço zum-zum.', procurar: 'Perto de flores, nas horas de sol.',
-    pagina: 'abelha.html',
+    pagina: 'bicho3d.html?id=abelha',
     resumo: 'A abelha do mel, que poliniza flores e vive em colmeias.',
     fotos: [
       { arquivo: 'img/animais/abelha-1.jpg', autor: 'Cole Shoemaker', lic: 'CC BY', especie: 'Apis mellifera', inat: 117869766 },

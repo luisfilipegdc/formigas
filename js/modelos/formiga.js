@@ -1,16 +1,14 @@
+/* =====================================================================
+   modelos/formiga.js — formiga-saúva (Atta) no motor bicho3d
+   Operária (com a folha), rainha e zangão (com voo nupcial) e o
+   formigueiro em corte com passeio. A escultura, o comportamento e o
+   formigueiro vieram da página antiga (js/formiga.js), agora usando a
+   interface padrão do Modo Explorar. Unidades = mm. Y para cima.
+   ===================================================================== */
 (function () {
 'use strict';
-
-if (!window.THREE || !THREE.OrbitControls || !THREE.triTable) {
-  document.getElementById('loading').style.display = 'none';
-  const f = document.getElementById('fail');
-  f.style.display = 'grid';
-  f.onclick = () => location.reload();
-  return;
-}
-if (THREE.ColorManagement) THREE.ColorManagement.legacyMode = false; // cores hex fiéis
-const MOBILE = Math.min(screen.width, screen.height) < 820 || /iPhone|Android.+Mobile/i.test(navigator.userAgent);   // celular: 3D mais leve
-
+if (THREE.ColorManagement) THREE.ColorManagement.legacyMode = false; // cores hex fiéis (como na página antiga)
+let ctx = null, scene = null, renderer = null, camera = null, controls = null, MOBILE = false, ground = null;
 
 /* ================= AJUSTES (edite à vontade) ================= */
 const COR = {
@@ -358,37 +356,8 @@ function sdfMesh(fn, min, max, cell, colorFn, mat) {
 }
 
 /* =====================================================================
-   3) RENDERIZADOR, LUZ, CHÃO
+   3) CHÃO DE TERRA (o motor cuida do renderizador, da luz e da câmera)
    ===================================================================== */
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE ? 1.5 : 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.prepend(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color('#d8cbb2');
-scene.fog = new THREE.Fog('#d8cbb2', 45, 120);
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-
-const key = new THREE.DirectionalLight(0xfff1e0, 1.7);
-key.castShadow = true;
-key.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
-key.shadow.radius = 5;
-Object.assign(key.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 50 });
-key.shadow.bias = -0.0004;
-key.shadow.normalBias = 0.02;
-scene.add(key, key.target);
-const KEY_OFFSET = new V3(7, 14, 9);
-const rim = new THREE.DirectionalLight(0xcfe0ff, 1.0);
-rim.position.set(-9, 6, -8);
-scene.add(rim);
-scene.add(new THREE.HemisphereLight(0xfff6ea, 0x5a4330, 0.3));
-
 // chão de terra/areia (textura desenhada no próprio navegador)
 function soilTexture() {
   const S = 512, c = document.createElement('canvas');
@@ -413,11 +382,6 @@ function soilTexture() {
   t.anisotropy = renderer.capabilities.getMaxAnisotropy();
   return t;
 }
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260),
-  new THREE.MeshStandardMaterial({ map: soilTexture(), roughness: 0.95, envMapIntensity: 0.4 }));
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
 
 /* =====================================================================
    4) MATERIAIS
@@ -467,7 +431,6 @@ addCuticle(mJaw, 0.006, 1.5);
    ===================================================================== */
 const ant = new THREE.Group();           // move/gira no mundo
 ant.rotation.order = 'YZX';
-scene.add(ant);
 let G = null;                             // modelo da casta atual (filho de "ant")
 
 function hairMesh(list) {
@@ -1051,99 +1014,41 @@ function updateJawsAndAntennae(t, dt) {
 }
 
 /* =====================================================================
-   7) CÂMERA, TOQUES E BOTÕES
+   7) TOQUES E AÇÕES (o motor cuida da câmera, dos botões e da ficha)
    ===================================================================== */
-const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 300);
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.rotateSpeed = 0.8;
-controls.screenSpacePanning = true;
-controls.maxPolarAngle = Math.PI * 0.47;
-controls.minDistance = 4;
-controls.maxDistance = 80;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 1.0;
-
 const centerLocal = new V3(0, 2, 0);
-let radius = 10;
-function home() {
-  const vfov = camera.fov * Math.PI / 180;
-  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
-  const d = radius / Math.sin(Math.min(vfov, hfov) / 2) * 0.8;
-  const c = ant.localToWorld(centerLocal.clone());
-  controls.target.copy(c);
-  camera.position.copy(c).add(new V3(0.95, 0.45, 1.05).normalize().multiplyScalar(d));
-  controls.update();
-}
-// câmera acompanha a formiga quando ela anda
-const _c = new V3(), lastAnt = new V3();
-function follow() {
-  _c.subVectors(ant.position, lastAnt);
-  lastAnt.copy(ant.position);
-  controls.target.add(_c);
-  camera.position.add(_c);
-  key.position.copy(ant.position).setY(0).add(KEY_OFFSET);
-  key.target.position.copy(ant.position).setY(0);
-}
-
-const hint = document.getElementById('hint');
-controls.addEventListener('start', () => { controls.autoRotate = false; hint.style.opacity = 0; });
-
-// toque rápido (sem arrastar): na formiga = morder; no chão = ir até lá
-const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-let down = null;
-renderer.domElement.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
-renderer.domElement.addEventListener('pointerup', (e) => {
+let radius = 10, mode = 'ant';
+let ring = null, ringT = 9;
+function marker(p) { ring.position.set(p.x, 0.02, p.z); ringT = 0; }
+function bite() { state.biteT = 0; }
+function toqueCena(c, ray) {           // toque rápido: na formiga = morder; no chão = ir até lá
   if (mode !== 'ant') return;
-  if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10 || performance.now() - down.t > 400) return;
-  ndc.set(e.clientX / window.innerWidth * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
-  ray.setFromCamera(ndc, camera);
   if (ray.intersectObject(ant, true).length) { bite(); return; }
   const hit = ray.intersectObject(ground)[0];
   if (hit) {
     state.target = hit.point.clone().setY(0);
-    const r = Math.hypot(state.target.x, state.target.z);
-    if (r > AREA) state.target.multiplyScalar(AREA / r);
+    const rr = Math.hypot(state.target.x, state.target.z);
+    if (rr > AREA) state.target.multiplyScalar(AREA / rr);
     marker(state.target);
   }
-});
-
-// marquinha onde a criança tocou
-const ring = new THREE.Mesh(new THREE.RingGeometry(0.7, 1.0, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 }));
-ring.rotation.x = -Math.PI / 2;
-ring.position.y = 0.02;
-scene.add(ring);
-let ringT = 9;
-function marker(p) { ring.position.set(p.x, 0.02, p.z); ringT = 0; }
-
-function bite() { state.biteT = 0; }
-const bWalk = document.getElementById('bWalk'), bLeaf = document.getElementById('bLeaf');
-bWalk.addEventListener('click', () => {
+}
+function passear(c, b) {
   state.wander = !state.wander;
-  bWalk.classList.toggle('on', state.wander);
-  bWalk.textContent = state.wander ? '✋' : '🚶';
+  c.marcar('passear', state.wander);
+  if (b) b.querySelector('b').textContent = state.wander ? '✋' : '🚶';
   if (!state.wander) state.target = null; else state.wanderWait = 0;
-});
-bLeaf.addEventListener('click', () => {
+}
+function folha(c) {
+  if (!CA.folha) return;
   state.carrying = !state.carrying;
   leaf.visible = state.carrying;
-  bLeaf.classList.toggle('on', state.carrying);
-});
-document.getElementById('bBite').addEventListener('click', bite);
-document.getElementById('bFly').addEventListener('click', () => {
+  c.marcar('folha', state.carrying);
+}
+function voar() {
   if (!CA.asas) return;
   if (state.flyT < 0) state.flyT = 0;
   else if (state.flyT < VOO.subir + VOO.pairar) state.flyT = VOO.subir + VOO.pairar;   // pousar
-});
-document.querySelectorAll('.castes button[data-caste]').forEach((b) => b.addEventListener('click', () => switchCaste(b.dataset.caste)));
-document.getElementById('bHome').addEventListener('click', home);
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-document.addEventListener('gesturestart', (e) => e.preventDefault());
+}
 
 /* =====================================================================
    9) FORMIGUEIRO — cena à parte: murundu, olheiros, trilha e um corte
@@ -1216,7 +1121,6 @@ function sdfNest(x, y, z) {
 }
 
 const nest = { built: false, scene: null, ants: null, antData: [], labels: [], flight: null, stop: -1 };
-let mode = 'ant';
 
 function leafTextureDry() {
   const S = 256, c = document.createElement('canvas');
@@ -1722,30 +1626,6 @@ function buildNest() {
     { em: '👑', t: 'Rainha', lp: new V3(2, -42, -1), p: new V3(1, -51.5, -2.5), cam: new V3(5, -45.5, 14), txt: 'A rainha é a mãe de todas as formigas. Ela bota muitos ovos e fica protegida lá no fundo.' },
     { em: '🗑️', t: 'Lixo', lp: new V3(52, -33, -1), p: new V3(50, -44, -1), cam: new V3(46, -38, 30), txt: 'As formigas são limpinhas: o lixo vai para uma sala só para isso.' }
   ];
-  const box = document.getElementById('nestLabels');
-  box.innerHTML = '';
-  nest.labels = nest.stops.map((st, i) => {
-    if (i === 0) return null;
-    const el = document.createElement('button');
-    el.className = 'nlabel';
-    el.innerHTML = '<b>' + st.em + '</b>' + st.t;
-    el.addEventListener('click', () => goStop(i));
-    box.appendChild(el);
-    return el;
-  });
-  nest.subLabels = nest.subStops.map((st) => {
-    const el = document.createElement('button');
-    el.className = 'nlabel sub';
-    el.innerHTML = '<b>' + st.em + '</b>' + st.t;
-    el.addEventListener('click', () => {
-      document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
-      document.getElementById('cardP').textContent = st.txt;
-      document.getElementById('card').classList.add('on');
-      nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.p.clone().add(new V3(1.2, 3.2, 8.5)), t1: st.p.clone().add(new V3(0, -0.6, 0)) };
-    });
-    box.appendChild(el);
-    return el;
-  });
   nest.scene = S;
   nest.built = true;
   console.log('resto do formigueiro: ' + Math.round(performance.now() - T0) + ' ms');
@@ -1809,21 +1689,6 @@ function updateNest(dt, t) {
     });
     nest.larvaMesh.instanceMatrix.needsUpdate = true;
   }
-  // etiquetas presas aos pontos 3D
-  const w = window.innerWidth, h = window.innerHeight;
-  const showSub = nest.stops[nest.stop] && nest.stops[nest.stop].t === 'Berçário';
-  (nest.subLabels || []).forEach((el, i) => {
-    _np.copy(nest.subStops[i].p).project(camera);
-    el.style.display = showSub && _np.z < 1 ? '' : 'none';
-    el.style.transform = 'translate(' + clamp((_np.x + 1) / 2 * w, 64, w - 64) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
-  });
-  nest.labels.forEach((el, i) => {
-    if (!el) return;
-    _np.copy(nest.stops[i].lp || nest.stops[i].p).project(camera);
-    el.style.display = _np.z < 1 ? '' : 'none';
-    el.style.transform = 'translate(' + clamp((_np.x + 1) / 2 * w, 64, w - 64) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
-    el.classList.toggle('on', i === nest.stop);
-  });
   // voo da câmera até uma parada
   if (nest.flight) {
     const F = nest.flight;
@@ -1854,50 +1719,44 @@ function goStop(i) {
   const st = nest.stops[i];
   nest.stop = i;
   nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: fitPortrait(st.cam, st.p), t1: st.p.clone() };
-  document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
-  document.getElementById('cardP').textContent = st.txt;
-  document.getElementById('card').classList.add('on');
-  document.getElementById('bTour').innerHTML = i < nest.stops.length - 1 ? '⏭' : '🔁';
 }
-
+function goSub(st) {
+  nest.stop = nest.stops.findIndex((s) => s.t === 'Berçário');
+  nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.p.clone().add(new V3(1.2, 3.2, 8.5)), t1: st.p.clone().add(new V3(0, -0.6, 0)) };
+}
 const antView = { p: new V3(), t: new V3() };
 function enterNest() {
-  const go = () => {
-    Progresso.marcar('formiga', 'casa');
-    ensureBuilt('rainhaNinho', 'rainhaNinho', 1.6);
-    if (!nest.built) buildNest();
-    mode = 'nest';
-    antView.p.copy(camera.position); antView.t.copy(controls.target);
-    document.body.classList.add('nest');
-    controls.autoRotate = false;
-    controls.maxDistance = 220; controls.minDistance = 5; controls.maxPolarAngle = Math.PI * 0.62;
-    controls.minAzimuthAngle = -1.1; controls.maxAzimuthAngle = 1.1;   // sempre olhando o corte pela frente
-    camera.far = 900; camera.updateProjectionMatrix();
-    nest.stop = -1;
-    camera.position.set(-30, 90, 190); controls.target.set(0, -10, -5);
-    goStop(0);
-    loading.style.opacity = 0;
-  };
-  if (nest.built) go();
-  else { loading.textContent = '⛏️ Cavando o formigueiro…'; loading.style.opacity = 1; setTimeout(go, 50); }
+  return new Promise((res) => {
+    const go = () => {
+      Progresso.marcar('formiga', 'casa');
+      ensureBuilt('rainhaNinho', 'rainhaNinho', 1.6);
+      if (!nest.built) buildNest();
+      if (mode !== 'nest') { antView.p.copy(camera.position); antView.t.copy(controls.target); }
+      mode = 'nest';
+      ctx.cenaAtiva = nest.scene;
+      controls.autoRotate = false;
+      Object.assign(controls, { maxDistance: 220, minDistance: 5, maxPolarAngle: Math.PI * 0.62, minAzimuthAngle: -1.1, maxAzimuthAngle: 1.1 });   // sempre olhando o corte pela frente
+      camera.far = 900; camera.updateProjectionMatrix();
+      nest.stop = -1;
+      camera.position.set(-30, 90, 190); controls.target.set(0, -10, -5);
+      ctx.carregando(false);
+      ctx.mostrarPartes(true);
+      res();
+    };
+    if (nest.built) go();
+    else { ctx.carregando('⛏️ Cavando o formigueiro…'); setTimeout(go, 50); }
+  });
 }
 function leaveNest() {
   mode = 'ant';
-  document.body.classList.remove('nest');
-  document.getElementById('card').classList.remove('on');
-  controls.maxDistance = 80; controls.minDistance = 4; controls.maxPolarAngle = Math.PI * 0.47;
-  controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity;
-  camera.far = 300; camera.updateProjectionMatrix();
+  ctx.cenaAtiva = null;
+  Object.assign(controls, { minAzimuthAngle: -Infinity, maxAzimuthAngle: Infinity });
+  camera.far = 3000; camera.updateProjectionMatrix();
   camera.position.copy(antView.p); controls.target.copy(antView.t);
-  lastAnt.copy(ant.position);
 }
-document.getElementById('bNest').addEventListener('click', enterNest);
-document.getElementById('bBack').addEventListener('click', leaveNest);
-document.getElementById('bTour').addEventListener('click', () => goStop((nest.stop + 1) % nest.stops.length));
-document.getElementById('cardX').addEventListener('click', () => document.getElementById('card').classList.remove('on'));
 
 /* =====================================================================
-   8) TROCA DE CASTA E INÍCIO
+   8) TROCA DE CASTA
    ===================================================================== */
 const built = {};      // modelos já esculpidos (cada casta é feita uma vez só)
 function buildCaste(name, key) {
@@ -1920,7 +1779,6 @@ function buildCaste(name, key) {
   return (built[key || name] = { G, legs, antennae, jaws, wings, leaf, center: box.getCenter(new V3()), radius: box.getSize(new V3()).length() / 2 });
 }
 
-const loading = document.getElementById('loading');
 // monta uma casta sem trocar a que está na tela (usado pelo formigueiro)
 function ensureBuilt(name, key, lod) {
   if (built[key || name]) return built[key || name];
@@ -1931,61 +1789,131 @@ function ensureBuilt(name, key, lod) {
   return m;
 }
 let current = null;
-function switchCaste(name, first) {
-  if (name === current) return;
-  document.querySelectorAll('.castes button[data-caste]').forEach((b) => b.classList.toggle('on', b.dataset.caste === name));
-  const go = () => {
-    const old = current ? built[current].G : null;
-    const m = built[name] || buildCaste(name);
-    CA = CASTES[name];
-    if (old) ant.remove(old);
-    ({ G, legs, antennae, jaws, wings, leaf } = m);
-    ant.add(G);
-    current = name;
-    Ficha.casta(name);
-    ant.scale.setScalar(CA.escala);
-    ant.position.y = 0; ant.rotation.z = 0;
-    state.flyT = -1; state.fly = 0; state.biteT = -1;
-    state.carrying = state.carrying && CA.folha;
-    if (leaf) leaf.visible = state.carrying;
-    bLeaf.classList.toggle('on', state.carrying);
-    document.getElementById('tLeaf').classList.toggle('hide', !CA.folha);
-    document.getElementById('tFly').classList.toggle('hide', !CA.asas);
-    // pés no chão, na posição de descanso
-    ant.updateMatrixWorld(true);
-    legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld); l.foot.y = 0.05 * CA.escala; solveLeg(l, l.neutral); });
-    centerLocal.copy(m.center);
-    radius = m.radius * CA.escala;
-    const sh = key.shadow.camera, e = 12 * CA.escala;
-    Object.assign(sh, { left: -e, right: e, top: e, bottom: -e });
-    sh.updateProjectionMatrix();
-    lastAnt.copy(ant.position);
-    home();
-    loading.style.opacity = 0;
-  };
-  if (built[name]) go();
-  else {
-    loading.textContent = '🐜 Esculpindo a ' + CASTES[name].nome.replace('zangão', 'formiga zangão') + '…';
-    loading.style.opacity = 1;
-    setTimeout(go, first ? 60 : 40);
-  }
+function vestir(name) {
+  const old = current ? built[current].G : null;
+  const m = built[name] || buildCaste(name);
+  CA = CASTES[name];
+  if (old) ant.remove(old);
+  ({ G, legs, antennae, jaws, wings, leaf } = m);
+  ant.add(G);
+  current = name;
+  Ficha.casta(name);
+  ant.scale.setScalar(CA.escala);
+  ant.position.y = 0; ant.rotation.z = 0;
+  state.flyT = -1; state.fly = 0; state.biteT = -1;
+  state.carrying = state.carrying && CA.folha;
+  if (leaf) leaf.visible = state.carrying;
+  ctx.marcar('folha', state.carrying);
+  // pés no chão, na posição de descanso
+  ant.updateMatrixWorld(true);
+  legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld); l.foot.y = 0.05 * CA.escala; solveLeg(l, l.neutral); });
+  centerLocal.copy(m.center);
+  radius = m.radius * CA.escala;
+}
+function switchCaste(name) {
+  return new Promise((res) => {
+    const go = () => {
+      if (name !== current) vestir(name);
+      ctx.carregando(false);
+      ctx.foco(ant.localToWorld(centerLocal.clone()), radius);
+      res();
+    };
+    if (built[name] || name === current) go();
+    else { ctx.carregando('🐜 Esculpindo ' + (name === 'zangao' ? 'o zangão' : 'a ' + CASTES[name].nome) + '…'); setTimeout(go, 40); }
+  });
 }
 
-Ficha.criar('formiga');
-setTimeout(() => Progresso.marcar('formiga', '3d'), 2500);
-switchCaste('operaria', true);
-setTimeout(() => { hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 7000); }, 900);
-const clock = new THREE.Clock();
-renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-  if (mode === 'nest') { updateNest(dt, t); controls.update(); keepCameraOutOfSoil(); renderer.render(nest.scene, camera); return; }
-  if (!G || !legs.length) { renderer.render(scene, camera); return; }
-  updateWalk(dt);
-  updateJawsAndAntennae(t, dt);
-  follow();
-  if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
-  controls.update();
-  renderer.render(scene, camera);
-});
-window.SAUVA = { state, ant, bite, home, camera, controls, switchCaste, enterNest, leaveNest, goStop, nest };   // para testes no console
+/* =====================================================================
+   10) PARTES DA FORMIGA (etiquetas do botão 🔎 Partes)
+   ===================================================================== */
+const noCorpo = (x, y, z) => () => ant.localToWorld(new V3(x, y, z));
+function partesFormiga() {
+  const An = CA.antena.base, Md = CA.mandibula.pos, E = CA.olho;
+  const l = [
+    { nome: 'Antenas', emoji: '📡', ponto: noCorpo(An[0] + 0.6, An[1] + 1.4, An[2] + 1.2), texto: 'Dobradas como um cotovelo. A formiga usa as antenas para sentir cheiros e reconhecer as companheiras do formigueiro.', pequeno: 'Ela sente cheiros com as antenas!' },
+    CA.folha
+      ? { nome: 'Mandíbulas', emoji: '✂️', ponto: noCorpo(Md[0] + 0.9, Md[1] - 0.8, 0), texto: 'Fortes como tesouras. As saúvas usam as mandíbulas para cortar pedaços de folha. Toque na formiga para ela morder!', pequeno: 'Corta folhas como uma tesoura!' }
+      : { nome: 'Mandíbulas', emoji: '✂️', ponto: noCorpo(Md[0] + 0.3, Md[1] - 0.2, 0), texto: CASTES.zangao === CA ? 'O zangão tem mandíbulas pequenas: ele não corta folhas.' : 'A rainha também tem mandíbulas fortes. Ela usa para cavar a primeira câmara do formigueiro novo.', pequeno: CASTES.zangao === CA ? 'O zangão não corta folhas.' : 'Ela cava a casa nova com as mandíbulas!' },
+    CA.ocelos
+      ? { nome: 'Olhos', emoji: '👀', ponto: noCorpo(E.x, E.y + 0.5, 0.9), texto: 'Olhos maiores que os da operária, e mais 3 olhinhos simples no alto da cabeça, que ajudam no voo.', pequeno: 'Olhos grandes para voar!' }
+      : { nome: 'Olhos', emoji: '👀', ponto: noCorpo(E.x - 0.3, E.y + 1.0, 0.8), texto: 'Pequenos. A operária se guia mais pelo cheiro do que pela visão.', pequeno: 'Ela se guia pelo cheiro!' },
+    { nome: 'Pernas', emoji: '🦵', ponto: () => { const g = legs.find((k) => k.i === 1 && k.s === 1); return g ? g.tibia.getWorldPosition(new V3()) : ant.position.clone(); }, texto: 'Como todo inseto, a formiga tem 6 pernas. Ela anda apoiada em 3 de cada vez, como um tripé.', pequeno: 'Conte: são 6 pernas!' },
+    { nome: 'Gáster', curto: 'Barriga', emoji: '🫃', ponto: noCorpo(CA.gasterX - 1.6, 3.4, 0), texto: 'A parte de trás do corpo. Lá dentro fica o papo, onde ela guarda comida para dividir com as outras formigas.', pequeno: 'Aqui ela guarda comida para dividir!' }
+  ];
+  if (CA.asas) l.push({ nome: 'Asas', emoji: '🪽', ponto: noCorpo(CA.asas.frente.base[0] - 3, CA.asas.frente.base[1] + 0.5, 1.8), texto: 'A rainha e o zangão nascem com asas para o voo nupcial. Depois do voo, a rainha perde as asas e começa um formigueiro novo.', pequeno: 'Asas para o voo do casamento!' });
+  return l;
+}
+function partesFormigueiro() {
+  const l = [];
+  nest.stops.forEach((st, i) => {
+    if (i === 0) return;
+    l.push({ nome: st.t, emoji: st.em, texto: st.txt, ponto: () => st.lp || st.p, ir: () => goStop(i) });
+    if (st.t === 'Berçário') nest.subStops.forEach((sb) => l.push({ nome: sb.t, emoji: sb.em, texto: sb.txt, ponto: () => sb.p, ir: () => goSub(sb), visivel: () => nest.stops[nest.stop] && nest.stops[nest.stop].t === 'Berçário' }));
+  });
+  return l;
+}
+
+/* =====================================================================
+   11) REGISTRO NO MOTOR
+   ===================================================================== */
+Modelos3D.formiga = {
+  cena: 'chao',
+  cenario: 'proprio',
+  formas: [
+    { id: 'operaria', nome: 'Operária', ocultar: ['voar'] },
+    { id: 'rainha', nome: 'Rainha', ocultar: ['folha'] },
+    { id: 'zangao', nome: 'Zangão', ocultar: ['folha'] },
+    { id: 'formigueiro', nome: '🏠 Formigueiro', ocultar: ['passear', 'folha', 'morder', 'voar', 'tam', 'limpo'] }
+  ],
+  acoes: [
+    { id: 'passear', ico: '🚶', rotulo: 'Passear', fn: passear },
+    { id: 'folha', ico: '🍃', rotulo: 'Folha', fn: folha },
+    { id: 'morder', ico: '🦷', rotulo: 'Morder', fn: bite },
+    { id: 'voar', ico: '🪽', rotulo: 'Voar', fn: voar }
+  ],
+  construir(c) {
+    ctx = c; scene = c.scene; renderer = c.renderer; camera = c.camera; controls = c.controls; MOBILE = c.MOBILE;
+    scene.background = new THREE.Color('#d8cbb2');
+    scene.fog = new THREE.Fog('#d8cbb2', 45, 120);
+    ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), new THREE.MeshStandardMaterial({ map: soilTexture(), roughness: 0.95, envMapIntensity: 0.4 }));
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+    ring = new THREE.Mesh(new THREE.RingGeometry(0.7, 1.0, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.02;
+    scene.add(ring);
+    scene.add(ant);
+    vestir('operaria');
+    c.seguir = ant;
+    setTimeout(() => c.aviso('👆 Toque no chão e ela vai até lá. Toque nela!'), 1800);
+    window.__formiga = { state, ant, bite, nest, goStop, CASTES };   // para testes
+    return { grupo: ant, raio: radius, centro: ant.localToWorld(centerLocal.clone()) };
+  },
+  forma(id) {
+    if (id === 'formigueiro') return enterNest();
+    if (mode === 'nest') leaveNest();
+    return switchCaste(id);
+  },
+  centroAtual: () => ant.localToWorld(centerLocal.clone()),
+  home(c) {
+    if (mode !== 'nest') return false;
+    goStop(0);
+    c.cartao(nest.stops[0].em + ' ' + nest.stops[0].t, nest.stops[0].txt);
+    return true;
+  },
+  partesAtuais: () => (mode === 'nest' ? partesFormigueiro() : partesFormiga()),
+  toqueCena,
+  update(dt, t) {
+    dt = Math.min(dt, 0.05);
+    if (mode === 'nest') { updateNest(dt, t); keepCameraOutOfSoil(); return; }
+    if (!G || !legs.length) return;
+    // neblina acompanha a distância da câmera (no celular em pé a câmera fica mais longe)
+    const d = camera.position.distanceTo(controls.target);
+    scene.fog.near = d + 25; scene.fog.far = d + 100;
+    updateWalk(dt);
+    updateJawsAndAntennae(t, dt);
+    if (ringT < 1) { ringT += dt * 1.2; ring.material.opacity = 0.8 * (1 - ringT); ring.scale.setScalar(1 + ringT); }
+  }
+};
 })();

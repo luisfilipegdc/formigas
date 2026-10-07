@@ -22,12 +22,12 @@ O projeto está sendo ampliado para uma **enciclopédia interativa da natureza**
 - `bicho3d.html?id=<bicho>`: **página 3D reutilizável** no "Modo Explorar" (barra de formas no topo, ações na lateral, Partes, Tamanho real com arroz/moeda/régua, modo "só o bicho", selo "No meu bolso" e dicas do Curu). O motor fica em `js/bicho3d.js` e cada bicho tem só o seu modelo em `js/modelos/<id>.js` (o motor carrega só o modelo do bicho aberto):
   - `cigarra` (*Quesada gigas*): adulta, ninfa e casca (exúvia no tronco); canta (som imitado) e voa.
   - `aranha` (*Trichonephila clavipes*): fêmea e o macho pequenininho na teia dourada; anda, desce no fio e sente a teia tremer.
-  - `abelha` (*Apis mellifera*), **em teste** (`bicho3d.html?id=abelha`): operária, rainha e zangão no jardim com flores (toque numa flor e ela voa até lá; 🌼 visita as flores sozinha; 👅 língua), com Partes e a 🍯 Colmeia aberta com passeio (etiquetas + "Próxima ⏭"). Veio de `abelha.html`, que continua no ar até a versão nova ser aprovada.
+  - `abelha` (*Apis mellifera*): operária, rainha e zangão no jardim com flores (toque numa flor e ela voa até lá; 🌼 visita as flores sozinha; 👅 língua), Partes e a 🍯 Colmeia aberta com passeio (etiquetas + "Próxima ⏭").
+  - `formiga` (*Atta*, saúva): operária (🍃 carrega folha), rainha e zangão (🪽 voo nupcial), 🚶 passear, 🦷 morder (ou toque nela), toque no chão para ela andar até lá, Partes e o 🏠 Formigueiro em corte com passeio (no Berçário aparecem ovos, larvas e pupas).
 - **Novo bicho com 3D:** cadastre em `js/catalogo.js` com `pagina: 'bicho3d.html?id=<id>'` e crie `js/modelos/<id>.js` (veja o topo de `js/bicho3d.js`). Espécies do mesmo tipo (várias aranhas, várias cigarras) usam o campo `tipo`.
 - **Por Dentro do Bicho** (protótipo na cigarra: "Como nasce o canto"): três modos no 3D (🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona?) e o seletor 🧸 Pequeno / 🧒 Explorador. No modelo, `dentro: { ligar, partes }` deixa o corpo transparente e mostra os órgãos; `processo: { titulo, passos, toque }` cria os passos guiados, em que a criança provoca cada etapa tocando no bicho. No catálogo, `porDentro: true` mostra o selo "🧩 Explore por dentro". O conteúdo está marcado como "em revisão científica" (`revisado: false`).
 - `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).
-- `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
-- `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
+- `formiga.html` e `abelha.html`: endereços antigos. Só redirecionam para `bicho3d.html?id=formiga` e `?id=abelha` (QR codes e atalhos antigos continuam funcionando).
 - `qr.html`: folha A4 com o QR code do site, pronta para imprimir (usa o endereço onde o site está publicado; dá para trocar no campo de cima).
 - `js/catalogo.js`: **dados de todos os animais** (ficha, ciclo de vida, curiosidades, dados por casta). Para adicionar um animal ao catálogo, acrescente um item em `ANIMAIS`.
 - `js/ficha.js`: gaveta ℹ️ ficha (abas Ficha, Vida, Sabia? e 📷 Real; muda conforme a casta escolhida).
@@ -39,17 +39,11 @@ O projeto está sendo ampliado para uma **enciclopédia interativa da natureza**
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar
-- **🐜 operária · 👑 rainha · 🪽 zangão:** troca a formiga (no tamanho real de cada uma: a rainha é quase o dobro da operária).
-- **🏠 formigueiro:** entra num formigueiro de saúva "cortado" ao meio. Toque nas etiquetas
-  (murundu, olheiros, trilha, túneis, jardim de fungo, berçário, rainha, lixo) ou no ⏭ para fazer o passeio.
-  As formiguinhas andam pela trilha carregando folhas e pelos túneis. 🐜 volta para a formiga.
-- **✈️ voar** (rainha e zangão): abre as 4 asas e faz o voo nupcial; toque de novo para pousar.
-- **Toque no chão:** a formiga anda até lá, mexendo as 6 pernas como uma formiga de verdade.
-- **Toque na formiga** (ou no botão 🦷): ela abre e fecha as mandíbulas.
-- **🚶 passear:** ela passeia sozinha pelo chão. Toque em ✋ para parar.
-- **🍃 folha:** ela carrega um pedaço de folha, como as saúvas fazem.
+Em qualquer bicho 3D (`bicho3d.html?id=…`):
+- **Abas no topo:** trocam a forma (operária, rainha, zangão…) ou abrem a casa (🏠 formigueiro, 🍯 colmeia), com etiquetas e o botão "Próxima ⏭" para o passeio.
+- **Botões do lado:** ações do bicho (voar, passear, folha, língua, cantar…), 🔎 Partes, 📏 Tamanho real, 🔄 Câmera e 👁 Só o bicho.
+- **🧸 Pequeno / 🧒 Explorador:** frases curtas ou mais informações.
 - **Girar:** arraste com um dedo. **Zoom:** pinça com dois dedos. **Mover a câmera:** arraste com dois dedos.
-- **⟲ câmera:** volta a câmera para perto dela.
 
 Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR ficam em `vendor/` e as fotos em `img/animais/`. Fora do site só ficam a fonte (se não carregar, aparece a fonte do aparelho) e os dados extras da aba 📷 Real.
 
@@ -93,11 +87,11 @@ No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a veloc
 ## Celular
 Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra embaixo) e o 3D fica mais leve (menos pelos e sombras menores).
 
-## Organização do código da formiga
+## Organização do código 3D
 
-- `formiga.html`: somente estrutura da tela e carregamento dos scripts.
-- `css/formiga.css`: estilos exclusivos da experiência da saúva.
-- `js/formiga.js`: lógica da experiência 3D da saúva (modelo, animações, formigueiro e controles).
-- `js/core3d.js`: utilidades 3D compartilhadas pelas experiências que já usam o núcleo comum.
+- `bicho3d.html` + `css/bicho3d.css`: a tela padrão do Modo Explorar.
+- `js/bicho3d.js`: o motor (cena, câmera, botões, partes, tamanho real, passeio, Por dentro / Como funciona, ficha e bolso).
+- `js/modelos/<id>.js`: um arquivo por bicho (formiga, abelha, cigarra, aranha), carregado só quando o bicho é aberto.
+- `js/core3d.js`: peças 3D comuns (escultura SDF, pernas, texturas).
 
 A separação é estática: não exige npm, build ou backend e continua adequada para deploy direto na Vercel.

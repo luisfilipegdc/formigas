@@ -22,15 +22,15 @@
 ## 3. Já existe
 - **Motor reutilizável** (`js/bicho3d.js` + `bicho3d.html`): modos 🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona?, seletor Pequeno / Explorador e passos guiados. Formato dos campos `dentro` e `processo` no topo de `js/bicho3d.js`.
 - **Cigarra:** "Por dentro" (corpo transparente com tímbalos, músculos, saco de ar, músculos das asas e tubo da seiva) e "Como nasce o canto". Protótipo, **didático**, marcado como "em revisão científica".
-- **Formiga e abelha:** experiências 3D completas, mas fora do motor reutilizável (`formiga.html`, `abelha.html`). A colmeia aberta e o formigueiro em corte já existem nelas.
+- **Formiga e abelha:** ✅ migradas para o motor reutilizável (outubro de 2026), com a colmeia aberta e o formigueiro em corte como abas de passeio. Os endereços antigos redirecionam.
 
 ## 4. Pré-requisitos (PROPOSTA)
 
 | # | Item | Por quê |
 |---|---|---|
 | P1 | Selo "modelo didático (simplificado)" ou "anatomia fiel" no 3D | Transparência para pais e professores |
-| P2 | Migrar a **abelha** para o motor reutilizável | Os itens de abelha abaixo dependem disso |
-| P3 | Migrar a **formiga** para o motor reutilizável (o formigueiro vira uma forma ou cena) | Os itens de formiga abaixo dependem disso |
+| P2 | ✅ Migrar a **abelha** para o motor reutilizável (feito) | Os itens de abelha abaixo dependem disso |
+| P3 | ✅ Migrar a **formiga** para o motor reutilizável (feito; o formigueiro é uma aba) | Os itens de formiga abaixo dependem disso |
 
 ## 5. Itens planejados
 

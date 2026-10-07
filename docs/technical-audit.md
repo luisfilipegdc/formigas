@@ -1,3 +1,5 @@
+> **Atualização (outubro de 2026):** depois desta auditoria, a formiga e a abelha foram migradas para o motor `bicho3d` (`js/modelos/formiga.js` e `abelha.js`). `formiga.html` e `abelha.html` agora só redirecionam, e `js/formiga.js` e `css/formiga.css` foram removidos. O motor carrega só o modelo do bicho aberto.
+
 # Auditoria técnica do repositório (Etapa 0)
 
 > Feita no checkout do repositório, no branch `claude/fervent-ride-ckr2w7`, em outubro de 2026. **Nenhum código foi alterado.**

@@ -2,51 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Natureza">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="img/icone/favicon.png">
-<link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Formiga-saúva em 3D · Natureza no Bolso</title>
-<link rel="stylesheet" href="css/formiga.css">
+<!-- a formiga agora usa a página 3D padrão; este endereço continua valendo (QR codes e atalhos antigos) -->
+<meta http-equiv="refresh" content="0; url=bicho3d.html?id=formiga">
+<link rel="canonical" href="bicho3d.html?id=formiga">
+<script>location.replace('bicho3d.html?id=formiga' + location.hash);</script>
 </head>
-<body>
-<div class="castes">
-  <a class="museu" href="index.html" aria-label="Voltar para Natureza no Bolso"><b>🐾</b><span>bichos</span></a>
-  <button data-caste="operaria" class="on" aria-label="Operária"><b>🐜</b><span>operária</span></button>
-  <button data-caste="rainha" aria-label="Rainha"><b>👑</b><span>rainha</span></button>
-  <button data-caste="zangao" aria-label="Zangão"><b>🪽</b><span>zangão</span></button>
-  <button id="bNest" class="nestbtn" aria-label="Visitar o formigueiro"><b>🏠</b><span>formigueiro</span></button>
-</div>
-<div class="nestui">
-  <button id="bBack" class="big" aria-label="Voltar para a formiga"><b>🐜</b><span>voltar</span></button>
-  <button id="bTour" class="round" aria-label="Próxima parte">⏭</button>
-  <div id="nestLabels"></div>
-  <div id="card"><button id="cardX" aria-label="Fechar">✕</button><b id="cardT"></b><p id="cardP"></p></div>
-</div>
-<div class="tools">
-  <div class="tool hide" id="tFly"><button id="bFly" aria-label="Voar">✈️</button><span>voar</span></div>
-  <div class="tool"><button id="bWalk" aria-label="Passear">🚶</button><span>passear</span></div>
-  <div class="tool" id="tLeaf"><button id="bLeaf" aria-label="Folha">🍃</button><span>folha</span></div>
-  <div class="tool"><button id="bBite" aria-label="Morder">🦷</button><span>morder</span></div>
-  <div class="tool"><button id="bHome" aria-label="Voltar a câmera">⟲</button><span>câmera</span></div>
-</div>
-<div id="hint" class="msg">👆 toque no chão e ela vai até lá · toque nela!</div>
-<div id="loading" class="msg">🐜 Esculpindo a formiga…</div>
-<div id="fail">🐜<br>Precisa de internet para carregar o 3D.<br>Toque para tentar de novo.</div>
-
-<!-- Three.js r147: scripts clássicos (funcionam até em iPads antigos) -->
-<script src="js/catalogo.js"></script>
-<script src="js/dados.js"></script>
-<script src="js/progresso.js"></script>
-<script src="js/ficha.js"></script>
-<script src="vendor/three/three.min.js"></script>
-<script src="vendor/three/OrbitControls.js"></script>
-<script src="vendor/three/RoomEnvironment.js"></script>
-<!-- usado só pelas tabelas do algoritmo "marching cubes" (THREE.edgeTable / THREE.triTable) -->
-<script src="vendor/three/MarchingCubes.js"></script>
-<script src="js/formiga.js"></script>
-<script src="js/app.js"></script>
-</body>
+<body><p><a href="bicho3d.html?id=formiga">Abrir a formiga em 3D</a></p></body>
 </html>

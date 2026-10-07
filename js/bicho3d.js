@@ -21,7 +21,8 @@
      centroAtual(ctx)          → centro da câmera quando o bicho anda
      home(ctx, fator)          → devolve true se o modelo cuidou da câmera
      partesAtuais(ctx)         → lista de partes conforme a forma; parte com
-                                 ir(ctx) vira passeio (botão "Próxima" no cartão)
+                                 ir(ctx) vira passeio (botão "Próxima" no cartão);
+                                 visivel(ctx) esconde a etiqueta quando devolve false
    O motor carrega js/modelos/<id>.js sozinho se o modelo não estiver na página.
    Unidades ≈ milímetros. Y para cima.
    ===================================================================== */
@@ -223,7 +224,7 @@ function iniciar3d(id) {
     if (!partesOn) return;
     labels.querySelectorAll('.etq').forEach((b) => {
       _v.copy(b._p.ponto(ctx)).project(camera);
-      const vis = _v.z < 1;
+      const vis = _v.z < 1 && (!b._p.visivel || b._p.visivel(ctx));
       b.style.display = vis ? '' : 'none';
       b.style.transform = 'translate(' + clamp((_v.x + 1) / 2 * innerWidth, 64, innerWidth - 64) + 'px,' + ((1 - _v.y) / 2 * innerHeight) + 'px) translate(-50%,-50%)';
     });
