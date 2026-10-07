@@ -57,7 +57,7 @@
     const a = document.createElement('a');
     a.className = 'mini'; a.href = A.pagina;
     const f = Dados.locais(A)[0];
-    a.innerHTML = '<img alt="" loading="lazy" src="' + esc(f ? f.mini : '') + '"><div><b>' + esc(A.nome) + ' em 3D</b><span>' + esc((A.destaques || []).map((d) => d.replace(/^\S+\s/, '')).join(' · ')) + '</span></div>';
+    a.innerHTML = '<img alt="" loading="lazy" src="' + esc(f ? f.mini : '') + '"><div>' + (A.porDentro ? '<em class="badge badge-dentro">🧩 Explore por dentro</em>' : '') + '<b>' + esc(A.nome) + ' em 3D</b><span>' + esc((A.destaques || []).map((d) => d.replace(/^\S+\s/, '')).join(' · ')) + '</span></div>';
     $('minis').appendChild(a);
   });
   { const a = document.createElement('a');
@@ -83,6 +83,7 @@
     el.className = 'card'; el.dataset.id = A.id;
     el.style.setProperty('--cor', A.cor);
     el.innerHTML = '<div class="card-foto"><img alt="" loading="lazy"><span class="card-emoji" aria-hidden="true">' + A.emoji + '</span>' +
+      (A.porDentro ? '<span class="badge badge-dentro">🧩 Explore por dentro</span>' : '') +
       (A.pagina ? '<a class="badge badge-3d" href="' + A.pagina + '">' + Icone('cubo') + 'Explorar em 3D</a>'
                 : '<span class="badge badge-ficha">Conhecer o bicho</span>') +
       '<span class="badge badge-ok" hidden>' + Icone('check') + 'Encontrado</span></div>' +

@@ -92,6 +92,7 @@ button, input { font: inherit; color: inherit; }
 .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 900; white-space: nowrap; text-decoration: none; }
 .badge-3d { background: var(--color-accent); color: var(--text); }
 .badge-ficha { background: rgba(255, 255, 255, .94); color: var(--color-nature); }
+.badge-dentro { background: var(--color-nature); color: #fff; }
 .badge-ok { background: var(--color-primary); color: #fff; }
 
 /* ---------- chips de categoria ---------- */

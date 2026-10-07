@@ -13,6 +13,7 @@
      procurar   → onde procurar no mundo real
      som        → (opcional) { arquivo: 'som/x.mp3', autor, lic, fonte } para o botão 🔊
      silencio   → curiosidade para bichos que não fazem som audível
+     porDentro  → true quando o 3D tem "Por Dentro do Bicho" (selo 🧩 e descoberta extra)
      tipo       → (opcional) agrupa várias espécies do mesmo tipo (ex.: 'aranha', 'cigarra')
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
@@ -427,7 +428,7 @@ const ANIMAIS = [
   {
     id: 'cigarra', nome: 'Cigarra-gigante', cientifico: 'Quesada gigas', grupo: 'insetos', tipo: 'cigarra', emoji: '🦗', cor: '#d9e8c4',
     curto: 'cigarra', pista: 'No verão eu canto tão alto que dá para ouvir de longe.', procurar: 'Troncos de árvores no verão, e a casquinha que eu deixo grudada neles.',
-    pagina: 'bicho3d.html?id=cigarra',
+    pagina: 'bicho3d.html?id=cigarra', porDentro: true,
     resumo: 'A cantora do verão, que passa anos crescendo debaixo da terra.',
     fotos: [
       { arquivo: 'img/animais/cigarra-1.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Quesada gigas', inat: 57045694 },

@@ -54,13 +54,42 @@ body { background: #dcebd4; }
 body.limpo .topo3d, body.limpo .acoes, body.limpo .base3d, body.limpo .cartao, body.limpo #etiquetas, body.limpo .curu { display: none; }
 body.limpo .voltar-ui { display: block; }
 
+/* ---------- Por Dentro do Bicho ---------- */
+.idade { margin-left: auto; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .94); min-height: 44px; padding: 0 14px; font-weight: 900; font-size: 14px; color: var(--color-nature); box-shadow: var(--shadow-s); cursor: pointer; margin-right: 88px; }
+.modos { position: fixed; z-index: 10; left: 50%; transform: translateX(-50%); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 62px); display: flex; gap: 6px; background: rgba(255, 255, 255, .95); border-radius: 26px; padding: 6px; box-shadow: var(--shadow-m); }
+.modos button { border: 0; background: none; border-radius: 20px; min-height: 58px; padding: 4px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--color-nature); cursor: pointer; }
+.modos button b { font-size: 22px; line-height: 1.1; }
+.modos button.on { background: var(--color-nature); color: #fff; }
+.passos3d { position: fixed; z-index: 12; left: 50%; transform: translateX(-50%); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 136px); width: min(560px, calc(100vw - 110px)); display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 24px; padding: 12px 14px; box-shadow: var(--shadow-m); }
+.passos3d img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; border: 3px solid var(--color-primary-soft); }
+.passos3d > div { flex: 1; min-width: 0; }
+.passos3d b { display: block; color: var(--color-nature); font-size: 16px; }
+.passos3d p { margin: 2px 0 6px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+body.pequeno .passos3d p { font-size: 21px; }
+.dots { display: flex; gap: 4px; } .dots i { width: 22px; height: 6px; border-radius: 3px; background: var(--line); } .dots i.on { background: var(--color-leaf); }
+.passos3d small { display: block; margin-top: 6px; font-size: 12px; color: var(--text-soft); }
+.passo-bt { flex: none; border: 0; border-radius: 999px; background: var(--color-accent); min-height: 48px; padding: 0 16px; font-weight: 900; font-size: 15px; cursor: pointer; color: var(--text); }
+.passo-x { position: absolute; top: -12px; right: -8px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: #fff; box-shadow: var(--shadow-s); cursor: pointer; }
+body.com-modos .cartao:not(.topo) { bottom: calc(max(14px, env(safe-area-inset-bottom)) + 136px); }
+body.limpo .modos, body.limpo .passos3d, body.limpo .idade { display: none; }
+
 @media (max-width: 600px) {
+  .idade { margin-right: 0; font-size: 12px; min-height: 36px; padding: 0 10px; }
+  .modos { left: max(10px, env(safe-area-inset-left)); transform: none; bottom: calc(max(14px, env(safe-area-inset-bottom)) + 54px); }
+  .modos button { min-height: 50px; padding: 2px 9px; font-size: 12px; } .modos button b { font-size: 18px; }
+  .passos3d { left: 10px; transform: none; width: calc(100vw - 92px); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 116px); padding: 10px; gap: 8px; flex-wrap: wrap; }
+  .passos3d img { width: 46px; height: 46px; }
+  .passos3d p { font-size: 16px; } body.pequeno .passos3d p { font-size: 18px; }
+  .passo-bt { width: 100%; }
   .topo3d h1 { font-size: 16px; padding: 6px 12px; }
   .abas button { padding: 6px 10px; font-size: 13px; min-height: 36px; }
   .acao { width: 62px; min-height: 56px; border-radius: 16px; }
   .acao b { font-size: 20px; } .acao span { font-size: 11px; }
   .acoes { gap: 6px; }
   .bolso, .acao-ficha { font-size: 13px; padding: 0 12px; min-height: 42px; }
-  .base3d { right: 84px; justify-content: flex-start; }
+  .base3d { right: 84px; justify-content: flex-start; flex-wrap: nowrap; }
+  .base3d .bolso { flex: 1 1 auto; min-width: 0; white-space: normal; line-height: 1.15; padding: 4px 12px; font-size: 12.5px; }
+  .base3d .acao-ficha { flex: none; }
   .cartao { width: calc(100vw - 100px); }
+  body.com-modos .cartao:not(.topo) { bottom: calc(max(14px, env(safe-area-inset-bottom)) + 116px); }
 }

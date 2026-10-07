@@ -112,7 +112,7 @@ window.addEventListener('load', () => {
   const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.5, 3000);
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   Object.assign(controls, { enableDamping: true, dampingFactor: 0.08, rotateSpeed: 0.8, screenSpacePanning: true, autoRotate: true, autoRotateSpeed: 0.8 });
-  const ctx = { THREE, scene, camera, controls, renderer, A, MOBILE, chao, sol, estado: {}, aviso: avisoRapido };
+  const ctx = { THREE, scene, camera, controls, renderer, A, MOBILE, chao, sol, estado: {}, aviso: avisoRapido, aoVivo: () => proc.ativo };
   let raio = 30, centro = new V3(0, 10, 0);
   function home(fator) {
     const vfov = camera.fov * Math.PI / 180, hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
@@ -172,16 +172,20 @@ window.addEventListener('load', () => {
   }
 
   /* ---------- partes ---------- */
-  let partesOn = false;
+  let partesOn = false, modo = 'fora';
+  let idade = 'pequeno'; try { idade = localStorage.getItem('bnb-idade') || 'pequeno'; } catch (e) {}
+  ctx.idade = () => idade;
+  const txt = (o) => (idade === 'pequeno' && o.pequeno) || o.texto;
   const labels = $('etiquetas');
   function partes() {
     partesOn = !partesOn;
     etiqueta('partes', partesOn);
     labels.innerHTML = '';
-    if (partesOn) (M.partes || []).forEach((p, i) => {
+    const lista = (modo === 'dentro' && M.dentro && M.dentro.partes) || M.partes || [];
+    if (partesOn) lista.forEach((p, i) => {
       const b = document.createElement('button');
-      b.className = 'etq'; b.type = 'button'; b.textContent = (i + 1) + ' ' + p.nome;
-      b.addEventListener('click', () => { labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b)); cartao(p.nome, p.texto); });
+      b.className = 'etq'; b.type = 'button'; b.textContent = (idade === 'pequeno' && p.emoji ? p.emoji + ' ' : (i + 1) + ' ') + (idade === 'pequeno' && p.curto ? p.curto : p.nome);
+      b.addEventListener('click', () => { labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b)); cartao(p.nome, txt(p)); });
       b._p = p; labels.appendChild(b);
     });
     $('cartao').hidden = !partesOn;
@@ -220,6 +224,62 @@ window.addEventListener('load', () => {
   botao('👁', 'Só o bicho', () => document.body.classList.add('limpo'), 'limpo');
   $('voltar-ui').addEventListener('click', () => document.body.classList.remove('limpo'));
 
+  /* ---------- Por Dentro do Bicho: modos, idade e passos guiados ---------- */
+  const proc = { ativo: false, i: 0 };
+  ctx.trocarForma = (id) => { const i = (M.formas || []).findIndex((f) => f.id === id); const b = $('abas').children[i]; if (b && !b.classList.contains('on')) b.click(); };
+  function setModo(m) {
+    if (partesOn) partes();
+    if (proc.ativo) pararProcesso();
+    modo = m;
+    $('modos').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+    if (M.dentro) M.dentro.ligar(ctx, m !== 'fora');
+    if (m === 'dentro') { controls.autoRotate = false; partes(); cartao('🫀 Por dentro', idade === 'pequeno' ? 'Olha o que tem dentro da ' + (A.curto || 'bicho') + '! Toque nos nomes.' : 'O corpo fica transparente para ver o que tem lá dentro. Toque nas etiquetas.'); Progresso.marcar(A.id, 'dentro'); }
+    if (m === 'funciona') iniciarProcesso();
+    if (m === 'fora') home();
+  }
+  function iniciarProcesso() {
+    proc.ativo = true; proc.i = 0; controls.autoRotate = false;
+    $('cartao').hidden = true;
+    if (M.processo.iniciar) M.processo.iniciar(ctx);
+    mostrarPasso();
+  }
+  function pararProcesso() { proc.ativo = false; $('passos').hidden = true; if (M.processo.parar) M.processo.parar(ctx); }
+  function mostrarPasso() {
+    const P = M.processo.passos, p = P[proc.i];
+    $('passos').hidden = false;
+    $('passo-t').textContent = M.processo.titulo;
+    $('passo-p').textContent = txt(p);
+    $('passo-dots').innerHTML = P.map((_, k) => '<i class="' + (k <= proc.i ? 'on' : '') + '"></i>').join('');
+    $('passo-rev').hidden = M.processo.revisado !== false;
+    const fim = proc.i === P.length - 1;
+    $('passo-bt').textContent = fim ? '↺ Ver de novo' : 'Próximo →';
+    $('passo-bt').hidden = !!p.espera && !fim;
+    if (p.acao) p.acao(ctx);
+  }
+  ctx.passoFeito = () => { if (!proc.ativo) return; proc.i = Math.min(proc.i + 1, M.processo.passos.length - 1); mostrarPasso(); };
+  $('passo-bt').addEventListener('click', () => {
+    if (proc.i === M.processo.passos.length - 1) { iniciarProcesso(); return; }
+    ctx.passoFeito();
+  });
+  $('passo-x').addEventListener('click', () => setModo('fora'));
+  if (M.dentro || M.processo) {
+    $('modos').hidden = false; document.body.classList.add('com-modos');
+    $('modos').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setModo(b.dataset.m)));
+    if (!M.processo) $('modos').querySelector('[data-m="funciona"]').remove();
+  }
+  const bIdade = $('idade');
+  const pintaIdade = () => { bIdade.textContent = idade === 'pequeno' ? '🧸 Pequeno' : '🧒 Explorador'; bIdade.setAttribute('aria-label', 'Modo ' + (idade === 'pequeno' ? 'Pequeno (até 6 anos)' : 'Explorador (7 anos ou mais)') + '. Toque para trocar.'); };
+  pintaIdade();
+  bIdade.addEventListener('click', () => {
+    idade = idade === 'pequeno' ? 'explorador' : 'pequeno';
+    try { localStorage.setItem('bnb-idade', idade); } catch (e) {}
+    pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno');
+    avisoRapido(idade === 'pequeno' ? 'Modo Pequeno: frases curtas, uma coisa de cada vez.' : 'Modo Explorador: nomes e mais informações.');
+    if (proc.ativo) mostrarPasso();
+    if (partesOn) { partes(); partes(); }
+  });
+  document.body.classList.toggle('pequeno', idade === 'pequeno');
+
   if (M.formas) {
     const abas = $('abas');
     M.formas.forEach((f, i) => {
@@ -228,6 +288,7 @@ window.addEventListener('load', () => {
       b.addEventListener('click', () => {
         abas.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
         if (partesOn) partes();
+        if (modo !== 'fora' && M.dentro && M.dentro.forma && f.id !== M.dentro.forma) setModo('fora');
         M.forma(f.id, ctx); home();
       });
       abas.appendChild(b);
@@ -264,7 +325,9 @@ window.addEventListener('load', () => {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10 || performance.now() - down.t > 450) return;
     ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
     ray.setFromCamera(ndc, camera);
-    if (ctx.grupo && ray.intersectObject(ctx.grupo, true).length && M.toque) M.toque(ctx);
+    const hits = ctx.grupo ? ray.intersectObject(ctx.grupo, true) : [];
+    if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits); return; }
+    if (hits.length && M.toque) M.toque(ctx);
   });
   controls.addEventListener('start', () => { controls.autoRotate = false; });
 

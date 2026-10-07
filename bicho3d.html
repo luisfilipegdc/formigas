@@ -22,7 +22,19 @@
   <a class="voltar" href="index.html#bichos" aria-label="Voltar para os bichos">←</a>
   <h1 id="nome">Bicho</h1>
   <nav class="abas" id="abas" aria-label="Formas"></nav>
+  <button class="idade" id="idade" type="button"></button>
 </header>
+<nav class="modos" id="modos" aria-label="Por Dentro do Bicho" hidden>
+  <button type="button" data-m="fora" class="on"><b>🐾</b>Por fora</button>
+  <button type="button" data-m="dentro"><b>🫀</b>Por dentro</button>
+  <button type="button" data-m="funciona"><b>▶️</b>Como funciona?</button>
+</nav>
+<section class="passos3d" id="passos" hidden aria-live="polite">
+  <img src="img/mascote/curu-rosto-360.jpg" alt="">
+  <div><b id="passo-t"></b><p id="passo-p"></p><span class="dots" id="passo-dots"></span><small id="passo-rev">Conteúdo simplificado, em revisão científica.</small></div>
+  <button class="passo-bt" id="passo-bt" type="button">Próximo →</button>
+  <button class="passo-x" id="passo-x" type="button" aria-label="Sair">✕</button>
+</section>
 <div class="acoes" id="acoes" role="toolbar" aria-label="Explorar"></div>
 <div class="base3d">
   <button class="bolso" id="bolso" type="button"></button>

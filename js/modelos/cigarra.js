@@ -108,9 +108,14 @@
     /* adulta */
     const ad = new THREE.Group(); raiz.add(ad);
     const corpo = new THREE.Group(); corpo.position.y = 2.2; ad.add(corpo);
-    corpo.add(sdfMesh(sdfFrente, new V3(-1, 1.5, -11), new V3(28.5, 18, 11), cell, corFrente, mCorpo));
+    S.casca = [sdfMesh(sdfFrente, new V3(-1, 1.5, -11), new V3(28.5, 18, 11), cell, corFrente, mCorpo)];
+    corpo.add(S.casca[0]);
     const abd = new THREE.Group(); corpo.add(abd);
-    abd.add(sdfMesh(sdfAbd, new V3(-27, 1, -9), new V3(4, 16, 9), cell, corAbd, mCorpo));
+    S.casca.push(sdfMesh(sdfAbd, new V3(-27, 1, -9), new V3(4, 16, 9), cell, corAbd, mCorpo));
+    abd.add(S.casca[1]);
+    S.mCorpo = mCorpo;
+    S.mTransl = new THREE.MeshPhysicalMaterial({ vertexColors: true, transparent: true, opacity: 0.42, depthWrite: false, roughness: 0.35, clearcoat: 0.4, side: THREE.FrontSide });
+    montarDentro(corpo, abd);
     S.abd = abd;
     const mOlho = new THREE.MeshPhysicalMaterial({ color: '#6a5634', roughness: 0.35, clearcoat: 0.7, clearcoatRoughness: 0.25 });
     S.olhos = [1, -1].map((s) => { const o = shadowy(new THREE.Mesh(new THREE.SphereGeometry(3.0, 24, 16), mOlho)); o.position.set(21.6, 10.4, s * 8.3); o.scale.set(1, 1.05, 0.85); corpo.add(o); return o; });
@@ -188,10 +193,64 @@
       w.p.rotation.x = -s * bate;                                           // batida (sobe e desce)
     });
   }
+  /* ---------- Por dentro: estruturas simplificadas ---------- */
+  function montarDentro(corpo, abd) {
+    const D = new THREE.Group(); D.visible = false; corpo.add(D);
+    const m = (cor, op) => new THREE.MeshPhysicalMaterial({ color: cor, roughness: 0.4, clearcoat: 0.5, transparent: !!op, opacity: op || 1, depthWrite: !op });
+    // barriga quase oca: saco de ar que funciona como caixa de som
+    const saco = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), m('#a9dcff', 0.45));
+    saco.scale.set(10.5, 5, 6); saco.position.set(-11, 8.6, 0); D.add(saco); S.saco = saco;
+    // tímbalos (membranas-tambor) com nervuras, e os músculos que os puxam
+    S.timbalos = [1, -1].map((s) => {
+      const t = new THREE.Group(); t.position.set(-0.5, 10, s * 7.4);
+      const disco = new THREE.Mesh(new THREE.CylinderGeometry(2.7, 2.7, 0.5, 28), m('#f2e2a8'));
+      disco.rotation.x = Math.PI / 2; disco.material.emissive = new THREE.Color('#000'); t.add(disco);
+      for (let i = -1; i <= 1; i++) { const r = new THREE.Mesh(new THREE.BoxGeometry(0.35, 4.4, 0.7), m('#b8964e')); r.position.set(i * 1.2, 0, s * 0.15); t.add(r); }
+      t.userData.disco = disco; D.add(t); return t;
+    });
+    S.musc = [1, -1].map((s) => { const mu = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 12), m('#d9534f')); mu.scale.set(1.3, 1.5, 2.6); mu.position.set(-1.2, 8.4, s * 4.4); mu.rotation.x = s * 0.4; D.add(mu); return mu; });
+    // músculos das asas (no tórax) e o tubo por onde passa a seiva
+    S.muscAsa = [1, -1].map((s) => { const mu = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 12), m('#ee9a96')); mu.scale.set(4, 3.4, 2.2); mu.position.set(6, 11, s * 2.6); D.add(mu); return mu; });
+    const curva = new THREE.CatmullRomCurve3([new V3(22.5, 5, 0), new V3(16, 7, 0), new V3(6, 8.2, 0), new V3(-6, 7.6, 0), new V3(-16, 7, 0), new V3(-23, 6.6, 0)]);
+    S.tubo = new THREE.Mesh(new THREE.TubeGeometry(curva, 40, 0.75, 10), m('#8fcf5a')); D.add(S.tubo);
+    S.dentro = D;
+  }
+  function ligarDentro(ctx, on) {
+    if (on) { ctx.trocarForma('adulta'); S.alvoVoo = 0; S.voo = 0; ctx.marcar('voar', false); }
+    S.casca.forEach((me) => { me.material = on ? S.mTransl : S.mCorpo; me.castShadow = !on; });
+    S.olhos.forEach((o) => { o.material.transparent = on; o.material.opacity = on ? 0.5 : 1; });
+    S.asas.forEach((w) => { w.p.visible = !on; });
+    S.dentro.visible = on;
+    if (!on) { pararCanto(ctx); destaque(false); }
+  }
+  // brilho pulsante para mostrar onde tocar
+  function destaque(on) { S.brilha = on; if (!on) S.timbalos.forEach((t) => t.userData.disco.material.emissive.set('#000')); }
+  function clique(ctx) {
+    sons().clique();
+    S.estalo = 0.12;
+    const r = new THREE.Mesh(anelGeo, new THREE.MeshBasicMaterial({ color: '#fff7c2', transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
+    r.position.copy(S.timbalos[0].getWorldPosition(new V3())); r.userData.t = 0.3; ctx.scene.add(r); S.aneis.push(r);
+  }
+  function pararCanto(ctx) { S.canto = 0; somImitado(false); ctx.marcar('cantar', false); }
+
   function cantar(ctx, b) {
     S.canto = S.canto > 0 ? 0 : 6;
     if (b) b.classList.toggle('on', S.canto > 0);
     if (S.canto > 0) { ctx.aviso('🎵 Só os machos cantam! (som imitado)'); somImitado(true); } else somImitado(false);
+  }
+  // clique do tímbalo: estalo curtinho
+  function sons() {
+    return { clique() {
+      try {
+        if (!audio) somImitado(true), somImitado(false);
+        const c = audio.c, len = Math.floor(c.sampleRate * 0.03), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+        const src = c.createBufferSource(); src.buffer = buf;
+        const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3200; bp.Q.value = 2;
+        const g = c.createGain(); g.gain.value = 0.6;
+        src.connect(bp); bp.connect(g); g.connect(c.destination); src.start();
+      } catch (e) {}
+    } };
   }
   // zumbido imitado com Web Audio (não é gravação: aparece escrito "som imitado")
   function somImitado(on) {
@@ -251,6 +310,15 @@
       r.quaternion.copy(ctx.camera.quaternion);
       if (k > 1.15) { ctx.scene.remove(r); r.material.dispose(); S.aneis.splice(i, 1); }
     }
+    // por dentro: tímbalo estalando, brilho de "toque aqui" e saco de ar vibrando com o canto
+    if (S.dentro && S.dentro.visible) {
+      S.estalo = Math.max(0, (S.estalo || 0) - dt);
+      const vib = S.canto > 0 ? Math.sin(t * 90) * 0.12 : 0;
+      S.timbalos.forEach((tm) => { tm.scale.z = 1 - (S.estalo > 0 ? 0.7 : 0) - Math.abs(vib); });
+      S.musc.forEach((mu) => { mu.scale.z = 2.6 * (1 - (S.estalo > 0 ? 0.25 : 0) - Math.abs(vib) * 0.5); });
+      S.saco.scale.set(10.5, 5 * (1 + vib * 0.15), 6 * (1 + vib * 0.2));
+      if (S.brilha) S.timbalos.forEach((tm) => tm.userData.disco.material.emissive.setRGB(0.55 + 0.45 * Math.sin(t * 6), 0.4 + 0.3 * Math.sin(t * 6), 0));
+    }
     // antenas e rostro mexendo de leve
     S.antenas.forEach((a, i) => { a.rotation.x += Math.sin(t * 2.3 + i) * 0.002; });
   }
@@ -262,6 +330,36 @@
       { id: 'cantar', ico: '🎵', rotulo: 'Cantar', fn: cantar },
       { id: 'voar', ico: '🪽', rotulo: 'Voar', fn: voar }
     ],
+    dentro: {
+      forma: 'adulta',
+      ligar: ligarDentro,
+      partes: [
+        { nome: 'Tímbalos', curto: 'Tambor', emoji: '🥁', texto: 'Duas membranas duras, uma de cada lado da barriga. Quando dobram, fazem "clique".', pequeno: 'É o tambor da cigarra! Faz clique.', ponto: () => S.timbalos[0].getWorldPosition(new V3()).add(new V3(0, 3, 2)) },
+        { nome: 'Músculo do tímbalo', curto: 'Músculo', emoji: '💪', texto: 'Um músculo forte puxa o tímbalo e solta, muito rápido.', pequeno: 'Ele puxa o tambor.', ponto: () => S.musc[0].getWorldPosition(new V3()).add(new V3(0, -3, 0)) },
+        { nome: 'Barriga oca', curto: 'Caixa de som', emoji: '🎈', texto: 'No macho, a barriga é quase toda um saco de ar. Funciona como a caixa de um violão e deixa o canto mais alto.', pequeno: 'A barriga é oca, como um tambor. Deixa o som mais alto!', ponto: () => S.saco.getWorldPosition(new V3()).add(new V3(-4, 6, 0)) },
+        { nome: 'Músculos das asas', curto: 'Força das asas', emoji: '🪽', texto: 'Músculos grandes no tórax movem as quatro asas no voo.', pequeno: 'Eles fazem as asas baterem.', ponto: () => S.muscAsa[0].getWorldPosition(new V3()).add(new V3(0, 4, 0)) },
+        { nome: 'Tubo da seiva', curto: 'Comida', emoji: '🥤', texto: 'A seiva sugada pelo bico passa por este tubo até a barriga.', pequeno: 'Por aqui passa a seiva que ela bebe.', ponto: () => S.corpo.localToWorld(new V3(14, 6, 0)) }
+      ]
+    },
+    processo: {
+      titulo: 'Como nasce o canto',
+      revisado: false,
+      iniciar(ctx) { S.cliques = 0; S.passoAtual = 0; pararCanto(ctx); ctx.foco(S.corpo.localToWorld(new V3(-1, 9, 4)), 20); },
+      parar(ctx) { pararCanto(ctx); destaque(false); },
+      passos: [
+        { texto: 'Este disco na barriga é o tímbalo: uma membrana dura que funciona como um tambor. Toque nele!', pequeno: 'Esse é o tambor da cigarra. Toque nele!', espera: 'toque', acao: () => destaque(true) },
+        { texto: 'Clique! Um músculo puxa o tímbalo, ele se dobra e estala. Agora toque bem rápido, várias vezes!', pequeno: 'Clique! Agora toque rápido, rápido!', espera: 'toque' },
+        { texto: 'A cigarra faz isso centenas de vezes por segundo! Os cliques viram um zumbido, e a barriga oca funciona como caixa de som.', pequeno: 'Os cliques viraram música! A barriga oca deixa o som bem alto.', acao: (ctx) => { destaque(false); S.canto = 8; somImitado(true); } },
+        { texto: 'Só os machos cantam, para chamar as fêmeas. Missão: no verão, escute uma cigarra de verdade!', pequeno: 'Só os machos cantam. No verão, escute uma cigarra de verdade!', acao: (ctx) => { Progresso.marcar('cigarra', 'dentro'); } }
+      ],
+      toque(ctx, hits) {
+        if (!hits.length) return;
+        clique(ctx);
+        S.cliques = (S.cliques || 0) + 1;
+        if (S.cliques === 1) ctx.passoFeito();
+        else if (S.cliques === 7) ctx.passoFeito();
+      }
+    },
     construir,
     update,
     toque(ctx) { if (S.ad.visible && S.canto <= 0) cantar(ctx, document.querySelector('.acao[data-id="cantar"]')); },
