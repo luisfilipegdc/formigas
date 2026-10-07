@@ -8,7 +8,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - `index.html`: home do Bicho no Bolso (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
 - `css/marca.css`: identidade visual (variáveis `--color-primary`, `--color-accent`, `--surface`… e componentes: cabeçalho, logo, botões, chips, rodapé).
 - `css/catalogo.css`: estilos da home.
-- `css/splash.css`, `js/splash.js` e `js/splash-bichos.js`: abertura (mascote, folhas e bichos passando: girafa, bem-te-vi, borboleta-azul, abelha e joaninha; para trocar por imagens realistas, veja o topo de `js/splash-bichos.js`), "Olá, explorador!" no primeiro acesso e saudação com os bichos encontrados na volta. Toque pula; não aparece de novo na mesma sessão.
+- `css/splash.css`, `js/splash.js` e `js/splash-bichos.js`: abertura (mascote, folhas e bichos passando: aranha descendo no fio, borboleta-azul e joaninha; para trocar por imagens realistas, veja o topo de `js/splash-bichos.js`), "Olá, explorador!" no primeiro acesso e saudação com os bichos encontrados na volta. Toque pula; não aparece de novo na mesma sessão.
 - `js/home.js`: lógica da home. `js/icones.js`: ícones SVG da interface.
 - `design/`: referências visuais da marca (não são usadas pelo site).
 - `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).

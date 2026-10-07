@@ -42,41 +42,6 @@
 .voo svg g { transform-box: fill-box; }
 .bal { will-change: transform; }
 
-/* girafa: caminha da direita para a esquerda, no chão */
-.voo-girafa { width: min(31vh, 270px); top: auto; bottom: -1vh; animation: girafa-caminho 4.8s linear both; }
-@keyframes girafa-caminho { from { transform: translateX(100vw); } to { transform: translateX(calc(100vw - min(31vh, 270px) - 10vw)); } }
-@media (max-width: 600px) {
-  .voo-girafa { width: min(24vh, 190px); animation-name: girafa-caminho-cel; }
-  @keyframes girafa-caminho-cel { from { transform: translateX(100vw); } to { transform: translateX(calc(100vw - min(24vh, 190px) * .78)); } }
-}
-.bal-girafa { animation: girafa-bal .45s ease-in-out infinite alternate; }
-@keyframes girafa-bal { to { transform: translateY(-3px); } }
-.sb-perna { transform-origin: 50% 0; animation: passo .9s ease-in-out infinite alternate; }
-.sb-perna-a, .sb-perna-b { animation-delay: -.9s; }
-@keyframes passo { from { transform: rotate(-13deg); } to { transform: rotate(13deg); } }
-.sb-pescoco { transform-origin: 100% 100%; animation: pescoco 1.8s ease-in-out infinite alternate; }
-@keyframes pescoco { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
-
-/* bem-te-vi: bate as asas, plana e ondula pelo alto */
-.voo-passaro { width: min(32vw, 160px); animation: passaro-caminho 3.2s ease-in-out .2s both; }
-.splash.rapida .voo-passaro { animation-duration: 1.6s; animation-delay: 0s; }
-@keyframes passaro-caminho {
-  0% { transform: translate(-30vw, 14vh) rotate(-6deg); }
-  30% { transform: translate(22vw, 8vh) rotate(4deg); }
-  55% { transform: translate(52vw, 13vh) rotate(-3deg); }
-  80% { transform: translate(84vw, 6vh) rotate(5deg); }
-  100% { transform: translate(125vw, 3vh) rotate(-4deg); }
-}
-.sb-asa { transform-origin: 90% 88%; animation: asa-passaro 1s ease-in-out infinite; }
-.sb-asa-fundo { animation-delay: -.04s; }
-@keyframes asa-passaro {
-  0%, 100% { transform: rotate(18deg); } 10% { transform: rotate(-62deg); } 20% { transform: rotate(18deg); }
-  30% { transform: rotate(-62deg); } 40% { transform: rotate(18deg); } 50% { transform: rotate(-58deg); }
-  62%, 90% { transform: rotate(-22deg); }
-}
-.bal-passaro { animation: bal-passaro 1s ease-in-out infinite; }
-@keyframes bal-passaro { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } 70% { transform: translateY(4px); } }
-
 /* borboleta: sobe da direita para a esquerda, em voo irregular */
 .voo-borboleta { width: min(26vw, 124px); animation: borboleta-caminho 4.6s ease-in-out both; }
 .splash.rapida .voo-borboleta { animation-duration: 1.8s; }
@@ -96,23 +61,21 @@
 .bal-borboleta { animation: bal-borboleta .7s ease-in-out infinite; }
 @keyframes bal-borboleta { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(3px, -7px); } 60% { transform: translate(-3px, 5px); } }
 
-/* abelha: zigue-zague com paradas no ar, como quem procura flores */
-.voo-abelha { width: min(19vw, 88px); animation: abelha-caminho 4.4s ease-in-out .3s both; }
-@keyframes abelha-caminho {
-  0% { transform: translate(-15vw, 40vh); }
-  18% { transform: translate(16vw, 33vh) rotate(-8deg); }
-  26% { transform: translate(19vw, 37vh) rotate(6deg); }
-  34% { transform: translate(15vw, 35vh) rotate(-4deg); }
-  42% { transform: translate(18vw, 34vh) rotate(4deg); }
-  58% { transform: translate(52vw, 26vh) rotate(-10deg); }
-  66% { transform: translate(55vw, 30vh) rotate(6deg); }
-  74% { transform: translate(51vw, 28vh) rotate(-4deg); }
-  100% { transform: translate(118vw, 20vh) rotate(-8deg); }
+/* aranha: desce do topo no fio de seda, balança, mexe as patas e sobe de volta */
+.voo-aranha { width: min(19vw, 86px); left: 74vw; top: 0; transform-origin: 50% 0; animation: aranha-desce 4.4s cubic-bezier(.45, 0, .3, 1) both; }
+@keyframes aranha-desce {
+  0% { transform: translateY(-100%); }
+  28% { transform: translateY(calc(30vh - 100%)); }
+  34% { transform: translateY(calc(27vh - 100%)); }
+  40%, 72% { transform: translateY(calc(29vh - 100%)); }
+  100% { transform: translateY(-110%); }
 }
-.sb-asa-abelha { transform-origin: 15% 95%; animation: zumbe .05s linear infinite alternate; }
-@keyframes zumbe { from { transform: rotate(-16deg); opacity: .95; } to { transform: rotate(18deg); opacity: .55; } }
-.bal-abelha { animation: bal-abelha .24s ease-in-out infinite alternate; }
-@keyframes bal-abelha { to { transform: translateY(-3px); } }
+.voo-aranha .fio { display: block; width: 1.5px; height: 100vh; margin: -100vh auto 0; background: linear-gradient(rgba(255, 255, 255, .15), rgba(255, 255, 255, .7)); }
+.bal-aranha { transform-origin: 50% -30vh; animation: aranha-balanco 1.6s ease-in-out .9s infinite alternate; }
+@keyframes aranha-balanco { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+.sb-patas-a { transform-origin: 50% 0%; animation: patas-aranha .35s ease-in-out infinite alternate; }
+.sb-patas-b { transform-origin: 50% 0%; animation: patas-aranha .35s ease-in-out -.35s infinite alternate; }
+@keyframes patas-aranha { from { transform: scaleY(.94) rotate(-2deg); } to { transform: scaleY(1.04) rotate(2deg); } }
 
 /* joaninha: anda um pouco, abre a carapaça e sai voando */
 .voo-joaninha { width: min(15vw, 68px); animation: joaninha-caminho 4.4s ease-in both; }
