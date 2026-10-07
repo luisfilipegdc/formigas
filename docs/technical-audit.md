@@ -9,7 +9,7 @@
 | Aspecto | Situação |
 |---|---|
 | Tipo de site | Estático: HTML, CSS e JavaScript em scripts clássicos. Sem build, sem npm, sem framework, sem servidor próprio |
-| Publicação | Vercel, a partir do branch `claude/fervent-ride-ckr2w7`. Endereço temporário: `formigas-beta.vercel.app`. Não há `vercel.json` |
+| Publicação | Vercel, a partir do branch `claude/fervent-ride-ckr2w7`. Endereço temporário: `formigas-beta.vercel.app`. `.vercelignore` e `vercel.json` mantêm `docs/` e `design/` fora do site |
 | Arquivos versionados | 129 (≈ 6,8 MB sem `design/` e `docs/`) |
 | Dependências | Three.js r147 (`vendor/three/`: `three.min.js`, `OrbitControls`, `RoomEnvironment`, `MarchingCubes`) e um gerador de QR (`vendor/qrcode.js`). Tudo dentro do repositório |
 | Serviços externos | Google Fonts (Nunito; Baloo 2 nas páginas antigas), API do iNaturalist e API REST da Wikipédia em português. Nenhum exige chave ou cadastro |
@@ -114,8 +114,7 @@ O nome aparece escrito diretamente em:
 
 ## 9. Riscos e achados
 
-1. **`docs/` e `design/` são públicos.** Sem `vercel.json`, a Vercel publica tudo o que está no repositório. Isso inclui hipóteses de preço, pendências internas e os 20 MB de arquivos originais da marca.
-   - PENDENTE: decidir se bloqueia esses caminhos (exige mudar a configuração de publicação, com autorização) ou se move esse material para fora do repositório do site.
+1. **`docs/` e `design/` eram publicados no site.** ✅ **Resolvido (outubro de 2026):** `.vercelignore` tira as duas pastas da publicação, e `vercel.json` redireciona `/docs` e `/design` para a home como garantia extra. O material continua só no repositório.
 2. **Conteúdo sem revisão registrada** (§3).
 3. **Três páginas com a identidade antiga** (§2).
 4. **Cache "tudo de uma vez"** e verificação de instalação frágil (§6).

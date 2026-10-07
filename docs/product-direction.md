@@ -196,4 +196,4 @@ Cada etapa é pequena, publicável sozinha e não quebra o que existe. Os ids at
 6. Preço e benefícios, depois das medições.
 7. Se a criança pode usar a câmera no perfil infantil ou só o adulto.
 8. Fósseis e corpo humano.
-9. Se `docs/` e `design/` continuam publicados no site ([`technical-audit.md`](technical-audit.md) §9).
+9. ~~Se `docs/` e `design/` continuam publicados no site~~ ✅ Decidido: ficam fora do site (bloqueados na Vercel).

@@ -1,0 +1,8 @@
+{
+  "redirects": [
+    { "source": "/docs", "destination": "/", "permanent": false },
+    { "source": "/docs/:path*", "destination": "/", "permanent": false },
+    { "source": "/design", "destination": "/", "permanent": false },
+    { "source": "/design/:path*", "destination": "/", "permanent": false }
+  ]
+}

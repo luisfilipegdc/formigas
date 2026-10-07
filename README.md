@@ -79,6 +79,8 @@ Esse aviso do Safari não vem do site: a Vercel usa um certificado válido. Ele 
 Não clique em "visitar este site mesmo assim" nos iPads das crianças: o certo é corrigir a rede.
 
 ## Publicar na Vercel
+`docs/` e `design/` **não vão para o site**: `.vercelignore` as tira da publicação e `vercel.json` redireciona esses caminhos para a home. Ficam só no repositório.
+
 1. Envie este repositório para o GitHub.
 2. Em [vercel.com](https://vercel.com), clique em **Add New → Project** e importe o repositório.
 3. Em *Framework Preset*, escolha **Other** e deixe o *Build Command* vazio.
