@@ -3,7 +3,7 @@
    (por exemplo, no Wi-Fi da escola que bloqueia o endereço).
    A lista abaixo é gerada por: python3 ferramentas/atualizar-cache.py
    ===================================================================== */
-const VERSAO = '36a6bded2d';
+const VERSAO = '4eba3fb3a6';
 const CACHE = 'animais3d-' + VERSAO;
 const FONTES = 'animais3d-fontes';
 const ARQUIVOS = [
@@ -65,8 +65,9 @@ const ARQUIVOS = [
   './img/marca/compartilhar.jpg',
   './img/marca/logo-completo-320.png',
   './img/marca/logo-completo-640.png',
+  './img/marca/logo-horizontal-144.png',
+  './img/marca/logo-horizontal-96.png',
   './img/mascote/mascote-lupa.jpg',
-  './img/mascote/mascote-rosto.jpg',
   './index.html',
   './js/app.js',
   './js/catalogo.js',
