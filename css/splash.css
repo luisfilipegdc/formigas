@@ -18,7 +18,7 @@
   border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
   animation: surge .7s cubic-bezier(.2, 1.4, .4, 1) .25s both;
 }
-.splash-logo { width: min(78vw, 380px); height: auto; margin-top: 14px; animation: sobe .6s ease .7s both; }
+.splash-logo { width: min(86vw, 460px); height: auto; animation: surge .8s cubic-bezier(.2, 1.4, .4, 1) .3s both; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .3)); }
 .splash-nome { margin: 16px 0 0; line-height: 1; animation: sobe .6s ease .7s both; text-shadow: 0 3px 12px rgba(0,0,0,.3); }
 .splash-nome b { display: block; font-size: clamp(54px, 15vw, 92px); font-weight: 900; color: #fff; letter-spacing: -.03em; }
 .splash-nome i { font-style: normal; font-size: clamp(30px, 8vw, 50px); font-weight: 900; color: var(--color-accent, #FBC02D); }

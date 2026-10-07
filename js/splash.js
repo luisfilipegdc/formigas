@@ -47,7 +47,7 @@
     bv.setAttribute('role', 'dialog');
     bv.setAttribute('aria-modal', 'true');
     bv.setAttribute('aria-labelledby', 'bv-titulo');
-    bv.innerHTML = '<div class="caixa"><img src="img/mascote/mascote-lupa-360.jpg" alt="">' +
+    bv.innerHTML = '<div class="caixa"><img src="img/mascote/lupi-rosto-360.jpg" alt="">' +
       '<h2 id="bv-titulo">Olá, explorador!</h2><p>Vamos descobrir o mundo dos bichos?</p>' +
       '<button class="btn btn-primario" type="button" data-ir="#bichos">Começar a explorar</button>' +
       '<button class="btn btn-claro" type="button" data-ir="#adultos">Sou responsável</button></div>';
