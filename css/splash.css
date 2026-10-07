@@ -19,6 +19,9 @@
   animation: surge .7s cubic-bezier(.2, 1.4, .4, 1) .25s both;
 }
 .splash-logo { width: min(78vw, 380px); height: auto; margin-top: 14px; animation: sobe .6s ease .7s both; }
+.splash-nome { margin: 16px 0 0; line-height: 1; animation: sobe .6s ease .7s both; text-shadow: 0 3px 12px rgba(0,0,0,.3); }
+.splash-nome b { display: block; font-size: clamp(54px, 15vw, 92px); font-weight: 900; color: #fff; letter-spacing: -.03em; }
+.splash-nome i { font-style: normal; font-size: clamp(30px, 8vw, 50px); font-weight: 900; color: var(--color-accent, #FBC02D); }
 .splash-oi { margin: 10px 0 0; font-size: clamp(18px, 4.6vw, 22px); font-weight: 800; color: #DCEBD9; animation: sobe .6s ease 1s both; }
 .splash-pular { position: absolute; z-index: 3; right: max(16px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); font-size: 14px; font-weight: 800; color: rgba(255, 255, 255, .75); }
 @keyframes surge { from { opacity: 0; transform: scale(.6) rotate(-8deg); } }

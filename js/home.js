@@ -1,5 +1,5 @@
 /* =====================================================================
-   home.js — página inicial do Encontre um Bicho
+   home.js — página inicial do Bicho no Bolso
    Monta as experiências 3D, o catálogo (busca + categorias), o álbum de
    descobertas e a missão. Dados em js/catalogo.js; fotos via js/dados.js;
    descobertas via js/progresso.js; ficha via js/ficha.js.
