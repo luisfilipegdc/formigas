@@ -11,6 +11,8 @@
      curto      → nome curto para frases ("Outra joaninha!")
      pista      → dica de "Quem sou eu?" para bichos ainda fora do bolso
      procurar   → onde procurar no mundo real
+     som        → (opcional) { arquivo: 'som/x.mp3', autor, lic, fonte } para o botão 🔊
+     silencio   → curiosidade para bichos que não fazem som audível
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
                   pequena "-1p.jpg" para os cartões); autor e licença aparecem no site
@@ -34,6 +36,7 @@ const GRUPOS = [
 const ANIMAIS = [
   {
     id: 'formiga', nome: 'Formiga-saúva', cientifico: 'Atta spp.', grupo: 'insetos', emoji: '🐜', cor: '#ffd3c2',
+    silencio: 'Formigas quase não fazem som: elas conversam pelo cheiro!',
     curto: 'formiga', pista: 'Eu ando em fila carregando pedacinhos de folha.', procurar: 'Trilhas no chão do jardim ou da calçada.',
     pagina: 'formiga.html',
     resumo: 'A cortadeira que planta um jardim de fungo debaixo da terra.',
@@ -145,6 +148,7 @@ const ANIMAIS = [
   },
   {
     id: 'borboleta', nome: 'Borboleta-azul', cientifico: 'Morpho helenor', grupo: 'insetos', emoji: '🦋', cor: '#cfe0ff', pagina: null,
+    silencio: 'Borboletas são silenciosas: nem as asas fazem barulho que a gente consiga ouvir.',
     curto: 'borboleta', pista: 'Minhas asas brilham azul quando eu voo.', procurar: 'Matas e jardins com frutas maduras caídas.',
     fotos: [
       { arquivo: 'img/animais/borboleta-1.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Morpho helenor', inat: 70941465 },
@@ -176,6 +180,7 @@ const ANIMAIS = [
   },
   {
     id: 'joaninha', nome: 'Joaninha', cientifico: 'Família Coccinellidae', grupo: 'insetos', emoji: '🐞', cor: '#ffd0cc', pagina: null,
+    silencio: 'A joaninha é silenciosa. Quando se assusta, solta um líquido amarelo com cheiro ruim!',
     curto: 'joaninha', pista: 'Sou vermelhinha, com bolinhas pretas.', procurar: 'Folhas de plantas com pulgões.',
     fotos: [
       { arquivo: 'img/animais/joaninha-1.jpg', autor: 'Eddie Dunbar', lic: 'CC BY-SA', especie: 'Coccinella septempunctata', inat: 860583 },
@@ -327,6 +332,7 @@ const ANIMAIS = [
   },
   {
     id: 'tartaruga', nome: 'Tartaruga-verde', cientifico: 'Chelonia mydas', grupo: 'repteis', emoji: '🐢', cor: '#d3efe0', pagina: null,
+    silencio: 'Tartarugas quase não fazem som que a gente escute. Elas não têm cordas vocais.',
     curto: 'tartaruga', pista: 'Nado no mar e carrego minha casa nas costas.', procurar: 'Praias e aquários.',
     fotos: [
       { arquivo: 'img/animais/tartaruga-1.jpg', autor: 'Dan Schofield', lic: 'CC BY', especie: 'Chelonia mydas', inat: 52560925 },
@@ -388,6 +394,7 @@ const ANIMAIS = [
   },
   {
     id: 'pirarucu', art: 'o', nome: 'Pirarucu', cientifico: 'Arapaima gigas', grupo: 'peixes', emoji: '🐟', cor: '#d6e9f3', pagina: null,
+    silencio: 'Fora da água a gente não escuta os peixes. Mas dá para ouvir o pirarucu respirando quando ele sobe à superfície!',
     curto: 'pirarucu', pista: 'Sou um peixe gigante que sobe para respirar ar.', procurar: 'Aquários grandes e rios da Amazônia.',
     fotos: [
       { arquivo: 'img/animais/pirarucu-1.jpg', autor: 'Vince Smith', lic: 'CC BY', especie: 'Arapaima gigas', inat: 83994048 },

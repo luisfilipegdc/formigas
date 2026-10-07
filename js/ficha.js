@@ -63,6 +63,10 @@ const Ficha = (function () {
   .ficha .aviso { opacity: .75; font-size: 16px; padding: 8px 0; }
   .ficha .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .ficha .selos span { font-size: 14px; font-weight: 800; background: #fff; border: 2px solid var(--line, #f0e2c4); border-radius: 999px; padding: 1px 10px; opacity: .45; }
+  .ficha .som { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin: 4px 0 2px; border-radius: 999px; border: 0; background: var(--color-nature, #164A3A); color: #fff; font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; }
+  .ficha .som.tocando { background: var(--color-primary, #2F8A47); }
+  .ficha .som-cred { text-align: center; margin-bottom: 8px; }
+  .ficha .silencio { background: var(--bg, #fff8e8); border-radius: 16px; padding: 10px 14px; margin: 4px 0 10px; font-size: 16px; line-height: 1.35; }
   .ficha .vi { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin: 4px 0 12px; border-radius: 999px; border: 2px dashed var(--color-primary, #c9a227); background: transparent; font: inherit; font-weight: 800; font-size: 17px; color: var(--color-nature, #4a2a12); cursor: pointer; }
   .ficha .vi.ok { border-style: solid; background: var(--color-primary-soft, #fff1c4); }
   .ficha .selos span.ok { opacity: 1; background: var(--color-accent-soft, #fff1c4); border-color: var(--color-accent, #ffd23f); }
@@ -72,6 +76,7 @@ const Ficha = (function () {
     .ficha.on { transform: none; }
     .ficha .grab { display: none; }
   }`;
+  let audio = null;
   let A = null, casta = null, aba = 'ficha', el = null, back = null;
 
   function montar() {
@@ -134,6 +139,9 @@ const Ficha = (function () {
       const C = A.castas && casta && A.castas[casta];
       // no catálogo, leva para a experiência 3D (dentro dela, não precisa)
       if (A.pagina && !location.pathname.endsWith('/' + A.pagina)) h += '<a class="btn" href="' + A.pagina + '">▶ Explorar ' + A.nome + ' em 3D</a>';
+      // som do bicho (gravação real) ou curiosidade sobre o silêncio
+      if (A.som) h += '<button class="som" type="button" data-som>🔊 Ouvir ' + (A.art || 'a') + ' ' + (A.curto || A.nome.toLowerCase()) + '</button><div class="cred som-cred">Som: ' + A.som.autor + ' · ' + A.som.lic + ' · ' + A.som.fonte + '</div>';
+      else if (A.silencio) h += '<div class="silencio">🤫 ' + A.silencio + '</div>';
       // encontrar no mundo real (sem foto, sem dados: só marca neste aparelho)
       if (typeof Progresso !== 'undefined') { const v = Progresso.vezes(A.id);
         h += '<button class="vi' + (v ? ' ok' : '') + '" type="button" data-vi>' + (v ? '👀 Encontrei outr' + (A.art === 'o' ? 'o' : 'a') + '! (' + v + (v === 1 ? ' observação' : ' observações') + ')' : '👀 Encontrei um de verdade!') + '</button>'; }
@@ -149,6 +157,11 @@ const Ficha = (function () {
     const body = el.querySelector('.body');
     body.innerHTML = h; body.scrollTop = 0;
     if (aba === 'real') carregarReal();
+    const bs = body.querySelector('[data-som]');
+    if (bs) bs.addEventListener('click', () => {
+      if (!audio || audio.dataset.id !== A.id) { if (audio) audio.pause(); audio = new Audio(A.som.arquivo); audio.dataset.id = A.id; audio.onended = () => bs.classList.remove('tocando'); }
+      if (audio.paused) { audio.currentTime = 0; audio.play().catch(() => {}); bs.classList.add('tocando'); } else { audio.pause(); bs.classList.remove('tocando'); }
+    });
     const vi = body.querySelector('[data-vi]');
     if (vi) vi.addEventListener('click', () => { Progresso.marcar(A.id, 'vi'); render(); document.dispatchEvent(new Event('ficha-mudou')); });
     // a estrela de "Real" só vem quando uma foto aparece de verdade (ver carregarReal)
@@ -208,6 +221,7 @@ const Ficha = (function () {
   function fechar() {
     if (!el.classList.contains('on')) return;
     el.classList.remove('on'); back.classList.remove('on');
+    if (audio) audio.pause();
     document.dispatchEvent(new Event('ficha-fechou'));
   }
   return { criar, abrir, fechar, casta(c) { casta = c; render(); } };
