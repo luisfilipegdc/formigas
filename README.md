@@ -29,7 +29,17 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - **Girar:** arraste com um dedo. **Zoom:** pinça com dois dedos. **Mover a câmera:** arraste com dois dedos.
 - **⟲ câmera:** volta a câmera para perto dela.
 
-Precisa de internet, porque o Three.js é carregado de um CDN.
+Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR ficam em `vendor/` e as fotos em `img/animais/`. Fora do site só ficam a fonte (se não carregar, aparece a fonte do aparelho) e os dados extras da aba 📷 Real.
+
+## "Esta Conexão Não É Privada" no iPad
+Esse aviso do Safari não vem do site: a Vercel usa um certificado válido. Ele aparece quando algo na rede troca o certificado no caminho. Na escola, quase sempre é o filtro ou firewall do Wi-Fi.
+1. **Teste no 4G:** abra o mesmo endereço num celular fora do Wi-Fi da escola. Se abrir, o problema é a rede.
+2. **Data e hora do iPad:** Ajustes › Geral › Data e Hora › "Ajustar Automaticamente" ligado. Com a data errada, todo site seguro dá esse aviso.
+3. **Wi-Fi com página de login:** conecte de novo na rede e faça o login (abra `captive.apple.com` para a página aparecer).
+4. **Peça para a TI da escola liberar** `*.vercel.app` no filtro (ou instalar nos iPads, pelo gerenciador de dispositivos, o certificado do filtro).
+5. **Melhor solução a longo prazo:** um domínio próprio (ex.: `animais3d.com.br`), ligado na Vercel em *Settings › Domains*. Filtros escolares costumam bloquear `vercel.app` inteiro, porque qualquer pessoa pode publicar ali. Depois, gere um QR novo em `qr.html` com o domínio novo.
+
+Não clique em "visitar este site mesmo assim" nos iPads das crianças: o certo é corrigir a rede.
 
 ## Publicar na Vercel
 1. Envie este repositório para o GitHub.

@@ -135,10 +135,10 @@
 <div id="loading" class="msg">🐝 Esculpindo a abelha…</div>
 <div id="fail">🐝<br>Precisa de internet para carregar o 3D.<br>Toque para tentar de novo.</div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/objects/MarchingCubes.js"></script>
+<script src="vendor/three/three.min.js"></script>
+<script src="vendor/three/OrbitControls.js"></script>
+<script src="vendor/three/RoomEnvironment.js"></script>
+<script src="vendor/three/MarchingCubes.js"></script>
 <script>
 if (!window.THREE || !THREE.OrbitControls || !THREE.triTable) {
   document.getElementById('loading').style.display = 'none';
