@@ -3,12 +3,16 @@
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
 ## Páginas
-- `index.html`: catálogo com busca e filtros por grupo (insetos, aves, mamíferos…). Animais ainda sem página aparecem como "em breve".
+- `index.html`: catálogo com busca, filtros por grupo, **fotos reais** e álbum de descobertas (⭐). Todo cartão abre a ficha; os que têm 3D abrem a tela 3D (ℹ️ abre a ficha sem sair do catálogo).
+- `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
 - `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
 - `qr.html`: folha A4 com o QR code do site, pronta para imprimir (usa o endereço onde o site está publicado; dá para trocar no campo de cima).
 - `js/catalogo.js`: **dados de todos os animais** (ficha, ciclo de vida, curiosidades, dados por casta). Para adicionar um animal ao catálogo, acrescente um item em `ANIMAIS`.
-- `js/ficha.js`: gaveta ℹ️ ficha usada nas telas 3D (abas Ficha, Vida e Curiosidades; muda conforme a casta escolhida).
+- `js/ficha.js`: gaveta ℹ️ ficha (abas Ficha, Vida, Sabia? e 📷 Real; muda conforme a casta escolhida).
+- `js/dados.js`: fotos e dados reais do **iNaturalist** e da **Wikipédia** (sem chave, sem cadastro). Fica guardado no aparelho por 14 dias; sem internet, o site usa os emojis.
+- `js/progresso.js`: álbum de descobertas, guardado só no aparelho (dá para apagar no rodapé do catálogo).
+- `docs/ESTRATEGIA.md`: design comportamental, crítica de UX/UI, APIs, monetização ética e recomendações de tecnologia 3D.
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar

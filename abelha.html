@@ -147,6 +147,8 @@ if (!window.THREE || !THREE.OrbitControls || !THREE.triTable) {
 </script>
 <script src="js/core3d.js"></script>
 <script src="js/catalogo.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/progresso.js"></script>
 <script src="js/ficha.js"></script>
 <script>
 (function () {
@@ -1535,6 +1537,7 @@ function goHiveStop(i) {
 const beeView = { p: new V3(), t: new V3() };
 function enterHive() {
   const go = () => {
+    Progresso.marcar('abelha', 'casa');
     if (!hive.built) buildHive();
     hiveMode = true;
     beeView.p.copy(camera.position); beeView.t.copy(controls.target);
@@ -1614,6 +1617,7 @@ setTimeout(() => {
   state.yaw = 0.6;
   bee.rotation.y = state.yaw;
   Ficha.criar('abelha');
+setTimeout(() => Progresso.marcar('abelha', '3d'), 2500);
   switchCaste('operaria');
   hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 7000);
   const clock = new THREE.Clock();
