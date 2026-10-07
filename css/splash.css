@@ -1,0 +1,59 @@
+/* =====================================================================
+   splash.css — abertura (splash) e boas-vindas do primeiro acesso
+   Só transform/opacity nas animações: leve para iPads antigos.
+   Segurança: se o JavaScript falhar, a splash some sozinha (animação "sai").
+   ===================================================================== */
+.splash {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #2E7D32 0, #1B5E20 55%, #12451A 100%); color: #fff;
+  animation: sai .5s ease 3.6s forwards; cursor: pointer;
+}
+.splash.rapida { animation-delay: 1.2s; }
+.splash.saindo { animation: sai .45s ease forwards; }
+@keyframes sai { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
+.splash-centro { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px; }
+.splash-mascote {
+  width: min(42vw, 180px); height: min(42vw, 180px); border-radius: 50%; object-fit: cover;
+  border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  animation: surge .7s cubic-bezier(.2, 1.4, .4, 1) .25s both;
+}
+.splash-logo { width: min(78vw, 380px); height: auto; margin-top: 14px; animation: sobe .6s ease .7s both; }
+.splash-oi { margin: 10px 0 0; font-size: clamp(18px, 4.6vw, 22px); font-weight: 800; color: #DCEBD9; animation: sobe .6s ease 1s both; }
+.splash-pular { position: absolute; z-index: 3; right: max(16px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); font-size: 14px; font-weight: 800; color: rgba(255, 255, 255, .75); }
+@keyframes surge { from { opacity: 0; transform: scale(.6) rotate(-8deg); } }
+@keyframes sobe { from { opacity: 0; transform: translateY(14px); } }
+
+/* folhas entrando pelas bordas */
+.splash-folha { position: absolute; z-index: 1; width: 120px; height: 120px; color: #43A047; opacity: .9; animation: entra 1s ease-out both; }
+.splash-folha:nth-of-type(1) { top: -20px; left: -18px; transform: rotate(130deg); --dx: -60px; --dy: -60px; color: #66BB6A; }
+.splash-folha:nth-of-type(2) { top: 6%; right: -26px; transform: rotate(-120deg); --dx: 60px; --dy: -40px; animation-delay: .1s; }
+.splash-folha:nth-of-type(3) { bottom: -24px; left: 6%; transform: rotate(40deg); --dx: -40px; --dy: 60px; animation-delay: .15s; color: #2E7D32; }
+.splash-folha:nth-of-type(4) { bottom: 8%; right: -10px; transform: rotate(-50deg); --dx: 60px; --dy: 40px; animation-delay: .2s; color: #7CC576; width: 90px; height: 90px; }
+@keyframes entra { from { opacity: 0; translate: var(--dx) var(--dy); } }
+
+/* joaninha que atravessa a tela */
+.splash-joaninha { position: absolute; z-index: 1; top: 22%; left: -60px; width: 44px; height: 44px; animation: voa 2.6s ease-in-out .5s both; }
+@keyframes voa {
+  0% { transform: translate(0, 0) rotate(20deg); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(55vw, -6vh) rotate(-10deg); }
+  100% { transform: translate(115vw, 4vh) rotate(25deg); opacity: 1; }
+}
+
+/* boas-vindas do primeiro acesso */
+.boas-vindas { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(18, 69, 26, .55); }
+.boas-vindas .caixa {
+  width: min(440px, 100%); background: var(--surface); border-radius: var(--radius-l); padding: 26px 22px 22px; text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .25); animation: sobe .4s ease both;
+}
+.boas-vindas img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: -70px auto 8px; border: 5px solid #fff; box-shadow: var(--shadow-m); }
+.boas-vindas h2 { margin: 0; font-size: 30px; font-weight: 900; color: var(--color-nature); }
+.boas-vindas p { margin: 6px 0 18px; font-size: 19px; color: var(--text-soft); }
+.boas-vindas .btn { width: 100%; margin-top: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .splash, .splash.rapida { animation: sai .3s ease .8s forwards; }
+  .splash *, .boas-vindas .caixa { animation: none !important; }
+  .splash-joaninha { display: none; }
+}
