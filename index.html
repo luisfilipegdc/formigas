@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Animais 3D">
+<meta name="apple-mobile-web-app-title" content="Bichos 3D">
 <meta name="theme-color" content="#fff3c8">
-<meta name="description" content="Catálogo 3D de Animais: explore formigas, abelhas e outros animais em 3D, com ficha da espécie e ciclo de vida. Grátis, direto no navegador.">
+<meta name="description" content="Encontre um Bicho: crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos. Grátis, direto no navegador do iPad.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="img/icone/favicon.png">
 <link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
-<title>Catálogo 3D de Animais</title>
+<title>Encontre um Bicho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
@@ -125,18 +125,18 @@
   <header class="topo">
     <div class="marca">
       <img class="ic" src="img/icone/icone-192.png" alt="">
-      <div><h1>Catálogo 3D de Animais</h1><p>Explore em 3D, veja fotos reais e conheça a vida dos animais.</p></div>
+      <div><h1>Encontre um Bicho</h1><p>Explore. Descubra. Colecione.</p></div>
     </div>
     <nav class="acoes">
-      <a class="pilula" href="comparar.html">⚖️<span class="longo"> Comparar</span></a>
-      <span class="pilula suave" id="album" aria-live="polite">🏅 0</span>
+      <a class="pilula" href="comparar.html">⚖️<span class="longo"> Qual é maior?</span></a>
+      <span class="pilula suave" id="album" aria-live="polite">🐾 0</span>
     </nav>
   </header>
 
   <h2>🧊 Explore em 3D <small>Gire com um dedo, dê zoom com dois.</small></h2>
   <section class="destaque" id="destaque"></section>
 
-  <h2>📋 Fichas dos animais <small>Fotos reais, ciclo de vida e curiosidades.</small></h2>
+  <h2>🔎 Encontre todos os bichos <small id="contagem"></small></h2>
   <div class="filtros">
     <input id="q" type="search" placeholder="🔎 Procurar animal…" aria-label="Procurar animal">
     <div class="chips" id="chips" role="group" aria-label="Grupos de animais"></div>
@@ -221,9 +221,10 @@
       const s = el.querySelector('.estrela, .prog');
       s.hidden = !c.feitas; s.textContent = '⭐ ' + c.feitas + '/' + c.total;
     });
-    const n = Progresso.total();
-    $('album').textContent = '🏅 ' + n;
-    $('album').title = n + (n === 1 ? ' descoberta' : ' descobertas');
+    const n = Progresso.encontrados(), t = ANIMAIS.length;
+    $('album').textContent = '🐾 ' + n + '/' + t;
+    $('album').title = n + ' de ' + t + (n === 1 ? ' bicho encontrado' : ' bichos encontrados');
+    $('contagem').textContent = n ? 'Você já encontrou ' + n + ' de ' + t + '!' : 'Toque num bicho para encontrá-lo.';
     $('album').setAttribute('aria-label', $('album').title);
   }
   $('creditos').innerHTML = ANIMAIS.flatMap((a) => (a.fotos || []).map((f) =>

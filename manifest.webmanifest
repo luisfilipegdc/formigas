@@ -1,7 +1,7 @@
 {
-  "name": "Catálogo 3D de Animais",
-  "short_name": "Animais 3D",
-  "description": "Formigas, abelhas e outros animais em 3D, com fotos reais e ficha da espécie. Grátis e sem anúncios.",
+  "name": "Encontre um Bicho",
+  "short_name": "Bichos 3D",
+  "description": "Explore. Descubra. Colecione. Crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos.",
   "lang": "pt-BR",
   "start_url": "./index.html",
   "scope": "./",

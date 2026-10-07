@@ -1,5 +1,5 @@
 /* =====================================================================
-   catalogo.js — dados do Catálogo 3D de Animais (edite à vontade)
+   catalogo.js — dados do Encontre um Bicho (edite à vontade)
 
    Cada animal tem:
      id, nome, cientifico, grupo, emoji, cor, pagina (null = "em breve")

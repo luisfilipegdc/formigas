@@ -1,4 +1,6 @@
-# 🐾 Catálogo 3D de Animais
+# 🐜 Encontre um Bicho
+
+**Explore. Descubra. Colecione.** Um catálogo interativo onde crianças exploram animais em 3D, descobrem curiosidades e comparam seus tamanhos.
 
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
