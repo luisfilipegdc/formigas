@@ -20,6 +20,14 @@
   --text: #493528;              /* marrom quente */
   --text-soft: #7A6656;
   --line: #EFE2C6;
+  /* tokens do MIV Bicho no Bolso v1.0 (mesmas cores, nomes oficiais) */
+  --forest: #164A3A;
+  --leaf: #46A758;
+  --lime: #A8D94A;
+  --adventure: #F5C451;
+  --terracotta: #D8784C;
+  --cream: #FFF8E8;
+  --brown: #493528;
   /* forma */
   --radius-s: 12px;
   --radius-m: 18px;
