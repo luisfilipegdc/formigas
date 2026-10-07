@@ -1,12 +1,14 @@
-# 🐜🐝 Museu dos Insetos 3D
+# 🐾 Catálogo 3D de Animais
 
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
 ## Páginas
-- `index.html`: tela inicial, onde se escolhe o inseto.
+- `index.html`: catálogo com busca e filtros por grupo (insetos, aves, mamíferos…). Animais ainda sem página aparecem como "em breve".
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
 - `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.
 - `qr.html`: folha A4 com o QR code do site, pronta para imprimir (usa o endereço onde o site está publicado; dá para trocar no campo de cima).
+- `js/catalogo.js`: **dados de todos os animais** (ficha, ciclo de vida, curiosidades, dados por casta). Para adicionar um animal ao catálogo, acrescente um item em `ANIMAIS`.
+- `js/ficha.js`: gaveta ℹ️ ficha usada nas telas 3D (abas Ficha, Vida e Curiosidades; muda conforme a casta escolhida).
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar
@@ -32,3 +34,6 @@ Precisa de internet, porque o Three.js é carregado de um CDN.
 
 ## Mudar as cores
 No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a velocidade e o tamanho da área por onde ela anda.
+
+## Celular
+Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra embaixo) e o 3D fica mais leve (menos pelos e sombras menores).

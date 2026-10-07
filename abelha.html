@@ -86,6 +86,29 @@
   #cardX { position: absolute; right: 10px; top: 8px; border: 0; background: #eee; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; }
   #fail { position: fixed; inset: 0; display: none; place-items: center; text-align: center; font-size: 26px; color: #4a2a12; padding: 30px; background: #cfe3ef; }
   @media (max-width: 700px) { .castes button, .castes a { width: 76px; height: 76px; } #hint { font-size: 16px; } }
+
+  /* ---------- celular (tela pequena ou deitada baixinha) ---------- */
+  @media (max-width: 760px), (max-height: 520px) {
+    .castes { left: 0; right: 0; top: max(8px, env(safe-area-inset-top)); padding: 2px 10px 6px; gap: 8px; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .castes::-webkit-scrollbar { display: none; }
+    .castes button, .castes a, .castes .museu { width: 64px !important; height: 64px !important; min-width: 64px; border-radius: 18px; border-width: 3px; flex: none; margin-right: 0 !important; }
+    .castes b, .castes .museu b, .castes button b { font-size: 28px !important; }
+    .castes span, .castes .museu span, .castes button span { font-size: 12px !important; }
+    .castes .nestbtn, .castes .hivebtn { width: 96px !important; min-width: 96px; margin-left: 0 !important; }
+    .tools { left: 0; right: 0; bottom: max(8px, env(safe-area-inset-bottom)); flex-direction: row; justify-content: center; gap: 6px; padding: 0 6px; flex-wrap: nowrap; }
+    .tools button { width: 54px; height: 54px; font-size: 25px; border-width: 3px; }
+    .tool span { font-size: 11px; padding: 0 6px; }
+    .msg { box-sizing: border-box; font-size: 15px; padding: 7px 14px; white-space: normal; text-align: center; width: calc(100vw - 32px); }
+    #hint { bottom: calc(92px + env(safe-area-inset-bottom)); left: 16px; transform: none; }
+    #card { box-sizing: border-box; width: calc(100vw - 20px); bottom: calc(8px + env(safe-area-inset-bottom)); padding: 10px 50px 12px 16px; border-radius: 20px; }
+    #card b { font-size: 20px; } #card p { font-size: 15.5px; }
+    #cardX { width: 34px; height: 34px; font-size: 16px; }
+    .nestui .big, .hiveui .big { width: 70px; height: 62px; border-width: 3px; border-radius: 18px; top: max(8px, env(safe-area-inset-top)); left: 10px; }
+    .nestui .big b, .hiveui .big b { font-size: 26px; } .nestui .big span, .hiveui .big span { font-size: 12px; }
+    .nestui .round, .hiveui .round { width: 62px; height: 62px; font-size: 28px; border-width: 3px; right: 10px; bottom: calc(132px + env(safe-area-inset-bottom)); }
+    .nlabel { font-size: 13px; padding: 2px 9px 2px 5px; border-width: 3px; }
+    .nlabel b { font-size: 17px; }
+  }
 </style>
 </head>
 <body>
@@ -123,10 +146,14 @@ if (!window.THREE || !THREE.OrbitControls || !THREE.triTable) {
 }
 </script>
 <script src="js/core3d.js"></script>
+<script src="js/catalogo.js"></script>
+<script src="js/ficha.js"></script>
 <script>
 (function () {
 'use strict';
 if (!window.THREE || !THREE.triTable) return;
+const MOBILE = Math.min(screen.width, screen.height) < 820 || /iPhone|Android.+Mobile/i.test(navigator.userAgent);   // celular: 3D mais leve
+
 
 /* =====================================================================
    1) AS 3 CASTAS DA ABELHA-EUROPEIA (Apis mellifera) — edite à vontade
@@ -242,7 +269,7 @@ function abdBand(x) {
    3) CENA: céu, luz, chão do jardim
    ===================================================================== */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE ? 1.5 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -256,7 +283,7 @@ scene.fog = new THREE.Fog('#cfe3ef', 90, 260);
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new THREE.RoomEnvironment(), 0.04).texture;
 const key = new THREE.DirectionalLight(0xfff3e0, 1.7);
 key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048);
+key.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
 key.shadow.radius = 5;
 Object.assign(key.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 90 });
 key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
@@ -421,7 +448,8 @@ function buildBody() {
 
   // pelos: muitos no tórax (dourados e compridos), finos na cabeça, faixas claras no abdômen
   const pos = body.geometry.attributes.position.array, nor = body.geometry.attributes.normal.array, count = pos.length / 3;
-  const list = [], hp = new THREE.Color(CA.cor.pelo), want = CA.pelos;
+  const list = [], hp = new THREE.Color(CA.cor.pelo), k = MOBILE ? 0.5 : 1;
+  const want = { torax: CA.pelos.torax * k, cabeca: CA.pelos.cabeca * k, abd: CA.pelos.abd * k };
   const got = { torax: 0, cabeca: 0, abd: 0 };
   for (let tries = 0; tries < 150000 && (got.torax < want.torax || got.cabeca < want.cabeca || got.abd < want.abd); tries++) {
     const v = Math.floor(rand() * count);
@@ -1478,7 +1506,7 @@ function updateHive(dt, t) {
     if (!el) return;
     _bp.copy(hive.stops[i].lp || hive.stops[i].p).project(camera);
     el.style.display = _bp.z < 1 ? '' : 'none';
-    el.style.transform = 'translate(' + ((_bp.x + 1) / 2 * w) + 'px,' + ((1 - _bp.y) / 2 * h) + 'px) translate(-50%,-100%)';
+    el.style.transform = 'translate(' + clamp((_bp.x + 1) / 2 * w, 64, w - 64) + 'px,' + ((1 - _bp.y) / 2 * h) + 'px) translate(-50%,-100%)';
     el.classList.toggle('on', i === hive.stop);
   });
 
@@ -1490,10 +1518,15 @@ function updateHive(dt, t) {
   }
   if (c.y < -55) c.y = -55;
 }
+// em tela em pé (celular) a câmera se afasta para caber tudo na largura
+function fitPortrait(cam, target) {
+  const f = Math.max(1, 1 / (camera.aspect * 1.25));
+  return cam.clone().sub(target).multiplyScalar(f).add(target);
+}
 function goHiveStop(i) {
   const st = hive.stops[i];
   hive.stop = i;
-  hive.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.cam.clone(), t1: st.p.clone() };
+  hive.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: fitPortrait(st.cam, st.p), t1: st.p.clone() };
   document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
   document.getElementById('cardP').textContent = st.txt;
   document.getElementById('card').classList.add('on');
@@ -1560,6 +1593,7 @@ function switchCaste(name) {
     ({ G, legs, antennae, wings, tongue, pollenBalls, pollenDust } = m);
     bee.add(G);
     current = name;
+    Ficha.casta(name);
     bee.scale.setScalar(CA.escala);
     if (!CA.cesta) { state.pollen = 0; state.dust = 0; }
     centerLocal.copy(m.center);
@@ -1579,6 +1613,7 @@ setTimeout(() => {
   bee.position.set(0, 0, 6);
   state.yaw = 0.6;
   bee.rotation.y = state.yaw;
+  Ficha.criar('abelha');
   switchCaste('operaria');
   hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 7000);
   const clock = new THREE.Clock();

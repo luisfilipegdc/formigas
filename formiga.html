@@ -94,6 +94,29 @@
   #loading { top: 50%; transform: translate(-50%, -50%); }
   #fail { position: fixed; inset: 0; display: none; place-items: center; text-align: center; font-size: 26px; color: #4a2a12; padding: 30px; background: #d8cbb2; }
   @media (max-width: 700px) { #hint { font-size: 16px; padding: 8px 16px; left: 16px; transform: none; } }
+
+  /* ---------- celular (tela pequena ou deitada baixinha) ---------- */
+  @media (max-width: 760px), (max-height: 520px) {
+    .castes { left: 0; right: 0; top: max(8px, env(safe-area-inset-top)); padding: 2px 10px 6px; gap: 8px; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .castes::-webkit-scrollbar { display: none; }
+    .castes button, .castes a, .castes .museu { width: 64px !important; height: 64px !important; min-width: 64px; border-radius: 18px; border-width: 3px; flex: none; margin-right: 0 !important; }
+    .castes b, .castes .museu b, .castes button b { font-size: 28px !important; }
+    .castes span, .castes .museu span, .castes button span { font-size: 12px !important; }
+    .castes .nestbtn, .castes .hivebtn { width: 96px !important; min-width: 96px; margin-left: 0 !important; }
+    .tools { left: 0; right: 0; bottom: max(8px, env(safe-area-inset-bottom)); flex-direction: row; justify-content: center; gap: 6px; padding: 0 6px; flex-wrap: nowrap; }
+    .tools button { width: 54px; height: 54px; font-size: 25px; border-width: 3px; }
+    .tool span { font-size: 11px; padding: 0 6px; }
+    .msg { box-sizing: border-box; font-size: 15px; padding: 7px 14px; white-space: normal; text-align: center; width: calc(100vw - 32px); }
+    #hint { bottom: calc(92px + env(safe-area-inset-bottom)); left: 16px; transform: none; }
+    #card { box-sizing: border-box; width: calc(100vw - 20px); bottom: calc(8px + env(safe-area-inset-bottom)); padding: 10px 50px 12px 16px; border-radius: 20px; }
+    #card b { font-size: 20px; } #card p { font-size: 15.5px; }
+    #cardX { width: 34px; height: 34px; font-size: 16px; }
+    .nestui .big, .hiveui .big { width: 70px; height: 62px; border-width: 3px; border-radius: 18px; top: max(8px, env(safe-area-inset-top)); left: 10px; }
+    .nestui .big b, .hiveui .big b { font-size: 26px; } .nestui .big span, .hiveui .big span { font-size: 12px; }
+    .nestui .round, .hiveui .round { width: 62px; height: 62px; font-size: 28px; border-width: 3px; right: 10px; bottom: calc(132px + env(safe-area-inset-bottom)); }
+    .nlabel { font-size: 13px; padding: 2px 9px 2px 5px; border-width: 3px; }
+    .nlabel b { font-size: 17px; }
+  }
 </style>
 </head>
 <body>
@@ -122,6 +145,8 @@
 <div id="fail">🐜<br>Precisa de internet para carregar o 3D.<br>Toque para tentar de novo.</div>
 
 <!-- Three.js r147: scripts clássicos (funcionam até em iPads antigos) -->
+<script src="js/catalogo.js"></script>
+<script src="js/ficha.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
@@ -139,6 +164,8 @@ if (!window.THREE || !THREE.OrbitControls || !THREE.triTable) {
   return;
 }
 if (THREE.ColorManagement) THREE.ColorManagement.legacyMode = false; // cores hex fiéis
+const MOBILE = Math.min(screen.width, screen.height) < 820 || /iPhone|Android.+Mobile/i.test(navigator.userAgent);   // celular: 3D mais leve
+
 
 /* ================= AJUSTES (edite à vontade) ================= */
 const COR = {
@@ -489,7 +516,7 @@ function sdfMesh(fn, min, max, cell, colorFn, mat) {
    3) RENDERIZADOR, LUZ, CHÃO
    ===================================================================== */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MOBILE ? 1.5 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -505,7 +532,7 @@ scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
 
 const key = new THREE.DirectionalLight(0xfff1e0, 1.7);
 key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048);
+key.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
 key.shadow.radius = 5;
 Object.assign(key.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 50 });
 key.shadow.bias = -0.0004;
@@ -627,7 +654,7 @@ function buildBody() {
   // pelos deitados para trás
   const pos = body.geometry.attributes.position.array, nor = body.geometry.attributes.normal.array;
   const count = pos.length / 3, list = [];
-  for (let i = 0; i < CA.pelos / LOD; i++) {
+  for (let i = 0; i < CA.pelos / LOD * (MOBILE ? 0.6 : 1); i++) {
     const v = Math.floor(rand() * count);
     const p = new V3().fromArray(pos, v * 3), n = new V3().fromArray(nor, v * 3);
     if (n.y < -0.6 && rand() < 0.7) continue;
@@ -1943,13 +1970,13 @@ function updateNest(dt, t) {
   (nest.subLabels || []).forEach((el, i) => {
     _np.copy(nest.subStops[i].p).project(camera);
     el.style.display = showSub && _np.z < 1 ? '' : 'none';
-    el.style.transform = 'translate(' + ((_np.x + 1) / 2 * w) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
+    el.style.transform = 'translate(' + clamp((_np.x + 1) / 2 * w, 64, w - 64) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
   });
   nest.labels.forEach((el, i) => {
     if (!el) return;
     _np.copy(nest.stops[i].lp || nest.stops[i].p).project(camera);
     el.style.display = _np.z < 1 ? '' : 'none';
-    el.style.transform = 'translate(' + ((_np.x + 1) / 2 * w) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
+    el.style.transform = 'translate(' + clamp((_np.x + 1) / 2 * w, 64, w - 64) + 'px,' + ((1 - _np.y) / 2 * h) + 'px) translate(-50%,-100%)';
     el.classList.toggle('on', i === nest.stop);
   });
   // voo da câmera até uma parada
@@ -1973,10 +2000,15 @@ function keepCameraOutOfSoil() {
   if (c.y < -NEST.depth + 2) c.y = -NEST.depth + 2;
 }
 
+// em tela em pé (celular) a câmera se afasta para caber tudo na largura
+function fitPortrait(cam, target) {
+  const f = Math.max(1, 1 / (camera.aspect * 1.25));
+  return cam.clone().sub(target).multiplyScalar(f).add(target);
+}
 function goStop(i) {
   const st = nest.stops[i];
   nest.stop = i;
-  nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: st.cam.clone(), t1: st.p.clone() };
+  nest.flight = { k: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: fitPortrait(st.cam, st.p), t1: st.p.clone() };
   document.getElementById('cardT').innerHTML = st.em + ' ' + st.t;
   document.getElementById('cardP').textContent = st.txt;
   document.getElementById('card').classList.add('on');
@@ -2064,6 +2096,7 @@ function switchCaste(name, first) {
     ({ G, legs, antennae, jaws, wings, leaf } = m);
     ant.add(G);
     current = name;
+    Ficha.casta(name);
     ant.scale.setScalar(CA.escala);
     ant.position.y = 0; ant.rotation.z = 0;
     state.flyT = -1; state.fly = 0; state.biteT = -1;
@@ -2092,6 +2125,7 @@ function switchCaste(name, first) {
   }
 }
 
+Ficha.criar('formiga');
 switchCaste('operaria', true);
 setTimeout(() => { hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 7000); }, 900);
 const clock = new THREE.Clock();

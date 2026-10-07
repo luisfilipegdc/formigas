@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Insetos 3D">
+<meta name="apple-mobile-web-app-title" content="Animais 3D">
 <meta name="theme-color" content="#fff3c8">
-<meta name="description" content="Museu dos Insetos 3D: explore formigas e abelhas em 3D, de graça, direto no navegador.">
-<title>Museu dos Insetos 3D</title>
+<meta name="description" content="Catálogo 3D de Animais: explore formigas, abelhas e outros animais em 3D, com ficha da espécie e ciclo de vida. Grátis, direto no navegador.">
+<title>Catálogo 3D de Animais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
@@ -18,79 +18,121 @@
     margin: 0; min-height: 100%;
     font-family: 'Baloo 2', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; color: var(--ink);
     background:
-      radial-gradient(circle at 10% 12%, rgba(255,255,255,.75) 0 60px, transparent 62px),
-      radial-gradient(circle at 92% 8%, rgba(255,255,255,.6) 0 44px, transparent 46px),
-      radial-gradient(circle at 85% 92%, rgba(255,255,255,.5) 0 70px, transparent 72px),
+      radial-gradient(circle at 10% 8%, rgba(255,255,255,.75) 0 60px, transparent 62px),
+      radial-gradient(circle at 92% 5%, rgba(255,255,255,.6) 0 44px, transparent 46px),
       linear-gradient(#fff6d6, #ffe0ad);
     background-attachment: fixed;
-    -webkit-user-select: none; user-select: none;
   }
   main {
-    max-width: 1100px; margin: 0 auto;
-    padding: max(20px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
-    display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+    max-width: 1180px; margin: 0 auto;
+    padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    display: flex; flex-direction: column; min-height: 100vh;
   }
-  h1 { margin: 6px 0 0; font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.05; text-align: center; }
+  header { text-align: center; }
+  h1 { margin: 4px 0 0; font-size: clamp(30px, 6vw, 60px); font-weight: 800; line-height: 1.05; }
   h1 .bug { display: inline-block; animation: anda 2.6s ease-in-out infinite; }
-  @keyframes anda { 0%,100% { transform: translateX(-6px) rotate(-8deg); } 50% { transform: translateX(6px) rotate(8deg); } }
-  .sub { margin: 4px 0 22px; font-size: clamp(18px, 2.4vw, 24px); font-weight: 600; opacity: .8; text-align: center; }
-  .grid {
-    width: 100%; display: grid; gap: clamp(14px, 2.4vw, 26px);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  @keyframes anda { 0%,100% { transform: translateX(-5px) rotate(-8deg); } 50% { transform: translateX(5px) rotate(8deg); } }
+  .sub { margin: 2px 0 14px; font-size: clamp(16px, 2.3vw, 22px); font-weight: 600; opacity: .8; }
+  .search { display: flex; justify-content: center; margin-bottom: 10px; }
+  .search input {
+    width: min(560px, 100%); font: inherit; font-size: 18px; padding: 10px 20px; border-radius: 999px;
+    border: 4px solid #fff; background: rgba(255,255,255,.85); color: var(--ink); outline: none;
+    box-shadow: 0 6px 0 rgba(74,42,18,.1);
   }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: none; justify-content: safe center; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips button {
+    flex: none; font: inherit; font-size: 17px; font-weight: 800; color: var(--ink); cursor: pointer;
+    border: 3px solid #fff; background: rgba(255,255,255,.7); border-radius: 999px; padding: 4px 14px;
+  }
+  .chips button.on { background: #ffd23f; }
+  .grid { display: grid; gap: clamp(12px, 2vw, 22px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); }
   .card {
-    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-    min-height: 340px; padding: 18px 18px 20px; border-radius: 38px; border: 6px solid #fff;
-    background: var(--bg); color: var(--ink); text-decoration: none; overflow: hidden;
-    box-shadow: 0 12px 0 rgba(74,42,18,.14), 0 18px 32px rgba(74,42,18,.16);
-    transition: transform .14s ease;
+    position: relative; display: flex; flex-direction: column; border-radius: 32px; border: 5px solid #fff;
+    background: var(--bg); color: var(--ink); text-decoration: none; overflow: hidden; cursor: pointer;
+    box-shadow: 0 10px 0 rgba(74,42,18,.12), 0 16px 28px rgba(74,42,18,.14); transition: transform .14s ease; text-align: left;
+    font: inherit; padding: 0;
   }
-  .card:active { transform: scale(.95); }
-  .card .pic { flex: 1; width: 100%; display: grid; place-items: center; }
-  .card .pic span { font-size: 150px; line-height: 1; filter: drop-shadow(0 10px 10px rgba(0,0,0,.18)); animation: flutua 3s ease-in-out infinite; }
-  .card:nth-child(2) .pic span { animation-delay: -1.2s; }
-  @keyframes flutua { 50% { transform: translateY(-10px) rotate(4deg); } }
-  .card .nm { font-size: 46px; font-weight: 800; line-height: 1; }
-  .card .what { font-size: 19px; font-weight: 600; opacity: .8; text-align: center; margin-top: 6px; line-height: 1.25; }
-  .card .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
-  .card .tags b { background: rgba(255,255,255,.75); border-radius: 999px; padding: 2px 12px; font-size: 16px; }
-  .card.soon { filter: grayscale(.55); opacity: .75; pointer-events: none; }
-  .card.soon::after {
-    content: 'em breve'; position: absolute; top: 18px; right: -40px; transform: rotate(35deg);
-    background: #fff; padding: 4px 50px; font-weight: 800; font-size: 16px;
+  .card:active { transform: scale(.96); }
+  .card .pic { height: 150px; display: grid; place-items: center; }
+  .card .pic span { font-size: 108px; line-height: 1; filter: drop-shadow(0 8px 8px rgba(0,0,0,.18)); animation: flutua 3s ease-in-out infinite; }
+  @keyframes flutua { 50% { transform: translateY(-8px) rotate(4deg); } }
+  .card .txt { background: rgba(255,255,255,.72); padding: 10px 16px 14px; flex: 1; display: flex; flex-direction: column; }
+  .card .nm { font-size: 27px; font-weight: 800; line-height: 1.05; }
+  .card .sci { font-size: 15px; font-style: italic; opacity: .7; }
+  .card .res { font-size: 16px; line-height: 1.3; margin: 6px 0 8px; }
+  .card .facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .card .facts b { background: #fff; border-radius: 999px; padding: 1px 10px; font-size: 14px; }
+  .card .go { position: absolute; top: 12px; right: 12px; background: #fff; border-radius: 999px; padding: 2px 12px; font-weight: 800; font-size: 15px; }
+  .card.soon .pic, .card.soon .txt { filter: grayscale(.5); opacity: .75; }
+  .card.soon { cursor: default; }
+  .card.soon .go { background: rgba(255,255,255,.8); }
+  .empty { text-align: center; font-size: 20px; padding: 30px; opacity: .7; }
+  footer { margin-top: auto; padding-top: 26px; font-size: 15px; opacity: .75; text-align: center; line-height: 1.5; }
+  footer a { color: inherit; }
+  @media (max-width: 520px) {
+    .card { flex-direction: row; border-radius: 24px; min-height: 0; }
+    .card .pic { height: auto; width: 96px; flex: none; }
+    .card .pic span { font-size: 62px; }
+    .card .nm { font-size: 22px; }
+    .card .res { font-size: 15px; margin: 2px 0 6px; }
+    .card .go { position: static; align-self: flex-start; margin-bottom: 4px; font-size: 13px; }
   }
-  footer { margin-top: auto; padding-top: 28px; font-size: 15px; opacity: .7; text-align: center; }
 </style>
 </head>
 <body>
 <main>
-  <h1><span class="bug">🐜</span> Museu dos Insetos 3D <span class="bug">🐝</span></h1>
-  <p class="sub">Escolha um inseto para explorar!</p>
-  <div class="grid">
-    <a class="card" href="formiga.html" style="--bg:#ffd3c2">
-      <div class="pic"><span>🐜</span></div>
-      <div class="nm">Formiga</div>
-      <div class="what">Saúva: operária, rainha e zangão</div>
-      <div class="tags"><b>🍃 folha</b><b>✈️ voo</b><b>🏠 formigueiro</b></div>
-    </a>
-    <a class="card" href="abelha.html" style="--bg:#ffe58a">
-      <div class="pic"><span>🐝</span></div>
-      <div class="nm">Abelha</div>
-      <div class="what">Abelha-europeia: operária, rainha e zangão</div>
-      <div class="tags"><b>🌼 flores</b><b>👅 néctar</b><b>✈️ voo</b></div>
-    </a>
-    <div class="card soon" style="--bg:#d8f0c4">
-      <div class="pic"><span>🦋</span></div>
-      <div class="nm">Borboleta</div>
-      <div class="what">Do ovo à borboleta</div>
-    </div>
-    <div class="card soon" style="--bg:#d9dcff">
-      <div class="pic"><span>🐞</span></div>
-      <div class="nm">Joaninha</div>
-      <div class="what">A caçadora de pulgões</div>
-    </div>
-  </div>
-  <footer>Grátis, sem anúncios e sem coleta de dados. Gire com um dedo e dê zoom com dois.<br><a href="qr.html" style="color:inherit">🖨️ QR code para imprimir</a></footer>
+  <header>
+    <h1><span class="bug">🐜</span> Catálogo 3D de Animais <span class="bug">🐝</span></h1>
+    <p class="sub">Escolha um animal para explorar em 3D e conhecer a vida dele!</p>
+  </header>
+  <div class="search"><input id="q" type="search" placeholder="🔎 Procurar animal…" aria-label="Procurar animal"></div>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>Nenhum animal encontrado 🐾</div>
+  <footer>
+    Grátis, sem anúncios e sem coleta de dados. Gire com um dedo e dê zoom com dois.<br>
+    <a href="qr.html">🖨️ QR code para imprimir</a>
+  </footer>
 </main>
+<script src="js/catalogo.js"></script>
+<script>
+(function () {
+  let grupo = 'todos';
+  const q = document.getElementById('q'), grid = document.getElementById('grid'), chips = document.getElementById('chips');
+  const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  GRUPOS.forEach((g) => {
+    const b = document.createElement('button');
+    b.textContent = g.emoji + ' ' + g.nome;
+    b.dataset.g = g.id;
+    b.addEventListener('click', () => { grupo = g.id; render(); });
+    chips.appendChild(b);
+  });
+  function render() {
+    chips.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.g === grupo));
+    const t = norm(q.value.trim());
+    const list = ANIMAIS.filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
+      (!t || norm(a.nome + ' ' + a.cientifico + ' ' + (a.resumo || '')).includes(t)));
+    list.sort((a, b) => (b.pagina ? 1 : 0) - (a.pagina ? 1 : 0));
+    grid.innerHTML = '';
+    list.forEach((a) => {
+      const el = document.createElement(a.pagina ? 'a' : 'div');
+      el.className = 'card' + (a.pagina ? '' : ' soon');
+      el.style.setProperty('--bg', a.cor);
+      if (a.pagina) el.href = a.pagina;
+      const r = a.rapido;
+      el.innerHTML = '<div class="pic"><span>' + a.emoji + '</span></div><div class="txt">' +
+        '<span class="go">' + (a.pagina ? '▶ ver em 3D' : 'em breve') + '</span>' +
+        '<div class="nm">' + a.nome + '</div><div class="sci">' + a.cientifico + '</div>' +
+        '<div class="res">' + (a.resumo || '') + '</div>' +
+        (r ? '<div class="facts"><b>📏 ' + r.tamanho + '</b><b>📍 ' + r.onde + '</b><b>🍽️ ' + r.come + '</b></div>' : '') + '</div>';
+      grid.appendChild(el);
+    });
+    document.getElementById('empty').hidden = list.length > 0;
+  }
+  q.addEventListener('input', render);
+  render();
+})();
+</script>
 </body>
 </html>
