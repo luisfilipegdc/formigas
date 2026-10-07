@@ -10,6 +10,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - `qr.html`: folha A4 com o QR code do site, pronta para imprimir (usa o endereço onde o site está publicado; dá para trocar no campo de cima).
 - `js/catalogo.js`: **dados de todos os animais** (ficha, ciclo de vida, curiosidades, dados por casta). Para adicionar um animal ao catálogo, acrescente um item em `ANIMAIS`.
 - `js/ficha.js`: gaveta ℹ️ ficha (abas Ficha, Vida, Sabia? e 📷 Real; muda conforme a casta escolhida).
+- `img/animais/`: **fotos reais** de cada bicho (3 por animal), tiradas do iNaturalist, só com licenças que permitem qualquer uso (CC0, CC BY e CC BY-SA). O nome do fotógrafo e a licença aparecem no site e estão em `fotos` no `catalogo.js`. Como ficam no próprio site, aparecem sempre, mesmo sem internet.
 - `js/dados.js`: fotos e dados reais do **iNaturalist** e da **Wikipédia** (sem chave, sem cadastro). Fica guardado no aparelho por 14 dias; sem internet, o site usa os emojis.
 - `js/progresso.js`: álbum de descobertas, guardado só no aparelho (dá para apagar no rodapé do catálogo).
 - `docs/ESTRATEGIA.md`: design comportamental, crítica de UX/UI, APIs, monetização ética e recomendações de tecnologia 3D.

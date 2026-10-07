@@ -112,7 +112,7 @@
   <div class="empty" id="empty" hidden>Nenhum animal encontrado 🐾</div>
   <footer>
     Grátis, sem anúncios e sem coleta de dados. Gire com um dedo e dê zoom com dois.<br>
-    Fotos: <b>iNaturalist</b> e <b>Wikipédia</b>, com o nome de cada fotógrafo e licença Creative Commons.<br>
+    Fotos reais do <b>iNaturalist</b>, com o nome de cada fotógrafo e licença Creative Commons (CC0, CC BY, CC BY-SA).<br>
     <a href="qr.html">🖨️ QR code para imprimir</a> · <button id="apagar">apagar minhas descobertas</button>
   </footer>
 </main>
@@ -174,7 +174,7 @@
         const pic = el.querySelector('.pic'), img = pic.querySelector('img');
         img.onload = () => pic.classList.add('foto');
         img.alt = 'Foto de ' + a.nome;
-        img.src = f.url;
+        img.src = f.mini || f.url;
         pic.querySelector('small').textContent = '📷 ' + f.autor;
       }).catch(() => {});
     });

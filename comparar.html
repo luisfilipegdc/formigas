@@ -109,7 +109,7 @@
       if (w.dataset.id !== A.id) return;
       const img = new Image(); img.alt = 'Foto de ' + A.nome;
       img.onload = () => { w.querySelector('.ph').appendChild(img); w.querySelector('.cr').textContent = '📷 ' + f.autor; };
-      img.src = f.url;
+      img.src = f.mini || f.url;
     }).catch(() => {});
     w.dataset.id = A.id;
   }

@@ -3,6 +3,8 @@
      • iNaturalist (api.inaturalist.org): foto com licença livre, quantas
        vezes o bicho já foi fotografado e a árvore da família (taxonomia).
      • Wikipédia em português: resumo para adultos e foto reserva.
+   As fotos principais ficam no próprio site (img/animais, campo "fotos" em
+   catalogo.js), então aparecem sempre, mesmo sem internet.
    Tudo é guardado no aparelho por 14 dias para abrir rápido e funcionar
    com internet fraca. Se não houver internet, o site usa os emojis.
    ===================================================================== */
@@ -61,10 +63,18 @@ const Dados = (function () {
       texto: r.extract || '', foto: r.thumbnail ? { url: r.thumbnail.source, autor: 'Wikipédia / Wikimedia Commons', lic: '' } : null
     })));
   }
-  // foto principal: iNaturalist; se falhar ou não tiver licença livre, Wikipédia
+  // fotos guardadas no próprio site (img/animais), escolhidas do iNaturalist
+  function locais(A) {
+    return (A.fotos || []).map((f, i) => ({
+      url: f.arquivo, mini: i === 0 ? f.arquivo.replace(/\.jpg$/, 'p.jpg') : f.arquivo,
+      autor: f.autor + ' · ' + f.lic + ' · iNaturalist', lic: f.lic, especie: f.especie
+    }));
+  }
+  // foto principal: a do site; senão iNaturalist; senão Wikipédia
   function fotoPrincipal(A) {
+    if (A.fotos && A.fotos.length) return Promise.resolve(locais(A)[0]);
     return taxon(A).then((t) => t.foto || Promise.reject(new Error('sem foto livre')))
       .catch(() => wiki(A).then((w) => w.foto || Promise.reject(new Error('sem foto'))));
   }
-  return { taxon: taxon, detalhe: detalhe, wiki: wiki, foto: fotoPrincipal };
+  return { taxon: taxon, detalhe: detalhe, wiki: wiki, foto: fotoPrincipal, locais: locais };
 })();

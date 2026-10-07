@@ -9,6 +9,8 @@
      ciclo      → etapas da vida (aba "Vida")
      curiosidades
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
+     fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
+                  pequena "-1p.jpg" para os cartões); autor e licença aparecem no site
      busca      → nome usado para buscar foto e dados reais no iNaturalist
      wiki       → título do artigo na Wikipédia em português
      comp       → dados do comparador (mm = tamanho típico em milímetros,
@@ -30,6 +32,11 @@ const ANIMAIS = [
     id: 'formiga', nome: 'Formiga-saúva', cientifico: 'Atta spp.', grupo: 'insetos', emoji: '🐜', cor: '#ffd3c2',
     pagina: 'formiga.html',
     resumo: 'A cortadeira que planta um jardim de fungo debaixo da terra.',
+    fotos: [
+      { arquivo: 'img/animais/formiga-1.jpg', autor: 'Juan Cruzado Cortés', lic: 'CC BY-SA', especie: 'Atta mexicana', inat: 2911140 },
+      { arquivo: 'img/animais/formiga-2.jpg', autor: 'Scott Loarie', lic: 'CC0', especie: 'Atta mexicana', inat: 579966 },
+      { arquivo: 'img/animais/formiga-3.jpg', autor: 'Eduardo A. Bolaños Vargas', lic: 'CC BY', especie: 'Atta cephalotes', inat: 97972791 }
+    ],
     busca: 'Atta', wiki: 'Saúva', visita: ['🏠', 'Visitou o formigueiro'],
     rapido: { tamanho: '2 a 15 mm', onde: 'Américas', come: 'Fungo' },
     comp: { mm: 10, tam: '2 a 15 mm (operária)', igual: 'um grão de arroz', dieta: 'fungo', come: 'Um fungo que elas plantam em pedaços de folha.', vive: 'Operária: meses · Rainha: mais de 10 anos', social: 'Colônias de milhões', casa: 'Formigueiro debaixo da terra', tax: ['Arthropoda', 'Insecta', 'Hymenoptera', 'Formicidae'], iucn: null },
@@ -77,6 +84,11 @@ const ANIMAIS = [
     id: 'abelha', nome: 'Abelha-europeia', cientifico: 'Apis mellifera', grupo: 'insetos', emoji: '🐝', cor: '#ffe58a',
     pagina: 'abelha.html',
     resumo: 'A abelha do mel, que poliniza flores e vive em colmeias.',
+    fotos: [
+      { arquivo: 'img/animais/abelha-1.jpg', autor: 'Cole Shoemaker', lic: 'CC BY', especie: 'Apis mellifera', inat: 117869766 },
+      { arquivo: 'img/animais/abelha-2.jpg', autor: 'Maxim Shashkov', lic: 'CC BY', especie: 'Apis mellifera', inat: 77392356 },
+      { arquivo: 'img/animais/abelha-3.jpg', autor: 'Michel Langeveld', lic: 'CC BY-SA', especie: 'Apis mellifera', inat: 96754126 }
+    ],
     busca: 'Apis mellifera', wiki: 'Apis mellifera', visita: ['🍯', 'Visitou a colmeia'],
     rapido: { tamanho: '12 a 20 mm', onde: 'Mundo todo', come: 'Néctar e pólen' },
     comp: { mm: 13, tam: '12 a 20 mm', igual: 'uma unha de adulto', dieta: 'nectar', come: 'Néctar (que vira mel) e pólen das flores.', vive: 'Operária: 6 semanas · Rainha: 2 a 5 anos', social: 'Colmeias de 20 a 80 mil', casa: 'Colmeia com favos de cera', tax: ['Arthropoda', 'Insecta', 'Hymenoptera', 'Apidae'], iucn: null },
@@ -125,6 +137,11 @@ const ANIMAIS = [
   },
   {
     id: 'borboleta', nome: 'Borboleta-azul', cientifico: 'Morpho helenor', grupo: 'insetos', emoji: '🦋', cor: '#cfe0ff', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/borboleta-1.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Morpho helenor', inat: 70941465 },
+      { arquivo: 'img/animais/borboleta-2.jpg', autor: 'Fernando Sessegolo', lic: 'CC0', especie: 'Morpho helenor', inat: 102956421 },
+      { arquivo: 'img/animais/borboleta-3.jpg', autor: 'Rob Foster', lic: 'CC BY', especie: 'Morpho helenor marinita', inat: 63364495 }
+    ],
     busca: 'Morpho helenor', wiki: 'Morpho helenor',
     resumo: 'Asas azuis brilhantes da Mata Atlântica.',
     rapido: { tamanho: '12 a 15 cm', onde: 'Brasil', come: 'Frutas caídas' },
@@ -150,6 +167,11 @@ const ANIMAIS = [
   },
   {
     id: 'joaninha', nome: 'Joaninha', cientifico: 'Família Coccinellidae', grupo: 'insetos', emoji: '🐞', cor: '#ffd0cc', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/joaninha-1.jpg', autor: 'Eddie Dunbar', lic: 'CC BY-SA', especie: 'Coccinella septempunctata', inat: 860583 },
+      { arquivo: 'img/animais/joaninha-2.jpg', autor: 'Katja Schulz', lic: 'CC BY', especie: 'Harmonia axyridis', inat: 7078473 },
+      { arquivo: 'img/animais/joaninha-3.jpg', autor: 'Alexis', lic: 'CC BY', especie: 'Harmonia axyridis', inat: 77172495 }
+    ],
     busca: 'Coccinellidae', wiki: 'Joaninha',
     resumo: 'A caçadora de pulgões.',
     rapido: { tamanho: '1 a 10 mm', onde: 'Mundo todo', come: 'Pulgões' },
@@ -175,6 +197,11 @@ const ANIMAIS = [
   },
   {
     id: 'beijaflor', art: 'o', nome: 'Beija-flor', cientifico: 'Família Trochilidae', grupo: 'aves', emoji: '🐦', cor: '#cdeedd', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/beijaflor-1.jpg', autor: 'David McCorquodale', lic: 'CC BY', especie: 'Colibri coruscans', inat: 13811179 },
+      { arquivo: 'img/animais/beijaflor-2.jpg', autor: 'Kahio T. Mazon', lic: 'CC0', especie: 'Amazilia fimbriata', inat: 28391150 },
+      { arquivo: 'img/animais/beijaflor-3.jpg', autor: 'Leonel Roget', lic: 'CC BY', especie: 'Leucochloris albicollis', inat: 29942811 }
+    ],
     busca: 'Trochilidae', wiki: 'Beija-flor',
     resumo: 'A ave que voa parada no ar.',
     rapido: { tamanho: '6 a 20 cm', onde: 'Américas', come: 'Néctar' },
@@ -199,6 +226,11 @@ const ANIMAIS = [
   },
   {
     id: 'arara', nome: 'Arara-azul', cientifico: 'Anodorhynchus hyacinthinus', grupo: 'aves', emoji: '🦜', cor: '#cfe3ff', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/arara-1.jpg', autor: 'Larissa Vaccarini Ávila', lic: 'CC BY', especie: 'Anodorhynchus hyacinthinus', inat: 86007053 },
+      { arquivo: 'img/animais/arara-2.jpg', autor: 'Larissa Vaccarini Ávila', lic: 'CC BY', especie: 'Anodorhynchus hyacinthinus', inat: 86006999 },
+      { arquivo: 'img/animais/arara-3.jpg', autor: 'Bruce Kirchoff', lic: 'CC BY', especie: 'Anodorhynchus hyacinthinus', inat: 28266959 }
+    ],
     busca: 'Anodorhynchus hyacinthinus', wiki: 'Arara-azul-grande',
     resumo: 'A maior arara do mundo, do Pantanal.',
     rapido: { tamanho: 'até 1 m', onde: 'Brasil', come: 'Coquinhos' },
@@ -223,6 +255,11 @@ const ANIMAIS = [
   },
   {
     id: 'onca', nome: 'Onça-pintada', cientifico: 'Panthera onca', grupo: 'mamiferos', emoji: '🐆', cor: '#ffe2b8', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/onca-1.jpg', autor: 'Paul Prior', lic: 'CC BY', especie: 'Panthera onca', inat: 53399436 },
+      { arquivo: 'img/animais/onca-2.jpg', autor: 'Millie Basden', lic: 'CC BY', especie: 'Panthera onca', inat: 48863325 },
+      { arquivo: 'img/animais/onca-3.jpg', autor: 'Millie Basden', lic: 'CC BY', especie: 'Panthera onca', inat: 48878839 }
+    ],
     busca: 'Panthera onca', wiki: 'Onça-pintada',
     resumo: 'O maior felino das Américas.',
     rapido: { tamanho: '1,1 a 1,8 m', onde: 'Américas', come: 'Carne' },
@@ -247,6 +284,11 @@ const ANIMAIS = [
   },
   {
     id: 'preguica', art: 'o', nome: 'Bicho-preguiça', cientifico: 'Bradypus variegatus', grupo: 'mamiferos', emoji: '🦥', cor: '#e6dccb', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/preguica-1.jpg', autor: 'Diogo Luiz', lic: 'CC BY-SA', especie: 'Bradypus variegatus', inat: 64066090 },
+      { arquivo: 'img/animais/preguica-2.jpg', autor: 'yvesbas', lic: 'CC BY', especie: 'Bradypus variegatus', inat: 69722725 },
+      { arquivo: 'img/animais/preguica-3.jpg', autor: 'Karen & Mike', lic: 'CC BY', especie: 'Bradypus variegatus', inat: 31705616 }
+    ],
     busca: 'Bradypus variegatus', wiki: 'Bradypus variegatus',
     resumo: 'Vive pendurado nas árvores, bem devagar.',
     rapido: { tamanho: '40 a 80 cm', onde: 'América do Sul', come: 'Folhas' },
@@ -271,6 +313,11 @@ const ANIMAIS = [
   },
   {
     id: 'tartaruga', nome: 'Tartaruga-verde', cientifico: 'Chelonia mydas', grupo: 'repteis', emoji: '🐢', cor: '#d3efe0', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/tartaruga-1.jpg', autor: 'Dan Schofield', lic: 'CC BY', especie: 'Chelonia mydas', inat: 52560925 },
+      { arquivo: 'img/animais/tartaruga-2.jpg', autor: 'Kyle Van Houtan', lic: 'CC BY', especie: 'Chelonia mydas', inat: 380377 },
+      { arquivo: 'img/animais/tartaruga-3.jpg', autor: 'Richard Fuller', lic: 'CC0', especie: 'Chelonia mydas', inat: 67882443 }
+    ],
     busca: 'Chelonia mydas', wiki: 'Tartaruga-verde',
     resumo: 'Atravessa oceanos e volta à praia onde nasceu.',
     rapido: { tamanho: 'casco de 1 m', onde: 'Oceanos', come: 'Algas' },
@@ -295,6 +342,11 @@ const ANIMAIS = [
   },
   {
     id: 'sapo', art: 'o', nome: 'Sapo-cururu', cientifico: 'Rhinella diptycha', grupo: 'anfibios', emoji: '🐸', cor: '#dcefc6', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/sapo-1.jpg', autor: 'Pablo H Capovilla', lic: 'CC BY-SA', especie: 'Rhinella diptycha', inat: 68986425 },
+      { arquivo: 'img/animais/sapo-2.jpg', autor: 'Leonel Roget', lic: 'CC BY', especie: 'Rhinella diptycha', inat: 7334047 },
+      { arquivo: 'img/animais/sapo-3.jpg', autor: 'Douglas', lic: 'CC BY', especie: 'Rhinella diptycha', inat: 27320409 }
+    ],
     busca: 'Rhinella diptycha', wiki: 'Sapo-cururu',
     resumo: 'Começa a vida como girino na água.',
     rapido: { tamanho: 'até 20 cm', onde: 'América do Sul', come: 'Insetos' },
@@ -320,6 +372,10 @@ const ANIMAIS = [
   },
   {
     id: 'pirarucu', art: 'o', nome: 'Pirarucu', cientifico: 'Arapaima gigas', grupo: 'peixes', emoji: '🐟', cor: '#d6e9f3', pagina: null,
+    fotos: [
+      { arquivo: 'img/animais/pirarucu-1.jpg', autor: 'Vince Smith', lic: 'CC BY', especie: 'Arapaima gigas', inat: 83994048 },
+      { arquivo: 'img/animais/pirarucu-2.jpg', autor: 'Vince Smith', lic: 'CC BY', especie: 'Arapaima gigas', inat: 83953168 }
+    ],
     busca: 'Arapaima gigas', wiki: 'Pirarucu',
     resumo: 'Um dos maiores peixes de água doce, da Amazônia.',
     rapido: { tamanho: 'até 3 m', onde: 'Amazônia', come: 'Peixes' },

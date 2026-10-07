@@ -100,7 +100,7 @@ const Ficha = (function () {
       const quem = A;
       Dados.foto(A).then((f) => {
         if (quem !== A) return;
-        const img = new Image(); img.alt = A.nome; img.src = f.url;
+        const img = new Image(); img.alt = A.nome; img.src = f.mini || f.url;
         img.onload = () => { if (quem === A) el.querySelector('header .em').replaceChildren(img); };
       }).catch(() => {});
     }
@@ -173,18 +173,20 @@ const Ficha = (function () {
       const im = $('#fr img');
       if (im && typeof Progresso !== 'undefined') im.addEventListener('load', () => { if (vivo()) Progresso.marcar(quem.id, 'real'); }, { once: true });
     };
-    const fig = (f) => '<figure><img loading="lazy" src="' + esc(f.url) + '" alt="Foto de ' + esc(A.nome) + '"><figcaption>📷 ' + esc(f.autor) + (f.lic && soLetras(f.autor).indexOf(soLetras(f.lic)) < 0 ? ' · ' + esc(f.lic) : '') + '</figcaption></figure>';
+    const fig = (f) => '<figure><img loading="lazy" src="' + esc(f.url) + '" alt="Foto de ' + esc(A.nome) + '"><figcaption>' + (f.especie && f.especie !== A.cientifico ? '<i>' + esc(f.especie) + '</i> · ' : '') + '📷 ' + esc(f.autor) + (f.lic && soLetras(f.autor).indexOf(soLetras(f.lic)) < 0 ? ' · ' + esc(f.lic) : '') + '</figcaption></figure>';
+    const locais = Dados.locais(A);
+    if (locais.length) fotos(locais);
     Dados.taxon(A).then((t) => {
       if (!vivo()) return;
       if (t.obs) $('#obs').innerHTML = '<div class="stat">🔭 Pessoas do mundo todo já registraram este bicho <b>' + t.obs.toLocaleString('pt-BR') + '</b> vezes no iNaturalist.</div>';
-      if (t.foto) fotos([t.foto]);
+      if (t.foto && !locais.length) fotos([t.foto]);
     }).catch(() => {});
     Dados.detalhe(A).then((d) => {
       if (!vivo()) return;
-      if (d.fotos.length) fotos(d.fotos);
+      if (d.fotos.length && !locais.length) fotos(d.fotos);
       if (d.arvore.length > 3) $('#arv').innerHTML = d.arvore.map((x, i) =>
         '<li style="--n:' + Math.min(i, 6) + '"><small>' + x.nivel + '</small><span>' + (x.comum ? esc(x.comum) + ' · ' : '') + '<i>' + esc(x.nome) + '</i></span></li>').join('');
-    }).catch(() => { if (vivo() && !$('#fr img[src]')) Dados.foto(A).then((f) => { if (vivo()) fotos([f]); }).catch(() => { if (vivo()) $('#fr').innerHTML = semNet; }); });
+    }).catch(() => { if (vivo() && !locais.length && !$('#fr img[src]')) Dados.foto(A).then((f) => { if (vivo()) fotos([f]); }).catch(() => { if (vivo()) $('#fr').innerHTML = semNet; }); });
     Dados.wiki(A).then((w) => {
       if (vivo() && w.texto) $('#wk').innerHTML = '<summary>👩‍🏫 Para adultos: o que diz a Wikipédia</summary><p>' + esc(w.texto) + '</p><div class="cred">Texto: Wikipédia em português (CC BY-SA 4.0).</div>';
     }).catch(() => { if (vivo()) $('#wk').remove(); });
