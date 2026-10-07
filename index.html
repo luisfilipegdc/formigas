@@ -44,6 +44,7 @@
       <a href="#familias" class="so-largo" data-ico="folha"><span class="rotulo">Famílias</span></a>
       <a href="#escolas" class="so-largo" data-ico="colecao"><span class="rotulo">Escolas</span></a>
       <a href="#descobertas" class="nav-bolso" data-ico="bolso"><span class="rotulo">Meu Bolso</span> <span class="contador" id="contador">0</span></a>
+      <button class="btn btn-primario btn-entrar" type="button" id="entrar">Entrar</button>
     </nav>
   </div>
 </header>
@@ -54,18 +55,18 @@
       <div class="hero2-txt">
         <h1>Um mundo de bichos no seu <em>bolso.</em></h1>
         <p>Descubra animais, explore em 3D e monte sua própria coleção.</p>
-        <div class="hero-acoes"><a class="btn btn-primario btn-g" href="#bichos" data-ico="busca">Explorar bichos</a><button class="btn btn-3d btn-g" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
+        <div class="hero-acoes"><a class="btn btn-primario btn-g" href="#comece" data-ico="busca">Explorar bichos</a><button class="btn btn-3d btn-g" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
         <ul class="selos"><li data-ico="folha">Grátis para começar</li><li data-ico="check">Sem anúncios</li><li data-ico="check">Seguro para crianças</li></ul>
       </div>
       <div class="hero2-curu">
-        <img src="img/mascote/curu-binoculo-460.png" srcset="img/mascote/curu-binoculo-460.png 1x, img/mascote/curu-binoculo-920.png 2x" width="460" height="365" alt="Curu, a perereca exploradora, olhando pelo binóculo">
+        <img src="img/mascote/curu-binoculo-920.png" width="825" height="655" alt="Curu, a perereca exploradora, olhando pelo binóculo">
         <p class="fala">Olá! Eu sou o <b>Curu</b>.<br>Vamos descobrir quem vive por aí?</p>
       </div>
     </div>
   </section>
 
   <div class="wrap">
-    <section class="conhecer" aria-labelledby="tconhecer">
+    <section class="conhecer" id="comece" aria-labelledby="tconhecer">
       <h2 id="tconhecer">Que bicho você quer conhecer?</h2>
       <form class="busca" id="busca" role="search">
         <span data-ico="busca"></span>
@@ -77,56 +78,36 @@
     </section>
 
     <section class="secao" aria-labelledby="tcomece">
-      <div class="secao-topo"><div><h2 id="tcomece">Comece sua <em>descoberta</em></h2><p>Escolha um bicho para conhecer.</p></div>
-        <a class="ver-todos" href="#bichos">Ver todos os animais →</a></div>
+      <div class="secao-topo"><div><h2 id="tcomece">Comece sua <em>descoberta</em></h2><p>Escolha um bicho para conhecer.</p></div></div>
+      <div class="primeira" id="primeira" hidden><span class="primeira-ico" data-ico="pata"></span><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
       <div class="destaques" id="destaques"></div>
     </section>
 
-    <section class="viu" aria-labelledby="tviu">
-      <img src="img/mascote/curu-binoculo-460.png" alt="" width="230" height="182" loading="lazy">
-      <div><h2 id="tviu">Viu um bicho por aí?</h2>
-        <p>Conte qual foi e coloque no seu bolso. Observe sem tocar e chame um adulto.</p>
+    <section class="momento" aria-labelledby="tviu">
+      <div class="momento-txt">
+        <h2 id="tviu">Viu um bicho por aí?</h2>
+        <p>Conte qual bicho você encontrou e ganhe a carta dele no seu bolso.</p>
         <button class="btn btn-3d btn-g" type="button" id="encontrei2" data-ico="pata">Encontrei um bicho!</button>
-        <small>Em breve: tirar uma foto para descobrir quem é.</small></div>
-    </section>
-
-    <section class="secao passos-e-3d">
-      <div class="passos painel"><h2>Cada <em>descoberta</em> vai para o seu <em>bolso</em>.</h2>
-        <ol>
-          <li><b>1</b><strong>Encontre</strong><span>Observe um animal.</span></li>
-          <li><b>2</b><strong>Descubra</strong><span>Conheça seu novo bicho.</span></li>
-          <li><b>3</b><strong>Colecione</strong><span>Ganhe sua carta.</span></li>
-          <li><b>4</b><strong>Complete</strong><span>Faça missões e complete coleções.</span></li>
-        </ol></div>
-      <a class="pertinho" href="formiga.html"><img src="img/animais/formiga-3.jpg" alt="Formiga-saúva" loading="lazy">
-        <div><h2>Explore de pertinho</h2><p>Gire. Aproxime. Compare. Descubra.</p><span class="btn btn-primario" data-ico="cubo">Explorar em 3D</span></div>
-        <b class="selo3d">3D</b></a>
-    </section>
-
-    <section class="secao" id="bichos" aria-labelledby="tbichos">
-      <div class="secao-topo"><div>
-        <h2 id="tbichos">Todos os bichos</h2>
-        <p>Toque num bicho para conhecer: fotos reais, ciclo de vida e curiosidades.</p>
-      </div></div>
-      <div class="primeira" id="primeira" hidden><img class="mascote" src="img/mascote/curu-rosto-360.jpg" alt="" width="64" height="64"><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
-      <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
-      <div class="grade" id="grade"></div>
-      <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
-    </section>
-
-    <section class="secao" aria-labelledby="t3d">
-      <div class="secao-topo"><div>
-        <h2 id="t3d">Veja de pertinho. Sem chegar perto.</h2>
-        <p>Gire animais em 3D, conheça suas partes, compare tamanhos e descubra curiosidades.</p>
-      </div></div>
-      <div class="exps" id="exps"></div>
+        <small>Observe sem tocar e chame um adulto. Em breve: tirar uma foto para descobrir quem é.</small>
+      </div>
+      <div class="fluxo-visual" aria-hidden="true">
+        <figure class="fv-foto"><img src="img/animais/joaninha-1p.jpg" alt=""><figcaption>Você vê</figcaption></figure>
+        <span class="fv-seta">→</span>
+        <figure class="fv-id"><b>Parece ser uma</b><strong>Joaninha!</strong><figcaption>Você descobre</figcaption></figure>
+        <span class="fv-seta">→</span>
+        <figure class="fv-carta"><img src="img/animais/joaninha-1p.jpg" alt=""><em>#004</em><span>Joaninha</span><figcaption>Ganha a carta</figcaption></figure>
+      </div>
+      <img class="momento-curu" src="img/mascote/curu-binoculo-460.png" width="460" height="365" alt="" loading="lazy">
     </section>
 
     <section class="secao" id="descobertas" aria-labelledby="tdesc">
       <div class="secao-topo"><div>
-        <h2 id="tdesc">Meu Bolso</h2>
-        <p>Cada bicho que você descobre vira uma carta no seu bolso.</p>
+        <h2 id="tdesc">Novo bicho no <em>bolso!</em></h2>
+        <p>Encontre → descubra → ganhe a carta → complete o Meu Bolso.</p>
       </div></div>
+      <ol class="passos-linha">
+        <li><b>1</b>Encontre</li><li><b>2</b>Descubra</li><li><b>3</b>Ganhe a carta</li><li><b>4</b>Complete coleções</li>
+      </ol>
       <div class="descobertas">
         <div class="painel">
           <div class="nivel" id="nivel"></div>
@@ -139,34 +120,59 @@
       </div>
     </section>
 
+    <section class="secao palco3d" aria-labelledby="t3d">
+      <a class="janela3d" href="formiga.html">
+        <img src="img/animais/formiga-1.jpg" alt="Formiga-saúva" loading="lazy">
+        <div class="j3d-topo"><span>Formiga-saúva</span><span class="j3d-abas"><i class="on">Operária</i><i>Rainha</i><i>Zangão</i><i>Ninho</i></span></div>
+        <div class="j3d-lado"><i>Partes</i><i>Folha</i><i>Mandíbula</i><i>Andar</i></div>
+        <div class="j3d-base"><div><h2 id="t3d">Explore em 3D</h2><p>Gire. Aproxime. Veja de pertinho, sem chegar perto.</p></div><span class="btn btn-3d btn-g" data-ico="cubo">Experimentar em 3D</span></div>
+      </a>
+      <div class="palco-lado">
+        <a class="mini" href="abelha.html"><img src="img/animais/abelha-1p.jpg" alt="" loading="lazy"><div><b>Abelha em 3D</b><span>Colmeia por dentro e voo nas flores</span></div></a>
+        <a class="mini" href="comparar.html?a=formiga&b=onca"><span class="mini-duo"><img src="img/animais/formiga-1p.jpg" alt="" loading="lazy"><img src="img/animais/onca-1p.jpg" alt="" loading="lazy"></span><div><b>Qual bicho é maior?</b><span>Compare tamanho, comida e parentesco</span></div></a>
+      </div>
+    </section>
+
+    <section class="secao" id="bichos" aria-labelledby="tbichos">
+      <div class="secao-topo"><div>
+        <h2 id="tbichos">Mais bichos para descobrir</h2>
+        <p>Fotos reais, ciclo de vida e curiosidades de cada um.</p>
+      </div></div>
+      <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
+      <div class="grade" id="grade"></div>
+      <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
+      <div class="ver-mais"><button class="btn btn-claro btn-g" type="button" id="vermais">Ver todos os bichos</button></div>
+    </section>
+
     <section class="secao duas" id="adultos">
       <div class="bloco" id="familias">
-        <img src="img/mascote/curu-rosto-360.jpg" alt="" width="96" height="96" loading="lazy">
+        <img class="bloco-curu" src="img/mascote/curu-binoculo-460.png" alt="" width="460" height="365" loading="lazy">
         <h2>Feito para pequenos curiosos. Pensado para <em>famílias</em>.</h2>
-        <p>O Bicho no Bolso transforma curiosidade em descoberta: experiências educativas, atividades no mundo real e conteúdo apropriado para crianças.</p>
-        <ul><li data-ico="check">Sem anúncios</li><li data-ico="check">Sem perfil infantil público</li><li data-ico="check">Nada da criança é coletado: as descobertas ficam no aparelho</li><li data-ico="check">Funciona até sem internet</li></ul>
+        <p>Transforma curiosidade em descoberta: experiências educativas, atividades no mundo real e conteúdo apropriado para crianças.</p>
+        <ul><li data-ico="check">Sem anúncios</li><li data-ico="check">Sem perfil infantil público</li><li data-ico="check">Nada da criança é coletado</li><li data-ico="check">Funciona até sem internet</li></ul>
+        <a class="btn btn-3d btn-g" href="#comece">Começar a explorar</a>
       </div>
       <div class="bloco escuro" id="escolas">
         <h2>É professor ou escola?</h2>
-        <p>Transforme o pátio em laboratório. Crie missões, explore espécies com a turma e monte um álbum coletivo de descobertas.</p>
-        <ul><li data-ico="check">Roteiros de aula ligados à BNCC</li><li data-ico="check">Funciona nos iPads da escola, sem instalar</li><li data-ico="check">Missões no pátio e álbum da turma (em breve)</li></ul>
-        <p class="contato">Quer testar com sua turma? Fale com a gente.</p>
+        <p>Transforme o pátio em laboratório. Explore espécies com a turma, faça missões no pátio e monte descobertas juntos.</p>
+        <ul><li data-ico="check">Roteiro de aula ligado à BNCC</li><li data-ico="check">Funciona nos iPads da escola, sem instalar</li><li data-ico="check">Álbum coletivo da turma (em breve)</li></ul>
+        <button class="btn btn-3d btn-g" type="button" id="roteiro">Ver como funciona em sala</button>
       </div>
     </section>
 
     <section class="aventura">
       <div><h2>Comece sua aventura</h2><p>Explore bichos gratuitamente e faça sua primeira descoberta.</p></div>
-      <a class="btn btn-3d btn-g" href="#bichos">Começar grátis →</a>
+      <a class="btn btn-3d btn-g" href="#comece">Começar grátis →</a>
     </section>
   </div>
 </main>
 
 <footer class="rodape">
-  <div class="wrap">
-    <img class="rodape-logo" src="img/marca/bnb-logo-360.png" srcset="img/marca/bnb-logo-360.png 1x, img/marca/bnb-logo-720.png 2x" width="240" height="160" alt="Bicho no Bolso: um mundo de bichos no seu bolso." loading="lazy">
+  <div class="wrap rodape-in">
+    <img class="rodape-logo" src="img/marca/bnb-horizontal-72.png" srcset="img/marca/bnb-horizontal-72.png 1x, img/marca/bnb-horizontal-144.png 2x" width="216" height="72" alt="Bicho no Bolso" loading="lazy">
+    <nav class="rodape-links"><a href="#comece">Explorar</a><a href="#familias">Famílias</a><a href="#escolas">Escolas</a><a href="comparar.html">Comparar</a><a href="qr.html">QR para imprimir</a><button id="apagar" type="button">Esvaziar meu bolso</button></nav>
+    <p class="rodape-priv">Grátis, sem anúncios e sem coleta de dados: as descobertas ficam só neste aparelho.</p>
     <p id="offline" class="offline" hidden></p>
-    <p>Explore. Descubra. Colecione. · Grátis, sem anúncios e sem coleta de dados.<br>
-      <a href="qr.html">QR code para imprimir</a> · <button id="apagar" type="button">esvaziar meu bolso</button></p>
     <details class="creditos"><summary>Créditos das fotos (iNaturalist, Creative Commons)</summary><ul id="creditos"></ul></details>
   </div>
 </footer>

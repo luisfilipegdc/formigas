@@ -10,7 +10,8 @@
   const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const porId = (id) => ANIMAIS.find((a) => a.id === id);
   const encontrado = (A) => Progresso.conta(A).feitas > 0;
-  let grupo = 'todos';
+  let grupo = 'todos', todos = false;
+  const LIMITE = 8;
 
   // coloca a foto real (guardada no site) num contêiner com <img>
   function foto(A, box, grande) {
@@ -25,29 +26,6 @@
   // ---------- ícones fixos do HTML ----------
   document.querySelectorAll('[data-ico]').forEach((el) => { el.insertAdjacentHTML('afterbegin', Icone(el.dataset.ico)); });
 
-  // ---------- experiências 3D ----------
-  const exps = $('exps');
-  ANIMAIS.filter((A) => A.pagina).forEach((A) => {
-    const el = document.createElement('article');
-    el.className = 'exp';
-    el.innerHTML = '<div class="exp-foto"><img alt=""><span class="badge badge-3d">' + Icone('cubo') + 'Em 3D</span></div>' +
-      '<div class="exp-corpo"><div><h3>' + esc(A.nome) + '</h3><i>' + esc(A.cientifico) + '</i></div>' +
-      '<ul>' + (A.destaques || []).map((d) => '<li>' + esc(d.replace(/^\S+\s/, '')) + '</li>').join('') + '</ul>' +
-      '<div class="bts"><a class="btn btn-3d" href="' + A.pagina + '">' + Icone('cubo') + 'Explorar em 3D</a>' +
-      '<button class="btn btn-claro" type="button">' + Icone('info') + 'Ficha</button></div></div>';
-    el.querySelector('.btn-claro').addEventListener('click', () => Ficha.abrir(A.id));
-    foto(A, el.querySelector('.exp-foto'), true);
-    exps.appendChild(el);
-  });
-  // terceiro cartão: comparar tamanhos (formiga x onça)
-  const cmp = document.createElement('article');
-  cmp.className = 'exp exp-comparar';
-  cmp.innerHTML = '<div class="exp-foto"><img alt="Formiga-saúva" src="img/animais/formiga-1p.jpg"><img alt="Onça-pintada" src="img/animais/onca-1p.jpg"></div>' +
-    '<div class="exp-corpo"><div><h3>Qual bicho é maior?</h3><i>Compare tamanho, comida e parentesco</i></div>' +
-    '<ul><li>formiga × onça</li><li>são parentes?</li><li>o que comem</li></ul>' +
-    '<div class="bts"><a class="btn btn-primario" href="comparar.html?a=formiga&b=onca">' + Icone('comparar') + 'Comparar bichos</a></div></div>';
-  exps.appendChild(cmp);
-
   // ---------- "Que bicho você quer conhecer?": grupos com foto real ----------
   const ROSTO = { insetos: 'joaninha', aves: 'arara', mamiferos: 'onca', repteis: 'tartaruga', anfibios: 'sapo', peixes: 'pirarucu' };
   GRUPOS.filter((g) => g.id !== 'todos').forEach((g) => {
@@ -57,7 +35,7 @@
     b.type = 'button'; b.className = 'cat';
     const f = Dados.locais(A)[0];
     b.innerHTML = '<span><img alt="" loading="lazy" src="' + esc(f ? f.mini : '') + '"></span>' + esc(g.nome);
-    b.addEventListener('click', () => { grupo = g.id; render(); $('bichos').scrollIntoView(); });
+    b.addEventListener('click', () => { grupo = g.id; todos = true; render(); $('bichos').scrollIntoView(); });
     $('cats').appendChild(b);
   });
 
@@ -113,13 +91,18 @@
     const t = norm(q.value.trim());
     const lista = ANIMAIS.filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
       (!t || norm(a.nome + ' ' + a.cientifico + ' ' + (a.resumo || '')).includes(t)));
+    // na home: 8 bichos; ao buscar, filtrar ou tocar em "Ver todos", a lista inteira
+    const tudo = todos || t || grupo !== 'todos';
     grade.innerHTML = '';
-    lista.forEach((a) => grade.appendChild(cartao(a)));
+    lista.slice(0, tudo ? lista.length : LIMITE).forEach((a) => grade.appendChild(cartao(a)));
+    $('vermais').hidden = tudo || lista.length <= LIMITE;
     $('vazio').hidden = lista.length > 0;
     atualizar();
   }
   q.addEventListener('input', render);
   $('busca').addEventListener('submit', (e) => { e.preventDefault(); q.blur(); $('bichos').scrollIntoView(); });
+  q.addEventListener('input', () => { if (q.value.trim()) $('bichos').scrollIntoView({ block: 'start' }); });
+  $('vermais').addEventListener('click', () => { todos = true; render(); });
 
   // ---------- descobertas, álbum e missão ----------
   function atualizar() {
@@ -191,6 +174,24 @@
   }
   $('encontrei').addEventListener('click', encontrei);
   $('encontrei2').addEventListener('click', encontrei);
+
+  // janela simples (Entrar, roteiro de aula)
+  function janela(html) {
+    const dlg = document.createElement('div');
+    dlg.className = 'janela'; dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true');
+    dlg.innerHTML = '<div class="caixa"><button class="fechar" type="button" aria-label="Fechar">' + Icone('fechar') + '</button>' + html + '</div>';
+    const fechar = () => dlg.remove();
+    dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('.fechar, [data-fechar]')) fechar(); });
+    document.body.appendChild(dlg);
+    dlg.querySelector('.fechar').focus();
+  }
+  $('entrar').addEventListener('click', () => janela('<h2>Contas chegam em breve</h2><p>Por enquanto não precisa de cadastro: as descobertas do seu explorador já ficam guardadas neste aparelho.</p>' +
+    '<p>Quando as contas chegarem, um adulto poderá guardar o bolso na nuvem e usar em vários aparelhos.</p><button class="btn btn-primario btn-g" type="button" data-fechar>Continuar explorando</button>'));
+  $('roteiro').addEventListener('click', () => janela('<h2>Uma aula com o Bicho no Bolso</h2><p>"Quem vive debaixo da terra?" · 1º ao 3º ano · 45 minutos</p><ol class="roteiro">' +
+    '<li><b>5 min</b> Pergunta: o que a formiga come? Anote as hipóteses.</li><li><b>10 min</b> Explorar a operária em 3D: pernas, antenas, mandíbula.</li>' +
+    '<li><b>10 min</b> Passeio pelo formigueiro: fungo, berçário, rainha.</li><li><b>5 min</b> Voltar às hipóteses: elas plantam fungo!</li>' +
+    '<li><b>10 min</b> Comparar com a abelha: tamanho e parentesco.</li><li><b>5 min</b> Desenho: o formigueiro que eu vi.</li></ol>' +
+    '<p>Funciona nos iPads da escola, até sem Wi-Fi depois de instalado. Quer testar com sua turma? Fale com quem te mostrou o Bicho no Bolso.</p>'));
 
   function missao() {
     const M = MISSOES[0];
