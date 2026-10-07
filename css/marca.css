@@ -48,7 +48,7 @@ button, input { font: inherit; color: inherit; }
 
 /* ---------- logo ---------- */
 .logo { display: inline-flex; align-items: center; gap: 2px; text-decoration: none; color: var(--color-nature); line-height: .9; flex: none; }
-.logo-folha { width: 26px; height: 34px; color: #43A047; margin-right: 2px; }
+.logo-mascote { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 2px solid var(--color-primary-soft); }
 .logo-txt { display: flex; flex-direction: column; }
 .logo-txt small { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--color-nature); }
 .logo-txt b { font-size: 30px; font-weight: 900; letter-spacing: -.02em; display: flex; align-items: center; color: var(--color-primary); }
@@ -126,7 +126,7 @@ button, input { font: inherit; color: inherit; }
 @media (max-width: 520px) {
   body { font-size: 16px; }
   .cabecalho .wrap { min-height: 60px; gap: 8px; }
-  .logo-folha { width: 20px; height: 28px; }
+  .logo-mascote { width: 42px; height: 42px; margin-right: 6px; }
   .logo-txt small { font-size: 12px; }
   .logo-txt b { font-size: 24px; }
   .nav { gap: 0; }
