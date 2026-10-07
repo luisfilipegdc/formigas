@@ -1,11 +1,11 @@
-# 🐜 Bicho no Bolso
+# 🌿 Natureza no Bolso (antes Bicho no Bolso)
 
 **Explore. Descubra. Colecione.** Um catálogo interativo onde crianças exploram animais em 3D, descobrem curiosidades e comparam seus tamanhos.
 
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
 ## Direção do projeto (outubro de 2026)
-O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (nome de trabalho: *Natureza no Bolso*, ainda não validado; o site continua publicado como **Bicho no Bolso**). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
+O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (agora com o nome **Natureza no Bolso**; domínio, Vercel e repositório continuam os mesmos). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
 - `docs/product-direction.md`: direção, decisões, hipóteses, pendências e etapas.
 - `docs/technical-audit.md`: auditoria técnica do código atual (rotas, dados, armazenamento, PWA, motor 3D).
 - `docs/catalog-model.md`: modelo de catálogo genérico, mapa de telas V2 e adaptações da home, da busca, da ficha e do Meu Bolso.
@@ -13,7 +13,7 @@ O projeto está sendo ampliado para uma **enciclopédia interativa da natureza**
 - `docs/backlog-3d.md`: experiências 3D planejadas e a validação exigida antes de modelar.
 
 ## Páginas
-- `index.html`: home do Bicho no Bolso (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
+- `index.html`: home do Natureza no Bolso (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
 - `css/marca.css`: identidade visual (variáveis `--color-primary`, `--color-accent`, `--surface`… e componentes: cabeçalho, logo, botões, chips, rodapé).
 - `css/catalogo.css`: estilos da home.
 - `css/splash.css`, `js/splash.js` e `js/splash-bichos.js`: abertura (mascote, folhas e bichos passando: aranha descendo no fio, borboleta-azul e joaninha; para trocar por imagens realistas, veja o topo de `js/splash-bichos.js`), "Olá, explorador!" no primeiro acesso e saudação com os bichos encontrados na volta. Toque pula; não aparece de novo na mesma sessão.

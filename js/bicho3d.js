@@ -40,7 +40,7 @@ function iniciar3d(id) {
   const A = typeof ANIMAIS !== 'undefined' && ANIMAIS.find((a) => a.id === id);
   const M = Modelos3D[id];
   if (!A || !M) { $('carregando').textContent = 'Bicho não encontrado.'; return; }
-  document.title = A.nome + ' em 3D · Bicho no Bolso';
+  document.title = A.nome + ' em 3D · Natureza no Bolso';
   $('nome').textContent = A.nome;
   $('carregando').textContent = 'Montando ' + (A.art || 'a') + ' ' + (A.curto || A.nome.toLowerCase()) + '…';
 

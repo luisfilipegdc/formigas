@@ -1,5 +1,5 @@
 /* =====================================================================
-   icones.js — ícones SVG da identidade "Bicho no Bolso"
+   icones.js — ícones SVG da identidade "Natureza no Bolso"
    Uso: Icone('aves') devolve o <svg> como texto. Todos usam currentColor,
    então herdam a cor do texto do botão/etiqueta onde estiverem.
    ===================================================================== */

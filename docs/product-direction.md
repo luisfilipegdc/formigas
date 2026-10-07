@@ -38,12 +38,11 @@ AGORA: descoberta da natureza → ficha enciclopédica → experiências dispon�
 
 ## 2. Nome
 
-- **DECIDIDO:** *Natureza no Bolso* é **nome de trabalho**.
-- **DECIDIDO:** o produto **não é renomeado visualmente** agora.
-- **DECIDIDO:** domínio, projeto na Vercel, repositório no GitHub, manifesto e textos com o nome **ficam intactos** até a validação de marca e domínio. O site continua como **Bicho no Bolso**.
-- **DECIDIDO:** a arquitetura nova não se amarra ao nome. Campos, arquivos e funções novos usam `item` ou `elemento`, não "bicho". Onde o nome está escrito hoje: [`technical-audit.md`](technical-audit.md) §8.
+- **DECIDIDO (outubro de 2026):** o produto passa a se chamar **Natureza no Bolso**. O nome já aparece no site: títulos, nome do app, rodapé, slogan "Um mundo de natureza no seu bolso." e textos com a marca. A logo nova será aplicada quando o arquivo for recebido. Até lá, as imagens de logo ainda mostram "Bicho no Bolso".
+- **DECIDIDO:** domínio, projeto na Vercel e repositório no GitHub **não mudam** nesta etapa. As chaves internas do aparelho (`progresso1` e outras) também não, para não apagar o Meu Bolso de ninguém.
+- **DECIDIDO:** a arquitetura nova não se amarra ao nome. Campos, arquivos e funções novos usam `item` ou `elemento`, não "bicho".
 - **PENDENTE:**
-  - validação de marca (INPI) e domínio;
+  - registro da marca (INPI) e do domínio;
   - se `encontreumbicho.com.br` ainda vale.
 - **PROPOSTA:** "Bicho no Bolso" pode sobreviver como nome do universo Animais dentro da marca maior.
 
@@ -188,7 +187,7 @@ Cada etapa é pequena, publicável sozinha e não quebra o que existe. Os ids at
 
 ## 9. Pendências do fundador
 
-1. Validar o nome (marca e domínio).
+1. ~~Nome~~ ✅ Natureza no Bolso. Falta registrar marca e domínio.
 2. Quem faz a revisão científica (biologia, micologia, microbiologia, geologia) e como ela é registrada.
 3. Se universos ainda sem ficha aparecem na home ([`catalog-model.md`](catalog-model.md) §4).
 4. Mecanismo de reconhecimento e orçamento para o teste de custo.
