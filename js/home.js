@@ -48,6 +48,32 @@
     '<div class="bts"><a class="btn btn-primario" href="comparar.html?a=formiga&b=onca">' + Icone('comparar') + 'Comparar bichos</a></div></div>';
   exps.appendChild(cmp);
 
+  // ---------- "Que bicho você quer conhecer?": grupos com foto real ----------
+  const ROSTO = { insetos: 'joaninha', aves: 'arara', mamiferos: 'onca', repteis: 'tartaruga', anfibios: 'sapo', peixes: 'pirarucu' };
+  GRUPOS.filter((g) => g.id !== 'todos').forEach((g) => {
+    const A = porId(ROSTO[g.id]) || ANIMAIS.find((a) => a.grupo === g.id);
+    if (!A) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'cat';
+    const f = Dados.locais(A)[0];
+    b.innerHTML = '<span><img alt="" loading="lazy" src="' + esc(f ? f.mini : '') + '"></span>' + esc(g.nome);
+    b.addEventListener('click', () => { grupo = g.id; render(); $('bichos').scrollIntoView(); });
+    $('cats').appendChild(b);
+  });
+
+  // ---------- "Comece sua descoberta": 4 bichos em destaque ----------
+  ['formiga', 'abelha', 'borboleta', 'onca'].map(porId).filter(Boolean).forEach((A) => {
+    const g = GRUPOS.find((x) => x.id === A.grupo);
+    const el = document.createElement('article');
+    el.className = 'dest';
+    el.innerHTML = '<div class="dest-foto"><img alt="Foto de ' + esc(A.nome) + '" loading="lazy" src="' + esc(Dados.locais(A)[0] ? Dados.locais(A)[0].url : '') + '">' +
+      (A.pagina ? '<span class="badge badge-3d">' + Icone('cubo') + 'Tem 3D</span>' : '') + '</div>' +
+      '<div class="dest-corpo"><h3>' + esc(A.nome) + '</h3><small>' + esc(g ? g.nome : '') + '</small>' +
+      '<button class="btn btn-3d" type="button">Explorar →</button></div>';
+    el.querySelector('button').addEventListener('click', () => Ficha.abrir(A.id));
+    $('destaques').appendChild(el);
+  });
+
   // ---------- categorias ----------
   const chips = $('chips');
   GRUPOS.forEach((g) => {
@@ -164,6 +190,7 @@
     dlg.querySelector('.escolha button').focus();
   }
   $('encontrei').addEventListener('click', encontrei);
+  $('encontrei2').addEventListener('click', encontrei);
 
   function missao() {
     const M = MISSOES[0];

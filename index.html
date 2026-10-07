@@ -41,82 +41,124 @@
     <a class="logo" href="#topo" aria-label="Bicho no Bolso: início"><img class="logo-img" src="img/marca/bnb-horizontal-144.png" srcset="img/marca/bnb-horizontal-72.png 1x, img/marca/bnb-horizontal-144.png 2x" width="216" height="72" alt="Bicho no Bolso"></a>
     <nav class="nav" aria-label="Principal">
       <a href="#bichos" data-ico="busca"><span class="rotulo">Explorar</span></a>
-      <a href="comparar.html" class="so-largo" data-ico="comparar"><span class="rotulo">Comparar</span></a>
-      <a href="#missao" data-ico="alvo"><span class="rotulo">Missões</span></a>
+      <a href="#familias" class="so-largo" data-ico="folha"><span class="rotulo">Famílias</span></a>
+      <a href="#escolas" class="so-largo" data-ico="colecao"><span class="rotulo">Escolas</span></a>
       <a href="#descobertas" class="nav-bolso" data-ico="bolso"><span class="rotulo">Meu Bolso</span> <span class="contador" id="contador">0</span></a>
     </nav>
   </div>
 </header>
 
-<main class="wrap">
-  <section class="hero" id="topo">
-    <div class="hero-txt">
-      <h1>Um mundo de bichos no seu bolso.</h1>
-      <p>Explore animais em 3D, encontre bichos de verdade e monte sua coleção.</p>
+<main>
+  <section class="hero2" id="topo">
+    <div class="wrap hero2-in">
+      <div class="hero2-txt">
+        <h1>Um mundo de bichos no seu <em>bolso.</em></h1>
+        <p>Descubra animais, explore em 3D e monte sua própria coleção.</p>
+        <div class="hero-acoes"><a class="btn btn-primario btn-g" href="#bichos" data-ico="busca">Explorar bichos</a><button class="btn btn-3d btn-g" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
+        <ul class="selos"><li data-ico="folha">Grátis para começar</li><li data-ico="check">Sem anúncios</li><li data-ico="check">Seguro para crianças</li></ul>
+      </div>
+      <div class="hero2-curu">
+        <img src="img/mascote/curu-binoculo-460.png" srcset="img/mascote/curu-binoculo-460.png 1x, img/mascote/curu-binoculo-920.png 2x" width="460" height="365" alt="Curu, a perereca exploradora, olhando pelo binóculo">
+        <p class="fala">Olá! Eu sou o <b>Curu</b>.<br>Vamos descobrir quem vive por aí?</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="conhecer" aria-labelledby="tconhecer">
+      <h2 id="tconhecer">Que bicho você quer conhecer?</h2>
       <form class="busca" id="busca" role="search">
         <span data-ico="busca"></span>
-        <label class="sr" for="q">Procure um animal</label>
-        <input id="q" type="search" placeholder="Procure um animal…" autocomplete="off">
+        <label class="sr" for="q">Procurar um bicho</label>
+        <input id="q" type="search" placeholder="Procurar um bicho…" autocomplete="off">
         <button type="submit" aria-label="Procurar" data-ico="seta"></button>
       </form>
-      <div class="hero-acoes"><a class="btn btn-primario" href="#bichos">Explorar bichos</a><button class="btn btn-3d" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
-    </div>
-    <div class="hero-foto">
-      <img src="img/animais/abelha-1.jpg" alt="Abelha-europeia pousada numa flor amarela, coberta de pólen">
-      <span class="balao" data-ico="cubo">Animais reais<br>em 3D</span>
-      <small class="credito">Foto: Cole Shoemaker · CC BY · iNaturalist</small>
-    </div>
-  </section>
+      <div class="cats" id="cats" role="group" aria-label="Grupos de bichos"></div>
+    </section>
 
-  <section class="secao" id="bichos" aria-labelledby="tbichos">
-    <div class="secao-topo"><div>
-      <h2 id="tbichos">Qual você quer descobrir?</h2>
-      <p>Toque num bicho para conhecer: fotos reais, ciclo de vida e curiosidades.</p>
-    </div></div>
-    <div class="primeira" id="primeira" hidden><img class="mascote" src="img/mascote/lupi-rosto-360.jpg" alt="" width="64" height="64"><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
-    <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
-    <div class="grade" id="grade"></div>
-    <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
-  </section>
+    <section class="secao" aria-labelledby="tcomece">
+      <div class="secao-topo"><div><h2 id="tcomece">Comece sua <em>descoberta</em></h2><p>Escolha um bicho para conhecer.</p></div>
+        <a class="ver-todos" href="#bichos">Ver todos os animais →</a></div>
+      <div class="destaques" id="destaques"></div>
+    </section>
 
-  <section class="secao" aria-labelledby="t3d">
-    <div class="secao-topo"><div>
-      <h2 id="t3d">Veja de pertinho. Sem chegar perto.</h2>
-      <p>Gire animais em 3D, conheça suas partes, compare tamanhos e descubra curiosidades.</p>
-    </div></div>
-    <div class="exps" id="exps"></div>
-  </section>
+    <section class="viu" aria-labelledby="tviu">
+      <img src="img/mascote/curu-binoculo-460.png" alt="" width="230" height="182" loading="lazy">
+      <div><h2 id="tviu">Viu um bicho por aí?</h2>
+        <p>Conte qual foi e coloque no seu bolso. Observe sem tocar e chame um adulto.</p>
+        <button class="btn btn-3d btn-g" type="button" id="encontrei2" data-ico="pata">Encontrei um bicho!</button>
+        <small>Em breve: tirar uma foto para descobrir quem é.</small></div>
+    </section>
 
-  <section class="secao" id="descobertas" aria-labelledby="tdesc">
-    <div class="secao-topo"><div>
-      <h2 id="tdesc">Meu Bolso</h2>
-      <p>Cada bicho que você descobre vira uma carta no seu bolso.</p>
-    </div></div>
-    <div class="descobertas">
-      <div class="painel">
-        <div class="nivel" id="nivel"></div>
-        <div class="progresso-txt"><b id="prog-n"></b><span id="prog-de"></span></div>
-        <div class="barra" aria-hidden="true"><span id="prog-barra"></span></div>
-        <ul class="por-grupo" id="por-grupo" aria-label="Bichos encontrados por grupo"></ul>
-        <div class="album" id="album" aria-label="Cartas do meu bolso"></div>
+    <section class="secao passos-e-3d">
+      <div class="passos painel"><h2>Cada <em>descoberta</em> vai para o seu <em>bolso</em>.</h2>
+        <ol>
+          <li><b>1</b><strong>Encontre</strong><span>Observe um animal.</span></li>
+          <li><b>2</b><strong>Descubra</strong><span>Conheça seu novo bicho.</span></li>
+          <li><b>3</b><strong>Colecione</strong><span>Ganhe sua carta.</span></li>
+          <li><b>4</b><strong>Complete</strong><span>Faça missões e complete coleções.</span></li>
+        </ol></div>
+      <a class="pertinho" href="formiga.html"><img src="img/animais/formiga-3.jpg" alt="Formiga-saúva" loading="lazy">
+        <div><h2>Explore de pertinho</h2><p>Gire. Aproxime. Compare. Descubra.</p><span class="btn btn-primario" data-ico="cubo">Explorar em 3D</span></div>
+        <b class="selo3d">3D</b></a>
+    </section>
+
+    <section class="secao" id="bichos" aria-labelledby="tbichos">
+      <div class="secao-topo"><div>
+        <h2 id="tbichos">Todos os bichos</h2>
+        <p>Toque num bicho para conhecer: fotos reais, ciclo de vida e curiosidades.</p>
+      </div></div>
+      <div class="primeira" id="primeira" hidden><img class="mascote" src="img/mascote/curu-rosto-360.jpg" alt="" width="64" height="64"><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
+      <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
+      <div class="grade" id="grade"></div>
+      <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
+    </section>
+
+    <section class="secao" aria-labelledby="t3d">
+      <div class="secao-topo"><div>
+        <h2 id="t3d">Veja de pertinho. Sem chegar perto.</h2>
+        <p>Gire animais em 3D, conheça suas partes, compare tamanhos e descubra curiosidades.</p>
+      </div></div>
+      <div class="exps" id="exps"></div>
+    </section>
+
+    <section class="secao" id="descobertas" aria-labelledby="tdesc">
+      <div class="secao-topo"><div>
+        <h2 id="tdesc">Meu Bolso</h2>
+        <p>Cada bicho que você descobre vira uma carta no seu bolso.</p>
+      </div></div>
+      <div class="descobertas">
+        <div class="painel">
+          <div class="nivel" id="nivel"></div>
+          <div class="progresso-txt"><b id="prog-n"></b><span id="prog-de"></span></div>
+          <div class="barra" aria-hidden="true"><span id="prog-barra"></span></div>
+          <ul class="por-grupo" id="por-grupo" aria-label="Bichos encontrados por grupo"></ul>
+          <div class="album" id="album" aria-label="Cartas do meu bolso"></div>
+        </div>
+        <div class="painel missao" id="missao"></div>
       </div>
-      <div class="painel missao" id="missao"></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="secao" id="adultos" aria-labelledby="tadultos">
-    <div class="adultos">
-      <div>
-        <h2 id="tadultos">Diversão que continua fora da tela.</h2>
-        <p>O Bicho no Bolso convida a criança a observar a natureza, fazer perguntas e descobrir o mundo ao seu redor.</p>
+    <section class="secao duas" id="adultos">
+      <div class="bloco" id="familias">
+        <img src="img/mascote/curu-rosto-360.jpg" alt="" width="96" height="96" loading="lazy">
+        <h2>Feito para pequenos curiosos. Pensado para <em>famílias</em>.</h2>
+        <p>O Bicho no Bolso transforma curiosidade em descoberta: experiências educativas, atividades no mundo real e conteúdo apropriado para crianças.</p>
+        <ul><li data-ico="check">Sem anúncios</li><li data-ico="check">Sem perfil infantil público</li><li data-ico="check">Nada da criança é coletado: as descobertas ficam no aparelho</li><li data-ico="check">Funciona até sem internet</li></ul>
       </div>
-      <ul>
-        <li><span data-ico="folha"></span><div><b>Missões no mundo real</b><span>Procurar bichos de verdade no jardim, no pátio ou no parque.</span></div></li>
-        <li><span data-ico="check"></span><div><b>Sem anúncios e sem cadastro</b><span>Nenhum dado da criança é coletado. As descobertas ficam só no aparelho.</span></div></li>
-        <li><span data-ico="cubo"></span><div><b>Funciona até sem internet</b><span>Adicione à Tela de Início do iPad e use na escola, mesmo sem Wi-Fi.</span></div></li>
-      </ul>
-    </div>
-  </section>
+      <div class="bloco escuro" id="escolas">
+        <h2>É professor ou escola?</h2>
+        <p>Transforme o pátio em laboratório. Crie missões, explore espécies com a turma e monte um álbum coletivo de descobertas.</p>
+        <ul><li data-ico="check">Roteiros de aula ligados à BNCC</li><li data-ico="check">Funciona nos iPads da escola, sem instalar</li><li data-ico="check">Missões no pátio e álbum da turma (em breve)</li></ul>
+        <p class="contato">Quer testar com sua turma? Fale com a gente.</p>
+      </div>
+    </section>
+
+    <section class="aventura">
+      <div><h2>Comece sua aventura</h2><p>Explore bichos gratuitamente e faça sua primeira descoberta.</p></div>
+      <a class="btn btn-3d btn-g" href="#bichos">Começar grátis →</a>
+    </section>
+  </div>
 </main>
 
 <footer class="rodape">
