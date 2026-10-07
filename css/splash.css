@@ -28,11 +28,15 @@
 @keyframes sobe { from { opacity: 0; transform: translateY(14px); } }
 
 /* folhas entrando pelas bordas */
-.splash-folha { position: absolute; z-index: 1; width: 120px; height: 120px; color: #43A047; opacity: .9; animation: entra 1s ease-out both; }
-.splash-folha:nth-of-type(1) { top: -20px; left: -18px; transform: rotate(130deg); --dx: -60px; --dy: -60px; color: #66BB6A; }
-.splash-folha:nth-of-type(2) { top: 6%; right: -26px; transform: rotate(-120deg); --dx: 60px; --dy: -40px; animation-delay: .1s; }
-.splash-folha:nth-of-type(3) { bottom: -24px; left: 6%; transform: rotate(40deg); --dx: -40px; --dy: 60px; animation-delay: .15s; color: #2F8A47; }
-.splash-folha:nth-of-type(4) { bottom: 8%; right: -10px; transform: rotate(-50deg); --dx: 60px; --dy: 40px; animation-delay: .2s; color: #7CC576; width: 90px; height: 90px; }
+.splash-folha { position: absolute; z-index: 1; width: 150px; height: auto; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .25)); animation: entra 1s ease-out both; }
+.splash-folha:nth-of-type(1) { top: -34px; left: -30px; transform: rotate(140deg); --dx: -60px; --dy: -60px; }
+.splash-folha:nth-of-type(2) { top: 4%; right: -40px; transform: rotate(-115deg); --dx: 60px; --dy: -40px; animation-delay: .1s; width: 130px; }
+.splash-folha:nth-of-type(3) { bottom: -40px; left: 2%; transform: rotate(30deg); --dx: -40px; --dy: 60px; animation-delay: .15s; }
+.splash-folha:nth-of-type(4) { bottom: 6%; right: -24px; transform: rotate(-40deg); --dx: 60px; --dy: 40px; animation-delay: .2s; width: 110px; }
+.splash-folha:nth-of-type(5) { top: 38%; left: -46px; transform: rotate(80deg); --dx: -60px; --dy: 0px; animation-delay: .25s; width: 100px; opacity: .85; }
+.sb-folha-bal { transform-box: fill-box; transform-origin: 50% 100%; animation: folha-bal 3.2s ease-in-out infinite alternate; }
+.splash-folha:nth-of-type(even) .sb-folha-bal { animation-duration: 2.6s; animation-direction: alternate-reverse; }
+@keyframes folha-bal { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
 @keyframes entra { from { opacity: 0; translate: var(--dx) var(--dy); } }
 
 /* ---------- bichos que passam (js/splash-bichos.js) ----------
@@ -71,7 +75,6 @@
   40%, 72% { transform: translateY(calc(29vh - 100%)); }
   100% { transform: translateY(-110%); }
 }
-.voo-aranha .fio { display: block; width: 1.5px; height: 100vh; margin: -100vh auto 0; background: linear-gradient(rgba(255, 255, 255, .15), rgba(255, 255, 255, .7)); }
 .bal-aranha { transform-origin: 50% -30vh; animation: aranha-balanco 1.6s ease-in-out .9s infinite alternate; }
 @keyframes aranha-balanco { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
 .sb-patas-a { transform-origin: 50% 0%; animation: patas-aranha .35s ease-in-out infinite alternate; }
@@ -109,5 +112,6 @@
 @media (prefers-reduced-motion: reduce) {
   .splash, .splash.rapida { animation: sai .3s ease .8s forwards; }
   .splash *, .boas-vindas .caixa { animation: none !important; }
+  .splash-folha { animation: none; }
   .voo { display: none; }
 }

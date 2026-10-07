@@ -17,7 +17,7 @@
   guarda('eub-aberturas', aberturas + 1);
   const primeira = aberturas === 0;
   // bichos que passam pela tela (js/splash-bichos.js)
-  if (typeof SplashBichos !== 'undefined') el.querySelector('.splash-centro').insertAdjacentHTML('beforebegin', SplashBichos.html(!primeira));
+  if (typeof SplashBichos !== 'undefined') el.querySelector('.splash-centro').insertAdjacentHTML('beforebegin', SplashBichos.folhas() + SplashBichos.html(!primeira));
 
   // saudação: quantos bichos já foram encontrados neste aparelho (js/progresso.js)
   let encontrados = 0;
