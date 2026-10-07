@@ -4,6 +4,12 @@
 
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
+## Direção do projeto (outubro de 2026)
+O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (nome de trabalho: *Natureza no Bolso*, ainda não validado; o site continua publicado como **Bicho no Bolso**). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
+- `docs/DIRECAO.md`: direção, com o que está decidido, o que é proposta e o que está pendente.
+- `docs/PROPOSTA-CATALOGO.md`: auditoria do código, modelo de catálogo, mapa de telas e adaptações.
+- `docs/PLANO.md`: etapas pequenas de implementação e backlog do 3D.
+
 ## Páginas
 - `index.html`: home do Bicho no Bolso (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
 - `css/marca.css`: identidade visual (variáveis `--color-primary`, `--color-accent`, `--surface`… e componentes: cabeçalho, logo, botões, chips, rodapé).
@@ -26,7 +32,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 - `js/dados.js`: fotos e dados reais do **iNaturalist** e da **Wikipédia** (sem chave, sem cadastro). Fica guardado no aparelho por 14 dias; sem internet, o site usa os emojis.
 - `js/progresso.js`: álbum de descobertas, guardado só no aparelho (dá para apagar no rodapé do catálogo).
 - `docs/PILOTO.md`: kit para testar com turmas e propor um piloto pago (roteiro de aula, perguntas para o professor, autorizações).
-- `docs/ESTRATEGIA.md`: design comportamental, crítica de UX/UI, APIs, monetização ética e recomendações de tecnologia 3D.
+- `docs/ESTRATEGIA.md` (fase "catálogo de animais"): design comportamental, crítica de UX/UI, APIs, monetização ética e recomendações de tecnologia 3D.
 - `js/core3d.js`: peças 3D comuns, usadas pelas telas novas.
 
 ## Como usar
