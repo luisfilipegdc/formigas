@@ -5,7 +5,11 @@
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
 ## Páginas
-- `index.html`: catálogo. No topo, o destaque **🧊 Explore em 3D** (formiga e abelha); embaixo, a galeria de **fichas** com fotos reais, busca e filtros. Tocar num cartão abre a ficha; bichos com 3D têm o botão "▶ Explorar em 3D" na ficha. Créditos das fotos no rodapé.
+- `index.html`: home do Encontre um Bicho (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
+- `css/marca.css`: identidade visual (variáveis `--color-primary`, `--color-accent`, `--surface`… e componentes: cabeçalho, logo, botões, chips, rodapé).
+- `css/catalogo.css`: estilos da home.
+- `js/home.js`: lógica da home. `js/icones.js`: ícones SVG da interface.
+- `design/`: referências visuais da marca (não são usadas pelo site).
 - `comparar.html`: comparador de dois bichos (tamanho, parentesco, o que come, quanto vive, com quem vive, onde mora, situação na natureza).
 - `formiga.html`: saúva (operária, rainha, zangão e formigueiro).
 - `abelha.html`: abelha-europeia (operária, rainha e zangão) num jardim com flores. O botão 🍯 colmeia abre uma caixa de colmeia aberta na frente: favo, mel, pólen, ovos, larvas, pupas, realeira, rainha, dança, entrada e zangões, com etiquetas e passeio (⏭). Toque numa flor e ela voa até lá e bebe néctar; 🌼 faz ela visitar as flores sozinha; 👅 mostra a língua.

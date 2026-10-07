@@ -417,3 +417,12 @@ const IUCN = {
   LC: ['🟢', 'Pouco preocupante'], NT: ['🟡', 'Quase ameaçada'], VU: ['🟠', 'Vulnerável'],
   EN: ['🔴', 'Em perigo'], CR: ['🔴', 'Criticamente em perigo']
 };
+
+// missões: encontrar bichos no mundo real (marcados na ficha com "Eu vi um bicho assim de verdade!")
+const MISSOES = [
+  {
+    id: 'jardim', nome: 'Pequenos do jardim', selo: 'Explorador do Jardim',
+    texto: 'Procure perto de casa ou da escola e marque na ficha quando vir um bicho assim de verdade.',
+    bichos: [['formiga', 'uma formiga'], ['abelha', 'uma abelha'], ['joaninha', 'uma joaninha'], ['borboleta', 'uma borboleta'], ['beijaflor', 'um beija-flor']]
+  }
+];

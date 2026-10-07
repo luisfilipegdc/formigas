@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bichos 3D">
-<meta name="theme-color" content="#fff3c8">
+<meta name="theme-color" content="#2E7D32">
 <meta name="description" content="Encontre um Bicho: crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos. Grátis, direto no navegador do iPad.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="img/icone/favicon.png">
@@ -20,232 +20,115 @@
 <title>Encontre um Bicho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink: #4a2a12; --ink2: rgba(74,42,18,.72); --mel: #ffd23f; --papel: #fffaf0;
-    --sombra: 0 8px 0 rgba(74,42,18,.10), 0 14px 26px rgba(74,42,18,.12);
-    --raio: 26px;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    margin: 0; min-height: 100%;
-    font-family: 'Baloo 2', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; color: var(--ink);
-    background: linear-gradient(#fff6d6, #ffe7b8 60%, #ffdca6); background-attachment: fixed;
-  }
-  main {
-    max-width: 1180px; margin: 0 auto;
-    padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-  }
-  /* ---------- topo ---------- */
-  .topo { display: flex; align-items: center; gap: 12px; }
-  .marca { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-  .marca .ic { width: 52px; height: 52px; border-radius: 16px; flex: none; box-shadow: 0 4px 0 rgba(74,42,18,.12); }
-  .marca h1 { margin: 0; font-size: clamp(22px, 3.4vw, 34px); line-height: 1; font-weight: 800; }
-  .marca p { margin: 2px 0 0; font-size: clamp(14px, 1.7vw, 17px); font-weight: 600; color: var(--ink2); line-height: 1.2; }
-  .acoes { display: flex; gap: 8px; flex: none; }
-  .pilula { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; font-weight: 800; font-size: 16px; box-shadow: 0 4px 0 rgba(74,42,18,.10); white-space: nowrap; }
-  .pilula.suave { background: rgba(255,255,255,.6); }
-  /* ---------- seções ---------- */
-  h2 { margin: 22px 4px 10px; font-size: clamp(20px, 2.6vw, 26px); line-height: 1.1; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  h2 small { font-size: 15px; font-weight: 600; color: var(--ink2); }
-  /* ---------- destaque 3D ---------- */
-  .destaque { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
-  .exp {
-    position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: clamp(250px, 32vw, 340px);
-    border-radius: 30px; overflow: hidden; color: #fff; text-decoration: none; isolation: isolate;
-    border: 5px solid #fff; box-shadow: var(--sombra); background: #6b4a2a; transition: transform .15s ease;
-  }
-  .exp:active { transform: scale(.97); }
-  .exp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
-  .exp::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(30,15,5,.45) 55%, rgba(30,15,5,.85) 100%); }
-  .exp .selo { position: absolute; top: 14px; left: 14px; background: var(--mel); color: var(--ink); font-weight: 800; font-size: 15px; border-radius: 999px; padding: 3px 12px; }
-  .exp .corpo { padding: 16px 18px 18px; }
-  .exp h3 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
-  .exp i { display: block; font-size: 15px; opacity: .85; margin-top: 2px; }
-  .exp ul { list-style: none; margin: 10px 0 12px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-  .exp li { background: rgba(255,255,255,.2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: 999px; padding: 1px 10px; font-size: 14px; font-weight: 800; }
-  .exp .bts { display: flex; gap: 8px; align-items: center; }
-  .exp .ir { flex: 1; text-align: center; background: var(--mel); color: var(--ink); border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 19px; box-shadow: 0 4px 0 rgba(0,0,0,.2); }
-  .exp .fi { flex: none; width: 50px; height: 50px; border-radius: 50%; border: 0; background: #fff; font-size: 22px; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.2); }
-  .exp .prog { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,.92); color: var(--ink); border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: 14px; }
-  /* ---------- filtros ---------- */
-  .filtros { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-  .filtros input {
-    flex: 1 1 260px; min-width: 0; font: inherit; font-size: 17px; padding: 9px 18px; min-height: 48px; border-radius: 999px;
-    border: 3px solid #fff; background: rgba(255,255,255,.85); color: var(--ink); outline: none;
-  }
-  .filtros input:focus { border-color: var(--mel); }
-  .chips { flex: 1 1 100%; display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
-  .chips::-webkit-scrollbar { display: none; }
-  .chips button {
-    flex: none; font: inherit; font-size: 16px; font-weight: 800; color: var(--ink); cursor: pointer; min-height: 44px;
-    border: 3px solid #fff; background: rgba(255,255,255,.6); border-radius: 999px; padding: 0 14px;
-  }
-  .chips button.on { background: var(--mel); border-color: var(--mel); }
-  @media (min-width: 900px) { .chips { flex: 0 1 auto; } .filtros input { flex: 0 1 300px; } }
-  /* ---------- galeria de fichas ---------- */
-  .grid { display: grid; gap: clamp(10px, 1.6vw, 18px); grid-template-columns: repeat(auto-fill, minmax(min(46%, 210px), 1fr)); }
-  .card {
-    position: relative; display: flex; flex-direction: column; text-align: left; padding: 0; font: inherit; color: var(--ink); cursor: pointer;
-    border-radius: var(--raio); border: 4px solid #fff; background: var(--papel); overflow: hidden; box-shadow: var(--sombra); transition: transform .14s ease;
-  }
-  .card:active { transform: scale(.96); }
-  .card .pic { position: relative; aspect-ratio: 4 / 3; background: var(--bg); display: grid; place-items: center; overflow: hidden; }
-  .card .pic span { font-size: 64px; line-height: 1; }
-  .card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
-  .card .pic.foto img { opacity: 1; }
-  .card .tag { position: absolute; top: 8px; left: 8px; border-radius: 999px; padding: 1px 9px; font-size: 13px; font-weight: 800; background: rgba(255,255,255,.92); }
-  .card .tag.d3 { background: var(--mel); }
-  .card .estrela { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 1px 8px; font-size: 13px; font-weight: 800; background: rgba(255,255,255,.92); }
-  .card .txt { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 2px; flex: 1; background: linear-gradient(var(--bg), var(--papel) 70%); }
-  .card .nm { font-size: clamp(18px, 2.2vw, 22px); font-weight: 800; line-height: 1.1; }
-  .card .sci { font-size: 13px; font-style: italic; color: var(--ink2); line-height: 1.2; }
-  .card .res { font-size: 15px; line-height: 1.3; margin: 4px 0 6px; }
-  .card .facts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; font-size: 13px; font-weight: 800; color: var(--ink2); }
-  .empty { text-align: center; font-size: 19px; padding: 26px; color: var(--ink2); }
-  /* ---------- rodapé ---------- */
-  footer { margin-top: 30px; text-align: center; font-size: 15px; line-height: 1.5; color: var(--ink2); }
-  footer a { color: inherit; }
-  footer button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
-  .offline { background: rgba(255,255,255,.75); border-radius: 18px; padding: 8px 14px; margin: 0 auto 12px; max-width: 560px; font-size: 16px; color: var(--ink); }
-  .offline button { font: inherit; font-weight: 800; background: var(--mel); border: 0; border-radius: 999px; padding: 6px 16px; cursor: pointer; text-decoration: none; }
-  .creditos { max-width: 760px; margin: 10px auto 0; text-align: left; background: rgba(255,255,255,.55); border-radius: 18px; padding: 8px 14px; }
-  .creditos summary { cursor: pointer; font-weight: 800; text-align: center; }
-  .creditos ul { columns: 2 260px; margin: 8px 0 4px; padding-left: 18px; font-size: 13px; line-height: 1.35; }
-  /* ---------- celular ---------- */
-  @media (max-width: 600px) {
-    .marca .ic { width: 44px; height: 44px; border-radius: 13px; }
-    .marca p { display: none; }
-    .pilula { padding: 0 12px; font-size: 15px; }
-    .pilula .longo { display: none; }
-    .exp { min-height: 210px; border-radius: 26px; }
-    .exp ul li:nth-child(n+4) { display: none; }
-    .card .res { display: none; }
-    .card .pic span { font-size: 48px; }
-    .card .txt { padding: 6px 10px 10px; }
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/marca.css">
+<link rel="stylesheet" href="css/catalogo.css">
 </head>
 <body>
-<main>
-  <header class="topo">
-    <div class="marca">
-      <img class="ic" src="img/icone/icone-192.png" alt="">
-      <div><h1>Encontre um Bicho</h1><p>Explore. Descubra. Colecione.</p></div>
-    </div>
-    <nav class="acoes">
-      <a class="pilula" href="comparar.html">⚖️<span class="longo"> Qual é maior?</span></a>
-      <span class="pilula suave" id="album" aria-live="polite">🐾 0</span>
+<header class="cabecalho">
+  <div class="wrap">
+    <a class="logo" href="#topo" aria-label="Encontre um Bicho: início">
+      <svg class="logo-folha" viewBox="0 0 24 32" fill="currentColor" aria-hidden="true"><path d="M20 2C8 4 2 12 4 22c.4 2 1.2 3.6 2.2 4.8C7 19 11 13 16.5 9.5 12 13.6 9 19 8.4 28.5c1.2.6 2.6.9 4 .9C21 29.4 23 17 20 2Z"/></svg>
+      <span class="logo-txt"><small>Encontre um</small><b>Bich<span class="logo-o" data-ico="pata"></span></b></span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#topo" class="on so-largo" data-ico="inicio"><span class="rotulo">Início</span></a>
+      <a href="#bichos" data-ico="colecao"><span class="rotulo">Coleções</span></a>
+      <a href="comparar.html" data-ico="comparar"><span class="rotulo">Comparar</span></a>
+      <a href="#descobertas" data-ico="album"><span class="rotulo">Minhas descobertas</span> <span class="contador" id="contador">0</span></a>
     </nav>
-  </header>
-
-  <h2>🧊 Explore em 3D <small>Gire com um dedo, dê zoom com dois.</small></h2>
-  <section class="destaque" id="destaque"></section>
-
-  <h2>🔎 Encontre todos os bichos <small id="contagem"></small></h2>
-  <div class="filtros">
-    <input id="q" type="search" placeholder="🔎 Procurar animal…" aria-label="Procurar animal">
-    <div class="chips" id="chips" role="group" aria-label="Grupos de animais"></div>
   </div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" hidden>Nenhum animal encontrado 🐾</div>
+</header>
 
-  <footer>
-    <p id="offline" class="offline" hidden></p>
-    Grátis, sem anúncios e sem coleta de dados.<br>
-    <a href="qr.html">🖨️ QR code para imprimir</a> · <button id="apagar">apagar minhas descobertas</button>
-    <details class="creditos"><summary>📷 Créditos das fotos (iNaturalist)</summary><ul id="creditos"></ul></details>
-  </footer>
+<main class="wrap">
+  <section class="hero" id="topo">
+    <div class="hero-txt">
+      <h1>Qual bicho vamos descobrir hoje?</h1>
+      <p>Explore animais incríveis, veja de pertinho e comece sua coleção.</p>
+      <form class="busca" id="busca" role="search">
+        <span data-ico="busca"></span>
+        <label class="sr" for="q">Procure um animal</label>
+        <input id="q" type="search" placeholder="Procure um animal…" autocomplete="off">
+        <button type="submit" aria-label="Procurar" data-ico="seta"></button>
+      </form>
+      <div class="hero-acoes"><a class="btn btn-primario" href="#bichos">Explorar os bichos</a></div>
+    </div>
+    <div class="hero-foto">
+      <img src="img/animais/abelha-1.jpg" alt="Abelha-europeia pousada numa flor amarela, coberta de pólen">
+      <span class="balao" data-ico="cubo">Animais reais<br>em 3D</span>
+      <small class="credito">Foto: Cole Shoemaker · CC BY · iNaturalist</small>
+    </div>
+  </section>
+
+  <section class="secao" id="bichos" aria-labelledby="tbichos">
+    <div class="secao-topo"><div>
+      <h2 id="tbichos">Encontre todos os bichos</h2>
+      <p>Toque num bicho para conhecer: fotos reais, ciclo de vida e curiosidades.</p>
+    </div></div>
+    <div class="primeira" id="primeira" hidden><span data-ico="busca"></span><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
+    <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
+    <div class="grade" id="grade"></div>
+    <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
+  </section>
+
+  <section class="secao" aria-labelledby="t3d">
+    <div class="secao-topo"><div>
+      <h2 id="t3d">Veja de pertinho. Sem chegar perto.</h2>
+      <p>Gire animais em 3D, conheça suas partes, compare tamanhos e descubra curiosidades.</p>
+    </div></div>
+    <div class="exps" id="exps"></div>
+  </section>
+
+  <section class="secao" id="descobertas" aria-labelledby="tdesc">
+    <div class="secao-topo"><div>
+      <h2 id="tdesc">Cada descoberta tem uma história.</h2>
+      <p>Complete seu álbum com os bichos que encontrou.</p>
+    </div></div>
+    <div class="descobertas">
+      <div class="painel">
+        <div class="progresso-txt"><b id="prog-n"></b><span id="prog-de"></span></div>
+        <div class="barra" aria-hidden="true"><span id="prog-barra"></span></div>
+        <ul class="por-grupo" id="por-grupo" aria-label="Bichos encontrados por grupo"></ul>
+        <div class="album" id="album" aria-label="Meus bichos encontrados"></div>
+      </div>
+      <div class="painel missao" id="missao"></div>
+    </div>
+  </section>
+
+  <section class="secao" aria-labelledby="tadultos">
+    <div class="adultos">
+      <div>
+        <h2 id="tadultos">Diversão que continua fora da tela.</h2>
+        <p>O Encontre um Bicho convida a criança a observar a natureza, fazer perguntas e descobrir o mundo ao seu redor.</p>
+      </div>
+      <ul>
+        <li><span data-ico="folha"></span><div><b>Missões no mundo real</b><span>Procurar bichos de verdade no jardim, no pátio ou no parque.</span></div></li>
+        <li><span data-ico="check"></span><div><b>Sem anúncios e sem cadastro</b><span>Nenhum dado da criança é coletado. As descobertas ficam só no aparelho.</span></div></li>
+        <li><span data-ico="cubo"></span><div><b>Funciona até sem internet</b><span>Adicione à Tela de Início do iPad e use na escola, mesmo sem Wi-Fi.</span></div></li>
+      </ul>
+    </div>
+  </section>
 </main>
+
+<footer class="rodape">
+  <div class="wrap">
+    <a class="logo" href="#topo" aria-label="Encontre um Bicho: início">
+      <svg class="logo-folha" viewBox="0 0 24 32" fill="currentColor" aria-hidden="true"><path d="M20 2C8 4 2 12 4 22c.4 2 1.2 3.6 2.2 4.8C7 19 11 13 16.5 9.5 12 13.6 9 19 8.4 28.5c1.2.6 2.6.9 4 .9C21 29.4 23 17 20 2Z"/></svg>
+      <span class="logo-txt"><small>Encontre um</small><b>Bich<span class="logo-o" data-ico="pata"></span></b></span>
+    </a>
+    <p id="offline" class="offline" hidden></p>
+    <p>Explore. Descubra. Colecione. · Grátis, sem anúncios e sem coleta de dados.<br>
+      <a href="qr.html">QR code para imprimir</a> · <button id="apagar" type="button">apagar meus bichos encontrados</button></p>
+    <details class="creditos"><summary>Créditos das fotos (iNaturalist, Creative Commons)</summary><ul id="creditos"></ul></details>
+  </div>
+</footer>
+
 <script src="js/catalogo.js"></script>
+<script src="js/icones.js"></script>
 <script src="js/dados.js"></script>
 <script src="js/progresso.js"></script>
 <script src="js/ficha.js"></script>
-<script>
-(function () {
-  let grupo = 'todos';
-  const $ = (s) => document.getElementById(s);
-  const q = $('q'), grid = $('grid'), chips = $('chips');
-  const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-  const foto = (A, el, grande) => Dados.foto(A).then((f) => {
-    const img = el.querySelector('img');
-    img.onload = () => el.classList.add('foto');
-    img.alt = 'Foto de ' + A.nome;
-    img.src = grande ? f.url : (f.mini || f.url);
-  }).catch(() => {});
-
-  // destaque: as experiências 3D, grandes, no topo
-  ANIMAIS.filter((A) => A.pagina).forEach((A) => {
-    const el = document.createElement('a');
-    el.className = 'exp'; el.href = A.pagina; el.dataset.id = A.id;
-    el.setAttribute('aria-label', A.nome + ': explorar em 3D');
-    el.innerHTML = '<img alt=""><span class="selo">🧊 3D</span><span class="prog" hidden></span><div class="corpo"><h3>' + A.nome + '</h3><i>' + A.cientifico + '</i>' +
-      '<ul>' + (A.destaques || []).map((d) => '<li>' + d + '</li>').join('') + '</ul>' +
-      '<div class="bts"><span class="ir">▶ Explorar em 3D</span><button class="fi" type="button" aria-label="Ficha: ' + A.nome + '">ℹ️</button></div></div>';
-    el.querySelector('.fi').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); Ficha.abrir(A.id); });
-    $('destaque').appendChild(el);
-    foto(A, el, true);
-  });
-
-  GRUPOS.forEach((g) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.textContent = g.emoji + ' ' + g.nome; b.dataset.g = g.id;
-    b.addEventListener('click', () => { grupo = g.id; render(); });
-    chips.appendChild(b);
-  });
-
-  // galeria: todos os animais; tocar abre a ficha
-  function render() {
-    chips.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.g === grupo));
-    const t = norm(q.value.trim());
-    const list = ANIMAIS.filter((a) => (grupo === 'todos' || a.grupo === grupo) &&
-      (!t || norm(a.nome + ' ' + a.cientifico + ' ' + (a.resumo || '')).includes(t)));
-    grid.innerHTML = '';
-    list.forEach((a) => {
-      const el = document.createElement('button');
-      el.type = 'button'; el.className = 'card'; el.dataset.id = a.id;
-      el.style.setProperty('--bg', a.cor);
-      el.setAttribute('aria-label', a.nome + ': ver ficha');
-      const r = a.rapido || {};
-      el.innerHTML = '<div class="pic"><img alt=""><span>' + a.emoji + '</span>' +
-        (a.pagina ? '<b class="tag d3">🧊 3D</b>' : '') + '<b class="estrela" hidden></b></div>' +
-        '<div class="txt"><div class="nm">' + a.nome + '</div><div class="sci">' + a.cientifico + '</div>' +
-        '<div class="res">' + (a.resumo || '') + '</div>' +
-        '<div class="facts"><span>📏 ' + (r.tamanho || '') + '</span><span>🍽️ ' + (r.come || '') + '</span></div></div>';
-      el.addEventListener('click', () => Ficha.abrir(a.id));
-      grid.appendChild(el);
-      foto(a, el.querySelector('.pic'));
-    });
-    $('empty').hidden = list.length > 0;
-    atualizar();
-  }
-  // progresso: só aparece quando já tem alguma descoberta (nada de estrelas vazias)
-  function atualizar() {
-    document.querySelectorAll('[data-id]').forEach((el) => {
-      const a = ANIMAIS.find((x) => x.id === el.dataset.id), c = Progresso.conta(a);
-      const s = el.querySelector('.estrela, .prog');
-      s.hidden = !c.feitas; s.textContent = '⭐ ' + c.feitas + '/' + c.total;
-    });
-    const n = Progresso.encontrados(), t = ANIMAIS.length;
-    $('album').textContent = '🐾 ' + n + '/' + t;
-    $('album').title = n + ' de ' + t + (n === 1 ? ' bicho encontrado' : ' bichos encontrados');
-    $('contagem').textContent = n ? 'Você já encontrou ' + n + ' de ' + t + '!' : 'Toque num bicho para encontrá-lo.';
-    $('album').setAttribute('aria-label', $('album').title);
-  }
-  $('creditos').innerHTML = ANIMAIS.flatMap((a) => (a.fotos || []).map((f) =>
-    '<li>' + esc(a.nome) + ' (<i>' + esc(f.especie) + '</i>): ' + esc(f.autor) + ', ' + esc(f.lic) + '</li>')).join('');
-  $('apagar').addEventListener('click', () => {
-    if (confirm('Apagar todas as descobertas deste aparelho?')) { Progresso.apagar(); atualizar(); }
-  });
-  document.addEventListener('ficha-fechou', atualizar);
-  window.addEventListener('pageshow', (e) => { if (e.persisted) atualizar(); });
-  q.addEventListener('input', render);
-  render();
-  Ficha.criar(ANIMAIS[0].id, { botao: false });
-})();
-</script>
+<script src="js/home.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

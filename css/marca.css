@@ -1,0 +1,136 @@
+/* =====================================================================
+   marca.css — identidade visual "Encontre um Bicho"
+   Variáveis (cores, raios, sombras) e componentes comuns: cabeçalho,
+   logo, botões, chips, seções e rodapé. Referência: design/*.png
+   ===================================================================== */
+:root {
+  /* cores */
+  --color-nature: #1B5E20;      /* verde escuro: títulos fortes, logo */
+  --color-primary: #2E7D32;     /* verde: ações principais, chip ativo */
+  --color-primary-soft: #E7F3E6;
+  --color-accent: #FBC02D;      /* amarelo: destaque e 3D */
+  --color-accent-soft: #FFF4CC;
+  --color-secondary: #1565C0;   /* azul: só apoio (links, dados) */
+  --bg: #F7F5EE;                /* fundo claro e quente */
+  --surface: #FFFFFF;
+  --surface-warm: #FFFCF4;
+  --text: #22301F;
+  --text-soft: #5B6657;
+  --line: #E7E3D6;
+  /* forma */
+  --radius-s: 12px;
+  --radius-m: 18px;
+  --radius-l: 26px;
+  --shadow-s: 0 1px 2px rgba(34, 48, 31, .06), 0 2px 8px rgba(34, 48, 31, .06);
+  --shadow-m: 0 2px 4px rgba(34, 48, 31, .06), 0 8px 20px rgba(34, 48, 31, .08);
+  --gutter: max(16px, env(safe-area-inset-left));
+  --font: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* usados pela gaveta da ficha (js/ficha.js) */
+  --chip-on: var(--color-primary);
+  --chip-on-text: #fff;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 17px; line-height: 1.45;
+  -webkit-font-smoothing: antialiased; text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--color-secondary); }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+.ico { width: 1.2em; height: 1.2em; flex: none; vertical-align: -.22em; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gutter); padding-right: max(16px, env(safe-area-inset-right)); }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- logo ---------- */
+.logo { display: inline-flex; align-items: center; gap: 2px; text-decoration: none; color: var(--color-nature); line-height: .9; flex: none; }
+.logo-folha { width: 26px; height: 34px; color: #43A047; margin-right: 2px; }
+.logo-txt { display: flex; flex-direction: column; }
+.logo-txt small { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--color-nature); }
+.logo-txt b { font-size: 30px; font-weight: 900; letter-spacing: -.02em; display: flex; align-items: center; color: var(--color-primary); }
+.logo-o { display: inline-grid; place-items: center; width: .9em; height: .9em; border-radius: 50%; background: var(--color-nature); color: #fff; margin-left: 1px; }
+.logo-o .ico { width: .58em; height: .58em; }
+
+/* ---------- cabeçalho ---------- */
+.cabecalho {
+  position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, .96);
+  border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top);
+}
+.cabecalho .wrap { display: flex; align-items: center; gap: 16px; min-height: 68px; }
+.nav { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+.nav a {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 14px; border-radius: 999px;
+  color: var(--text); text-decoration: none; font-weight: 800; font-size: 16px; white-space: nowrap;
+}
+.nav a .ico { color: var(--color-primary); }
+.nav a:hover, .nav a.on { background: var(--color-primary-soft); color: var(--color-nature); }
+.nav .contador { min-width: 24px; height: 24px; padding: 0 7px; border-radius: 999px; background: var(--color-accent); color: var(--text); font-size: 13px; font-weight: 900; display: inline-grid; place-items: center; }
+
+/* ---------- botões ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px;
+  border-radius: 999px; border: 0; cursor: pointer; text-decoration: none; font-weight: 900; font-size: 17px; white-space: nowrap;
+  transition: transform .12s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn-primario { background: var(--color-primary); color: #fff; box-shadow: 0 3px 0 var(--color-nature); }
+.btn-3d { background: var(--color-accent); color: var(--text); box-shadow: 0 3px 0 #D9A21A; }
+.btn-claro { background: var(--surface); color: var(--color-nature); box-shadow: inset 0 0 0 2px var(--line); }
+
+/* ---------- etiquetas ---------- */
+.badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 900; white-space: nowrap; text-decoration: none; }
+.badge-3d { background: var(--color-accent); color: var(--text); }
+.badge-ficha { background: rgba(255, 255, 255, .94); color: var(--color-nature); }
+.badge-ok { background: var(--color-primary); color: #fff; }
+
+/* ---------- chips de categoria ---------- */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 46px; padding: 0 16px; cursor: pointer;
+  border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-weight: 800; font-size: 16px;
+}
+.chip .ico { color: var(--color-primary); }
+.chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.chip.on .ico { color: #fff; }
+
+/* ---------- seções ---------- */
+.secao { padding: 36px 0 8px; }
+.secao-topo { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.secao h2 { margin: 0; font-size: clamp(25px, 3.2vw, 34px); line-height: 1.1; font-weight: 900; color: var(--color-nature); letter-spacing: -.01em; }
+.secao-topo p { margin: 4px 0 0; color: var(--text-soft); font-size: 17px; max-width: 640px; }
+.painel { background: var(--surface); border-radius: var(--radius-l); box-shadow: var(--shadow-s); padding: 20px; }
+
+/* ---------- rodapé ---------- */
+.rodape { margin-top: 44px; padding: 26px 0 max(28px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); color: var(--text-soft); font-size: 15px; text-align: center; }
+.rodape .logo { margin-bottom: 8px; }
+.rodape a { color: var(--color-nature); font-weight: 800; }
+.rodape button { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; }
+.offline { background: var(--color-primary-soft); color: var(--color-nature); border-radius: var(--radius-m); padding: 10px 16px; margin: 0 auto 14px; max-width: 620px; }
+.offline button { font-weight: 900; background: var(--color-primary); color: #fff; border-radius: 999px; padding: 6px 16px; text-decoration: none; }
+.creditos { max-width: 820px; margin: 14px auto 0; text-align: left; background: var(--surface); border-radius: var(--radius-m); padding: 10px 16px; box-shadow: var(--shadow-s); }
+.creditos summary { cursor: pointer; font-weight: 800; text-align: center; color: var(--text); }
+.creditos ul { columns: 2 280px; margin: 10px 0 4px; padding-left: 18px; font-size: 13px; line-height: 1.4; }
+
+/* ---------- iPad vertical e celular ---------- */
+@media (max-width: 900px) {
+  .nav a { padding: 0 11px; }
+  .nav a .rotulo { display: none; }
+  .nav a .ico { width: 1.45em; height: 1.45em; }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .cabecalho .wrap { min-height: 60px; gap: 8px; }
+  .logo-folha { width: 20px; height: 28px; }
+  .logo-txt small { font-size: 12px; }
+  .logo-txt b { font-size: 24px; }
+  .nav { gap: 0; }
+  .nav a { padding: 0 9px; }
+  .nav a.so-largo { display: none; }
+  .secao { padding-top: 28px; }
+  .painel { padding: 16px; border-radius: var(--radius-m); }
+}

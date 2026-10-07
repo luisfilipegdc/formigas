@@ -1,0 +1,146 @@
+/* =====================================================================
+   catalogo.css — página inicial (index.html): hero, experiências 3D,
+   catálogo de bichos, álbum de descobertas, missão e seção para adultos.
+   Usa as variáveis de css/marca.css.
+   ===================================================================== */
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative; margin-top: 18px; border-radius: var(--radius-l); overflow: hidden; background: var(--surface-warm);
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 400px; box-shadow: var(--shadow-s);
+}
+.hero-txt { position: relative; z-index: 1; padding: clamp(24px, 4vw, 48px); display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.hero h1 { margin: 0; font-size: clamp(30px, 4.3vw, 50px); line-height: 1.05; font-weight: 900; color: var(--color-nature); letter-spacing: -.02em; }
+.hero-txt > p { margin: 0; font-size: clamp(17px, 1.9vw, 20px); color: var(--text-soft); max-width: 520px; }
+.busca { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 999px; padding: 6px 6px 6px 18px; box-shadow: var(--shadow-m); max-width: 540px; }
+.busca > span .ico { color: var(--text-soft); }
+.busca button .ico { color: #fff; width: 22px; height: 22px; }
+.busca input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 17px; min-height: 44px; }
+.busca input::placeholder { color: #8A9386; }
+.busca button { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--color-primary); color: #fff; cursor: pointer; display: grid; place-items: center; }
+.hero-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-foto { position: relative; min-height: 260px; }
+.hero-foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-foto::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, var(--surface-warm) 0, rgba(255, 252, 244, 0) 28%); }
+.balao {
+  position: absolute; z-index: 2; top: 22px; left: 18px; transform: rotate(-6deg);
+  display: inline-flex; align-items: center; gap: 8px; background: var(--color-accent); color: var(--text);
+  border-radius: 18px; padding: 8px 16px; font-weight: 900; font-size: 18px; line-height: 1.05; box-shadow: var(--shadow-m);
+}
+.balao .ico { width: 1.6em; height: 1.6em; }
+.credito { position: absolute; z-index: 2; right: 10px; bottom: 8px; font-size: 11px; color: #fff; background: rgba(0, 0, 0, .45); border-radius: 8px; padding: 1px 7px; }
+
+/* ---------- experiências 3D ---------- */
+.exps { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.exp { display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-l); overflow: hidden; box-shadow: var(--shadow-s); }
+.exp-foto { position: relative; aspect-ratio: 16 / 9; background: var(--color-accent-soft); }
+.exp-foto img { width: 100%; height: 100%; object-fit: cover; }
+.exp-foto .badge { position: absolute; left: 12px; bottom: 12px; }
+.exp-corpo { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.exp h3 { margin: 0; font-size: 24px; font-weight: 900; line-height: 1.1; }
+.exp i { color: var(--text-soft); font-size: 15px; }
+.exp ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.exp li { background: var(--color-primary-soft); color: var(--color-nature); border-radius: 999px; padding: 2px 11px; font-size: 14px; font-weight: 800; }
+.exp .bts { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+.exp .bts .btn { flex: 1 1 auto; }
+.exp-comparar .exp-foto { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; background: var(--line); }
+.exp-comparar .exp-foto img { height: 100%; }
+
+/* ---------- catálogo ---------- */
+.primeira { display: flex; align-items: center; gap: 14px; background: var(--color-accent-soft); border: 2px dashed var(--color-accent); border-radius: var(--radius-m); padding: 12px 16px; margin-bottom: 14px; font-size: 17px; }
+.primeira b { display: block; color: var(--color-nature); font-size: 19px; }
+.primeira .ico { width: 34px; height: 34px; color: var(--color-nature); flex: none; }
+.filtros { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.grade { display: grid; gap: clamp(12px, 1.8vw, 20px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.card {
+  position: relative; display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius-l);
+  overflow: hidden; box-shadow: var(--shadow-s); transition: transform .14s ease, box-shadow .14s ease;
+}
+.card:active { transform: scale(.98); }
+.card-foto { position: relative; aspect-ratio: 16 / 10; background: var(--cor, var(--color-primary-soft)); display: grid; place-items: center; overflow: hidden; }
+.card-foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
+.card-foto.ok img { opacity: 1; }
+.card-emoji { font-size: 60px; line-height: 1; }
+.card-foto .badge { position: absolute; left: 10px; bottom: 10px; z-index: 2; }
+.card-foto .badge-ok { left: auto; right: 10px; top: 10px; bottom: auto; pointer-events: none; }
+.card-corpo { padding: 12px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.card h3 { margin: 0; font-size: 20px; font-weight: 900; line-height: 1.15; }
+.card i { color: var(--text-soft); font-size: 14px; line-height: 1.25; }
+.card p { margin: 6px 0 12px; font-size: 15px; line-height: 1.35; }
+.fatos { list-style: none; margin: auto 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.fatos li { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px 2px 8px; font-size: 13px; font-weight: 800; color: var(--text); }
+.fatos .ico { width: 15px; height: 15px; }
+.fatos li:nth-child(1) .ico { color: var(--color-secondary); }
+.fatos li:nth-child(2) .ico { color: #D84315; }
+.fatos li:nth-child(3) .ico { color: var(--color-primary); }
+/* o cartão inteiro abre a ficha; o selo "Explorar em 3D" fica por cima e leva ao 3D */
+.card-abrir { position: absolute; inset: 0; z-index: 1; border: 0; background: none; cursor: pointer; border-radius: inherit; }
+.card-abrir:focus-visible { outline-offset: -3px; }
+.vazio { text-align: center; padding: 30px; color: var(--text-soft); font-size: 18px; }
+
+/* ---------- descobertas ---------- */
+.descobertas { display: grid; gap: 18px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
+.progresso-txt { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.progresso-txt b { font-size: 22px; color: var(--color-nature); }
+.barra { height: 12px; border-radius: 999px; background: var(--color-primary-soft); overflow: hidden; }
+.barra span { display: block; height: 100%; border-radius: inherit; background: var(--color-primary); transition: width .5s ease; }
+.por-grupo { list-style: none; margin: 14px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.por-grupo li { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: 15px; }
+.por-grupo .ico { color: var(--color-primary); }
+.album { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+.figurinha {
+  position: relative; aspect-ratio: 1; border-radius: var(--radius-s); overflow: hidden; border: 0; padding: 0; cursor: pointer;
+  background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--line);
+}
+.figurinha img { width: 100%; height: 100%; object-fit: cover; }
+.figurinha span { position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 4px; font-size: 11px; font-weight: 800; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .65)); text-align: center; line-height: 1.2; }
+.figurinha.falta { display: grid; place-items: center; color: #A3AA9F; }
+.figurinha.falta .ico { width: 28px; height: 28px; }
+.figurinha.falta span { background: none; color: var(--text-soft); }
+.missao h3 { margin: 6px 0 4px; font-size: 22px; font-weight: 900; color: var(--color-nature); }
+.missao > p { margin: 0 0 12px; color: var(--text-soft); }
+.missao ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.missao li { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.missao li .caixa { width: 30px; height: 30px; border-radius: 9px; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; flex: none; }
+.missao li.ok .caixa { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.missao li button { margin-left: auto; background: none; border: 0; color: var(--color-secondary); font-weight: 800; font-size: 14px; cursor: pointer; padding: 6px 0; }
+.missao .selo { margin-top: 14px; display: flex; align-items: center; gap: 10px; background: var(--color-accent-soft); border-radius: var(--radius-m); padding: 10px 14px; font-weight: 800; }
+.missao .dica { margin-top: 12px; font-size: 14px; color: var(--text-soft); }
+
+/* ---------- para adultos ---------- */
+.adultos { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: center; background: var(--color-nature); color: #fff; border-radius: var(--radius-l); padding: clamp(22px, 4vw, 40px); }
+.adultos h2 { color: #fff; }
+.adultos > div > p { color: #DCEBD9; margin: 10px 0 0; font-size: 18px; }
+.adultos ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.adultos li { display: flex; gap: 12px; align-items: flex-start; background: rgba(255, 255, 255, .08); border-radius: var(--radius-m); padding: 12px 14px; }
+.adultos li .ico { color: var(--color-accent); width: 26px; height: 26px; margin-top: 1px; }
+.adultos li b { display: block; }
+.adultos li span { color: #DCEBD9; font-size: 15px; }
+
+/* ---------- iPad vertical ---------- */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .hero-foto { order: -1; min-height: 0; aspect-ratio: 16 / 7; }
+  .hero-foto::before { background: linear-gradient(180deg, rgba(255, 252, 244, 0) 55%, var(--surface-warm) 100%); }
+  .hero-txt { padding-top: 6px; }
+  .descobertas, .adultos { grid-template-columns: minmax(0, 1fr); }
+}
+/* ---------- celular ---------- */
+@media (max-width: 520px) {
+  .hero { margin-top: 12px; border-radius: var(--radius-m); }
+  .hero-foto { aspect-ratio: 16 / 9; }
+  .balao { font-size: 15px; padding: 6px 12px; top: 12px; left: 12px; }
+  .hero-acoes .btn { flex: 1; }
+  .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .card { border-radius: var(--radius-m); }
+  .card-corpo { padding: 9px 11px 12px; }
+  .card h3 { font-size: 17px; }
+  .card i { font-size: 12.5px; }
+  .card p { display: none; }
+  .fatos { margin-top: 8px; }
+  .fatos li:nth-child(2) { display: none; }
+  .fatos li { font-size: 12px; padding: 1px 8px 1px 6px; }
+  .card-foto .badge { left: 7px; bottom: 7px; font-size: 11.5px; padding: 2px 8px; }
+  .card-foto .badge-ok { left: auto; bottom: auto; right: 7px; top: 7px; }
+  .exp h3 { font-size: 21px; }
+}
