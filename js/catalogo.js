@@ -8,6 +8,9 @@
      castas     → (opcional) ficha específica de cada casta/forma
      ciclo      → etapas da vida (aba "Vida")
      curiosidades
+     curto      → nome curto para frases ("Outra joaninha!")
+     pista      → dica de "Quem sou eu?" para bichos ainda fora do bolso
+     procurar   → onde procurar no mundo real
      art        → 'o' quando o nome é masculino (o beija-flor); padrão 'a'
      fotos      → fotos do iNaturalist guardadas em img/animais (a 1ª tem versão
                   pequena "-1p.jpg" para os cartões); autor e licença aparecem no site
@@ -31,6 +34,7 @@ const GRUPOS = [
 const ANIMAIS = [
   {
     id: 'formiga', nome: 'Formiga-saúva', cientifico: 'Atta spp.', grupo: 'insetos', emoji: '🐜', cor: '#ffd3c2',
+    curto: 'formiga', pista: 'Eu ando em fila carregando pedacinhos de folha.', procurar: 'Trilhas no chão do jardim ou da calçada.',
     pagina: 'formiga.html',
     resumo: 'A cortadeira que planta um jardim de fungo debaixo da terra.',
     fotos: [
@@ -84,6 +88,7 @@ const ANIMAIS = [
   },
   {
     id: 'abelha', nome: 'Abelha-europeia', cientifico: 'Apis mellifera', grupo: 'insetos', emoji: '🐝', cor: '#ffe58a',
+    curto: 'abelha', pista: 'Eu visito flores e faço zum-zum.', procurar: 'Perto de flores, nas horas de sol.',
     pagina: 'abelha.html',
     resumo: 'A abelha do mel, que poliniza flores e vive em colmeias.',
     fotos: [
@@ -140,6 +145,7 @@ const ANIMAIS = [
   },
   {
     id: 'borboleta', nome: 'Borboleta-azul', cientifico: 'Morpho helenor', grupo: 'insetos', emoji: '🦋', cor: '#cfe0ff', pagina: null,
+    curto: 'borboleta', pista: 'Minhas asas brilham azul quando eu voo.', procurar: 'Matas e jardins com frutas maduras caídas.',
     fotos: [
       { arquivo: 'img/animais/borboleta-1.jpg', autor: 'deboas', lic: 'CC BY', especie: 'Morpho helenor', inat: 70941465 },
       { arquivo: 'img/animais/borboleta-2.jpg', autor: 'Fernando Sessegolo', lic: 'CC0', especie: 'Morpho helenor', inat: 102956421 },
@@ -170,6 +176,7 @@ const ANIMAIS = [
   },
   {
     id: 'joaninha', nome: 'Joaninha', cientifico: 'Família Coccinellidae', grupo: 'insetos', emoji: '🐞', cor: '#ffd0cc', pagina: null,
+    curto: 'joaninha', pista: 'Sou vermelhinha, com bolinhas pretas.', procurar: 'Folhas de plantas com pulgões.',
     fotos: [
       { arquivo: 'img/animais/joaninha-1.jpg', autor: 'Eddie Dunbar', lic: 'CC BY-SA', especie: 'Coccinella septempunctata', inat: 860583 },
       { arquivo: 'img/animais/joaninha-2.jpg', autor: 'Katja Schulz', lic: 'CC BY', especie: 'Harmonia axyridis', inat: 7078473 },
@@ -200,6 +207,7 @@ const ANIMAIS = [
   },
   {
     id: 'beijaflor', art: 'o', nome: 'Beija-flor', cientifico: 'Família Trochilidae', grupo: 'aves', emoji: '🐦', cor: '#cdeedd', pagina: null,
+    curto: 'beija-flor', pista: 'Bato as asas tão rápido que fico parado no ar.', procurar: 'Perto de flores coloridas, de manhã cedo.',
     fotos: [
       { arquivo: 'img/animais/beijaflor-1.jpg', autor: 'David McCorquodale', lic: 'CC BY', especie: 'Colibri coruscans', inat: 13811179 },
       { arquivo: 'img/animais/beijaflor-2.jpg', autor: 'Kahio T. Mazon', lic: 'CC0', especie: 'Amazilia fimbriata', inat: 28391150 },
@@ -229,6 +237,7 @@ const ANIMAIS = [
   },
   {
     id: 'arara', nome: 'Arara-azul', cientifico: 'Anodorhynchus hyacinthinus', grupo: 'aves', emoji: '🦜', cor: '#cfe3ff', pagina: null,
+    curto: 'arara-azul', pista: 'Sou azul, grande e tenho um bico fortíssimo.', procurar: 'Pantanal e Cerrado, em palmeiras.',
     fotos: [
       { arquivo: 'img/animais/arara-1.jpg', autor: 'Larissa Vaccarini Ávila', lic: 'CC BY', especie: 'Anodorhynchus hyacinthinus', inat: 86007053 },
       { arquivo: 'img/animais/arara-2.jpg', autor: 'Larissa Vaccarini Ávila', lic: 'CC BY', especie: 'Anodorhynchus hyacinthinus', inat: 86006999 },
@@ -258,6 +267,7 @@ const ANIMAIS = [
   },
   {
     id: 'onca', nome: 'Onça-pintada', cientifico: 'Panthera onca', grupo: 'mamiferos', emoji: '🐆', cor: '#ffe2b8', pagina: null,
+    curto: 'onça', pista: 'Sou um gato enorme e pintado que adora nadar.', procurar: 'Só de longe: zoológicos e documentários!',
     fotos: [
       { arquivo: 'img/animais/onca-1.jpg', autor: 'Paul Prior', lic: 'CC BY', especie: 'Panthera onca', inat: 53399436 },
       { arquivo: 'img/animais/onca-2.jpg', autor: 'Millie Basden', lic: 'CC BY', especie: 'Panthera onca', inat: 48863325 },
@@ -287,6 +297,7 @@ const ANIMAIS = [
   },
   {
     id: 'preguica', art: 'o', nome: 'Bicho-preguiça', cientifico: 'Bradypus variegatus', grupo: 'mamiferos', emoji: '🦥', cor: '#e6dccb', pagina: null,
+    curto: 'preguiça', pista: 'Vivo pendurada nas árvores, bem devagar.', procurar: 'Copa das árvores, em parques com mata.',
     fotos: [
       { arquivo: 'img/animais/preguica-1.jpg', autor: 'Diogo Luiz', lic: 'CC BY-SA', especie: 'Bradypus variegatus', inat: 64066090 },
       { arquivo: 'img/animais/preguica-2.jpg', autor: 'yvesbas', lic: 'CC BY', especie: 'Bradypus variegatus', inat: 69722725 },
@@ -316,6 +327,7 @@ const ANIMAIS = [
   },
   {
     id: 'tartaruga', nome: 'Tartaruga-verde', cientifico: 'Chelonia mydas', grupo: 'repteis', emoji: '🐢', cor: '#d3efe0', pagina: null,
+    curto: 'tartaruga', pista: 'Nado no mar e carrego minha casa nas costas.', procurar: 'Praias e aquários.',
     fotos: [
       { arquivo: 'img/animais/tartaruga-1.jpg', autor: 'Dan Schofield', lic: 'CC BY', especie: 'Chelonia mydas', inat: 52560925 },
       { arquivo: 'img/animais/tartaruga-2.jpg', autor: 'Kyle Van Houtan', lic: 'CC BY', especie: 'Chelonia mydas', inat: 380377 },
@@ -345,6 +357,7 @@ const ANIMAIS = [
   },
   {
     id: 'sapo', art: 'o', nome: 'Sapo-cururu', cientifico: 'Rhinella diptycha', grupo: 'anfibios', emoji: '🐸', cor: '#dcefc6', pagina: null,
+    curto: 'sapo', pista: 'Comecei a vida como girino na água.', procurar: 'Quintais e beiras de lagoa, à noite.',
     fotos: [
       { arquivo: 'img/animais/sapo-1.jpg', autor: 'Pablo H Capovilla', lic: 'CC BY-SA', especie: 'Rhinella diptycha', inat: 68986425 },
       { arquivo: 'img/animais/sapo-2.jpg', autor: 'Leonel Roget', lic: 'CC BY', especie: 'Rhinella diptycha', inat: 7334047 },
@@ -375,6 +388,7 @@ const ANIMAIS = [
   },
   {
     id: 'pirarucu', art: 'o', nome: 'Pirarucu', cientifico: 'Arapaima gigas', grupo: 'peixes', emoji: '🐟', cor: '#d6e9f3', pagina: null,
+    curto: 'pirarucu', pista: 'Sou um peixe gigante que sobe para respirar ar.', procurar: 'Aquários grandes e rios da Amazônia.',
     fotos: [
       { arquivo: 'img/animais/pirarucu-1.jpg', autor: 'Vince Smith', lic: 'CC BY', especie: 'Arapaima gigas', inat: 83994048 },
       { arquivo: 'img/animais/pirarucu-2.jpg', autor: 'Vince Smith', lic: 'CC BY', especie: 'Arapaima gigas', inat: 83953168 }
@@ -422,7 +436,7 @@ const IUCN = {
 const MISSOES = [
   {
     id: 'jardim', nome: 'Pequenos do jardim', selo: 'Explorador do Jardim',
-    texto: 'Procure perto de casa ou da escola e marque na ficha quando vir um bicho assim de verdade.',
+    texto: 'Procure perto de casa ou da escola. Viu um de verdade? Toque em "encontrei!".',
     bichos: [['formiga', 'uma formiga'], ['abelha', 'uma abelha'], ['joaninha', 'uma joaninha'], ['borboleta', 'uma borboleta'], ['beijaflor', 'um beija-flor']]
   }
 ];

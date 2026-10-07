@@ -1,6 +1,8 @@
 /* =====================================================================
-   progresso.js — bichos encontrados e descobertas, guardados só neste aparelho.
-   Um bicho conta como "encontrado" na primeira descoberta (ficha, 3D…).
+   progresso.js — o "Meu Bolso": bichos encontrados, descobertas e
+   observações no mundo real, guardados só neste aparelho.
+   Um bicho entra no bolso na primeira descoberta (ficha, 3D…).
+   "vi" guarda QUANTAS vezes a criança encontrou o bicho de verdade.
    Sem contas, sem sequência de dias, sem nada que se perde: cada
    descoberta fica marcada para sempre (ou até apagar no catálogo).
    ===================================================================== */
@@ -14,9 +16,18 @@ const Progresso = (function () {
     if (A.pagina) l.push(['3d', '🧊', 'Explorou em 3D']);
     l.push(['ficha', '📋', 'Leu a ficha'], ['vida', '🔄', 'Viu o ciclo de vida'], ['cur', '💡', 'Descobriu curiosidades'], ['real', '📷', 'Viu fotos de verdade']);
     if (A.visita) l.push(['casa', A.visita[0], A.visita[1]]);
-    l.push(['vi', '👀', 'Viu um bicho assim de verdade']);
+    l.push(['vi', '👀', 'Encontrou um de verdade']);
     return l;
   }
+  // níveis de explorador (pelo número de bichos no bolso)
+  const NIVEIS = [[0, '🥚', 'Começando'], [1, '🌱', 'Curioso'], [3, '🔎', 'Observador'], [6, '🥾', 'Explorador'], [11, '🌿', 'Naturalista Mirim']];
+  function nivel(n) {
+    if (n === undefined) n = encontrados();
+    let i = 0; while (i + 1 < NIVEIS.length && n >= NIVEIS[i + 1][0]) i++;
+    const prox = NIVEIS[i + 1];
+    return { emoji: NIVEIS[i][1], nome: NIVEIS[i][2], falta: prox ? prox[0] - n : 0, proximo: prox ? prox[2] : null };
+  }
+  function vezes(id) { return (d[id] && +d[id].vi) || 0; }
   function feito(id, k) { return !!(d[id] && d[id][k]); }
   let toastEl = null, toastT = 0;
   function aviso(txt) {
@@ -30,19 +41,40 @@ const Progresso = (function () {
     toastEl.innerHTML = txt; toastEl.classList.add('on');
     clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2200);
   }
+  function anunciar(A, novo, antes) {
+    const n = encontrados(), nv = nivel(n);
+    if (novo) {
+      const subiu = nivel(n - 1).nome !== nv.nome;
+      aviso('<b>🎉 Novo bicho no bolso!</b>' + A.nome + ' · ' + n + ' de ' + ANIMAIS.length + (subiu ? '<br>' + nv.emoji + ' Agora você é ' + nv.nome + '!' : ''));
+      return true;
+    }
+    return false;
+  }
   function marcar(id, k) {
+    if (k === 'vi') return observar(id);
     if (feito(id, k)) return false;
     const A = ANIMAIS.find((a) => a.id === id);
     const it = A && itens(A).find((x) => x[0] === k);
     if (!it) return false;
     const novo = !d[id] || !Object.keys(d[id]).length;
     (d[id] = d[id] || {})[k] = 1; salvar();
-    // primeira descoberta de um bicho = bicho encontrado
-    const missao = k === 'vi' && missaoCompleta(id);
+    if (!anunciar(A, novo)) aviso('⭐ ' + it[1] + ' ' + it[2] + '!');
+    return true;
+  }
+  // a criança encontrou o bicho no mundo real (sem foto: só conta neste aparelho)
+  function observar(id) {
+    const A = ANIMAIS.find((a) => a.id === id);
+    if (!A) return false;
+    const novo = !d[id] || !Object.keys(d[id]).length;
+    const n = vezes(id) + 1;
+    (d[id] = d[id] || {}).vi = n; salvar();
+    const missao = n === 1 && missaoCompleta(id);
     if (missao) aviso('<b>🏅 Missão completa!</b>' + missao.selo);
-    else if (novo) aviso('<b>🎉 ' + (encontrados() === 1 ? 'Você encontrou seu primeiro bicho!' : 'Você encontrou um novo bicho!') + '</b>' + A.nome + ' · ' + encontrados() + ' de ' + ANIMAIS.length);
-    else if (k === 'vi') aviso('<b>👀 Que olho de explorador!</b>Você viu um bicho assim de verdade.');
-    else aviso('⭐ ' + it[1] + ' ' + it[2] + '!');
+    else if (!anunciar(A, novo)) {
+      const c = A.curto || A.nome.toLowerCase();
+      aviso(n === 1 ? '<b>👀 Que olho de explorador!</b>Você encontrou ' + (A.art || 'a') + ' ' + c + ' de verdade.'
+        : '<b>👀 Outr' + (A.art === 'o' ? 'o ' : 'a ') + c + '!</b>Esta é a sua ' + n + 'ª observação.');
+    }
     return true;
   }
   function conta(A) { const l = itens(A); return { feitas: l.filter((x) => feito(A.id, x[0])).length, total: l.length }; }
@@ -54,5 +86,5 @@ const Progresso = (function () {
   function encontrados() { return ANIMAIS.filter((A) => conta(A).feitas > 0).length; }
   function total() { return ANIMAIS.reduce((s, A) => s + conta(A).feitas, 0); }
   function apagar() { d = {}; salvar(); }
-  return { itens: itens, feito: feito, marcar: marcar, conta: conta, total: total, encontrados: encontrados, missaoCompleta: missaoCompleta, apagar: apagar };
+  return { itens: itens, feito: feito, marcar: marcar, observar: observar, vezes: vezes, nivel: nivel, conta: conta, total: total, encontrados: encontrados, missaoCompleta: missaoCompleta, apagar: apagar };
 })();

@@ -102,43 +102,81 @@
     $('primeira').hidden = n > 0;
     $('contador').textContent = n;
     $('contador').setAttribute('aria-label', n + ' de ' + total + ' bichos encontrados');
-    $('prog-n').textContent = n ? 'Você já encontrou ' + n + (n === 1 ? ' bicho!' : ' bichos!') : 'Você ainda não encontrou nenhum bicho.';
+    $('prog-n').textContent = n ? n + (n === 1 ? ' bicho no bolso' : ' bichos no bolso') : 'Seu bolso está vazio. Vamos encontrar o primeiro bicho?';
     $('prog-de').textContent = n + ' de ' + total;
     $('prog-barra').style.width = (100 * n / total) + '%';
     $('por-grupo').innerHTML = GRUPOS.filter((g) => g.id !== 'todos').map((g) => {
       const doGrupo = ANIMAIS.filter((a) => a.grupo === g.id);
       return '<li>' + Icone(g.id) + esc(g.nome) + ' · ' + doGrupo.filter(encontrado).length + '/' + doGrupo.length + '</li>';
     }).join('');
+    const nv = Progresso.nivel(n);
+    $('nivel').innerHTML = '<span class="nivel-emoji">' + nv.emoji + '</span><div><b>' + esc(nv.nome) + '</b>' +
+      (nv.proximo ? 'Faltam ' + nv.falta + (nv.falta === 1 ? ' bicho' : ' bichos') + ' para ' + esc(nv.proximo) + '.' : 'Você encontrou todos os bichos!') + '</div>';
     const album = $('album');
     album.innerHTML = '';
-    ANIMAIS.forEach((A) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      if (encontrado(A)) {
-        b.className = 'figurinha';
-        b.innerHTML = '<img alt="" src="' + esc(Dados.locais(A)[0] ? Dados.locais(A)[0].mini : '') + '"><span>' + esc(A.nome) + '</span>';
-        b.setAttribute('aria-label', A.nome + ': encontrado');
-      } else {
-        b.className = 'figurinha falta';
-        b.innerHTML = Icone('cadeado') + '<span>?</span>';
-        b.setAttribute('aria-label', 'Bicho ainda não encontrado: toque para descobrir');
-      }
-      b.addEventListener('click', () => Ficha.abrir(A.id));
-      album.appendChild(b);
-    });
+    ANIMAIS.forEach((A, i) => album.appendChild(carta(A, i + 1)));
     missao();
   }
+  // carta do bolso: frente com foto e número; fora do bolso, "Quem sou eu?" com pista
+  const num = (i) => '#' + String(i).padStart(3, '0');
+  function carta(A, i) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    if (encontrado(A)) {
+      const v = Progresso.vezes(A.id);
+      b.className = 'carta';
+      b.innerHTML = '<img alt="" src="' + esc(Dados.locais(A)[0] ? Dados.locais(A)[0].mini : '') + '"><em>' + num(i) + '</em>' +
+        (v ? '<i title="Encontrado de verdade">👀 ' + v + '</i>' : '') + '<span>' + esc(A.nome) + '</span>';
+      b.setAttribute('aria-label', 'Carta ' + num(i) + ': ' + A.nome + (v ? ', encontrado de verdade ' + v + (v === 1 ? ' vez' : ' vezes') : ''));
+      b.addEventListener('click', () => Ficha.abrir(A.id));
+    } else {
+      b.className = 'carta falta';
+      b.innerHTML = '<em>' + num(i) + '</em><span class="frente">' + Icone('cadeado') + '<b>???</b></span>' +
+        '<span class="verso"><b>Quem sou eu?</b>' + esc(A.pista || '') + '<u>Descobrir</u></span>';
+      b.setAttribute('aria-label', 'Carta ' + num(i) + ': bicho ainda fora do bolso. Toque para ver a pista.');
+      b.addEventListener('click', () => {
+        if (!b.classList.contains('virada')) { b.classList.add('virada'); b.setAttribute('aria-label', 'Pista: ' + (A.pista || '') + '. Toque de novo para descobrir.'); }
+        else Ficha.abrir(A.id);
+      });
+    }
+    return b;
+  }
+
+  // "Encontrei um!": a criança viu um bicho de verdade e escolhe qual foi
+  function encontrei() {
+    const dlg = document.createElement('div');
+    dlg.className = 'janela';
+    dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-labelledby', 'enc-t');
+    dlg.innerHTML = '<div class="caixa"><button class="fechar" type="button" aria-label="Fechar">' + Icone('fechar') + '</button>' +
+      '<h2 id="enc-t">Que bicho você encontrou?</h2><p>Viu um destes de verdade? Toque nele para colocar no bolso.</p>' +
+      '<div class="escolha">' + ANIMAIS.map((A) => '<button type="button" data-id="' + A.id + '"><img alt="" src="' + esc(Dados.locais(A)[0] ? Dados.locais(A)[0].mini : '') + '"><span>' + esc(A.nome) + '</span></button>').join('') + '</div>' +
+      '<p class="aviso-seg">👀 Observe sem tocar. Alguns bichos picam ou mordem: chame um adulto.</p>' +
+      '<p class="em-breve">Não achou o seu? Em breve: tirar uma foto para descobrir quem é.</p></div>';
+    const fechar = () => { dlg.remove(); document.removeEventListener('keydown', esc_); };
+    const esc_ = (e) => { if (e.key === 'Escape') fechar(); };
+    document.addEventListener('keydown', esc_);
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) fechar(); });
+    dlg.querySelector('.fechar').addEventListener('click', fechar);
+    dlg.querySelectorAll('.escolha button').forEach((b) => b.addEventListener('click', () => {
+      Progresso.observar(b.dataset.id); fechar(); atualizar();
+    }));
+    document.body.appendChild(dlg);
+    dlg.querySelector('.escolha button').focus();
+  }
+  $('encontrei').addEventListener('click', encontrei);
+
   function missao() {
     const M = MISSOES[0];
     const feitos = M.bichos.filter((b) => Progresso.feito(b[0], 'vi')).length;
-    $('missao').innerHTML = '<span class="badge badge-3d">Missão</span><h3>' + esc(M.nome) + '</h3><p>' + esc(M.texto) + '</p><ul>' +
+    $('missao').innerHTML = '<span class="badge badge-3d">Missão do bolso</span><h3>' + esc(M.nome) + '</h3><p>' + esc(M.texto) + '</p><ul>' +
       M.bichos.map((b) => {
         const ok = Progresso.feito(b[0], 'vi');
         return '<li class="' + (ok ? 'ok' : '') + '"><span class="caixa">' + Icone('check') + '</span>' + esc(b[1].charAt(0).toUpperCase() + b[1].slice(1)) +
-          '<button type="button" data-ficha="' + b[0] + '">' + (ok ? 'ver ficha' : 'vi de verdade?') + '</button></li>';
+          (ok ? '<button type="button" data-ficha="' + b[0] + '">ver ficha</button>' : '<button type="button" data-vi="' + b[0] + '">encontrei!</button>') + '</li>';
       }).join('') + '</ul>' +
       (feitos === M.bichos.length ? '<div class="selo">🏅 Missão completa: ' + esc(M.selo) + '!</div>' : '<p class="dica">' + feitos + ' de ' + M.bichos.length + ' · Observe sem tocar. Alguns bichos podem picar: chame um adulto.</p>');
     $('missao').querySelectorAll('[data-ficha]').forEach((b) => b.addEventListener('click', () => Ficha.abrir(b.dataset.ficha)));
+    $('missao').querySelectorAll('[data-vi]').forEach((b) => b.addEventListener('click', () => { Progresso.observar(b.dataset.vi); atualizar(); }));
   }
 
   // ---------- rodapé ----------
@@ -146,7 +184,7 @@
     ANIMAIS.flatMap((a) => (a.fotos || []).map((f) =>
       '<li>' + esc(a.nome) + ' (<i>' + esc(f.especie) + '</i>): ' + esc(f.autor) + ', ' + esc(f.lic) + '</li>')).join('');
   $('apagar').addEventListener('click', () => {
-    if (confirm('Apagar todos os bichos encontrados e descobertas deste aparelho?')) { Progresso.apagar(); atualizar(); }
+    if (confirm('Esvaziar o bolso? Isso apaga os bichos encontrados e as descobertas deste aparelho.')) { Progresso.apagar(); atualizar(); }
   });
 
   document.addEventListener('ficha-fechou', atualizar);

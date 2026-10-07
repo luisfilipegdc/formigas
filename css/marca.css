@@ -4,25 +4,28 @@
    logo, botões, chips, seções e rodapé. Referência: design/*.png
    ===================================================================== */
 :root {
-  /* cores */
-  --color-nature: #1B5E20;      /* verde escuro: títulos fortes, logo */
-  --color-primary: #2E7D32;     /* verde: ações principais, chip ativo */
-  --color-primary-soft: #E7F3E6;
-  --color-accent: #FBC02D;      /* amarelo: destaque e 3D */
-  --color-accent-soft: #FFF4CC;
-  --color-secondary: #1565C0;   /* azul: só apoio (links, dados) */
-  --bg: #F7F5EE;                /* fundo claro e quente */
+  /* cores — paleta Bicho no Bolso */
+  --color-nature: #164A3A;      /* verde floresta: marca, títulos */
+  --color-primary: #2F8A47;     /* verde-folha (escurecido p/ contraste com texto branco): botões, chip ativo */
+  --color-leaf: #46A758;        /* verde-folha original: ícones e enfeites */
+  --color-lime: #A8D94A;        /* lima: descoberta, progresso */
+  --color-primary-soft: #E5F2DC;
+  --color-accent: #F5C451;      /* amarelo aventura: CTA, 3D, recompensa */
+  --color-accent-soft: #FDF1CF;
+  --color-terra: #D8784C;       /* terracota: detalhes */
+  --color-secondary: #2F6FA8;   /* azul: só apoio (links, dados) */
+  --bg: #FFF8E8;                /* creme */
   --surface: #FFFFFF;
-  --surface-warm: #FFFCF4;
-  --text: #22301F;
-  --text-soft: #5B6657;
-  --line: #E7E3D6;
+  --surface-warm: #FFFCF3;
+  --text: #493528;              /* marrom quente */
+  --text-soft: #7A6656;
+  --line: #EFE2C6;
   /* forma */
   --radius-s: 12px;
   --radius-m: 18px;
   --radius-l: 26px;
-  --shadow-s: 0 1px 2px rgba(34, 48, 31, .06), 0 2px 8px rgba(34, 48, 31, .06);
-  --shadow-m: 0 2px 4px rgba(34, 48, 31, .06), 0 8px 20px rgba(34, 48, 31, .08);
+  --shadow-s: 0 1px 2px rgba(73, 53, 40, .06), 0 2px 8px rgba(73, 53, 40, .06);
+  --shadow-m: 0 2px 4px rgba(73, 53, 40, .06), 0 8px 20px rgba(73, 53, 40, .08);
   --gutter: max(16px, env(safe-area-inset-left));
   --font: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* usados pela gaveta da ficha (js/ficha.js) */
@@ -61,7 +64,7 @@ button, input { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 14px; border-radius: 999px;
   color: var(--text); text-decoration: none; font-weight: 800; font-size: 16px; white-space: nowrap;
 }
-.nav a .ico { color: var(--color-primary); }
+.nav a .ico { color: var(--color-leaf); }
 .nav a:hover, .nav a.on { background: var(--color-primary-soft); color: var(--color-nature); }
 .nav .contador { min-width: 24px; height: 24px; padding: 0 7px; border-radius: 999px; background: var(--color-accent); color: var(--text); font-size: 13px; font-weight: 900; display: inline-grid; place-items: center; }
 
@@ -73,7 +76,7 @@ button, input { font: inherit; color: inherit; }
 }
 .btn:active { transform: scale(.97); }
 .btn-primario { background: var(--color-primary); color: #fff; box-shadow: 0 3px 0 var(--color-nature); }
-.btn-3d { background: var(--color-accent); color: var(--text); box-shadow: 0 3px 0 #D9A21A; }
+.btn-3d { background: var(--color-accent); color: var(--text); box-shadow: 0 3px 0 #D9A234; }
 .btn-claro { background: var(--surface); color: var(--color-nature); box-shadow: inset 0 0 0 2px var(--line); }
 
 /* ---------- etiquetas ---------- */
@@ -89,7 +92,7 @@ button, input { font: inherit; color: inherit; }
   flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 46px; padding: 0 16px; cursor: pointer;
   border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-weight: 800; font-size: 16px;
 }
-.chip .ico { color: var(--color-primary); }
+.chip .ico { color: var(--color-leaf); }
 .chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 .chip.on .ico { color: #fff; }
 

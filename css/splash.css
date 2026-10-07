@@ -5,7 +5,7 @@
    ===================================================================== */
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden;
-  background: radial-gradient(circle at 50% 40%, #2E7D32 0, #1B5E20 55%, #12451A 100%); color: #fff;
+  background: radial-gradient(circle at 50% 40%, #2F7A52 0, #164A3A 55%, #0F3529 100%); color: #fff;
   animation: sai .5s ease 4.6s forwards; cursor: pointer;
 }
 .splash.rapida { animation-delay: 1.5s; }
@@ -31,7 +31,7 @@
 .splash-folha { position: absolute; z-index: 1; width: 120px; height: 120px; color: #43A047; opacity: .9; animation: entra 1s ease-out both; }
 .splash-folha:nth-of-type(1) { top: -20px; left: -18px; transform: rotate(130deg); --dx: -60px; --dy: -60px; color: #66BB6A; }
 .splash-folha:nth-of-type(2) { top: 6%; right: -26px; transform: rotate(-120deg); --dx: 60px; --dy: -40px; animation-delay: .1s; }
-.splash-folha:nth-of-type(3) { bottom: -24px; left: 6%; transform: rotate(40deg); --dx: -40px; --dy: 60px; animation-delay: .15s; color: #2E7D32; }
+.splash-folha:nth-of-type(3) { bottom: -24px; left: 6%; transform: rotate(40deg); --dx: -40px; --dy: 60px; animation-delay: .15s; color: #2F8A47; }
 .splash-folha:nth-of-type(4) { bottom: 8%; right: -10px; transform: rotate(-50deg); --dx: 60px; --dy: 40px; animation-delay: .2s; color: #7CC576; width: 90px; height: 90px; }
 @keyframes entra { from { opacity: 0; translate: var(--dx) var(--dy); } }
 
@@ -95,7 +95,7 @@
 @keyframes asas-joaninha { 0%, 57% { opacity: 0; } 60%, 100% { opacity: 1; } }
 
 /* boas-vindas do primeiro acesso */
-.boas-vindas { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(18, 69, 26, .55); }
+.boas-vindas { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(15, 53, 41, .55); }
 .boas-vindas .caixa {
   width: min(440px, 100%); background: var(--surface); border-radius: var(--radius-l); padding: 26px 22px 22px; text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, .25); animation: sobe .4s ease both;

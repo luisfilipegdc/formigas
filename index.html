@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bichos 3D">
-<meta name="theme-color" content="#2E7D32">
+<meta name="theme-color" content="#164A3A">
 <meta name="description" content="Bicho no Bolso: crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos. Grátis, direto no navegador do iPad.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="img/icone/favicon.png">
@@ -41,10 +41,10 @@
   <div class="wrap">
     <a class="logo" href="#topo" aria-label="Bicho no Bolso: início"><span class="logo-txt"><img src="img/mascote/mascote-lupa.jpg" alt="" width="48" height="48"><span><b>Bicho</b> <i>no Bolso</i></span></span></a>
     <nav class="nav" aria-label="Principal">
-      <a href="#topo" class="on so-largo" data-ico="inicio"><span class="rotulo">Início</span></a>
-      <a href="#bichos" data-ico="colecao"><span class="rotulo">Coleções</span></a>
-      <a href="comparar.html" data-ico="comparar"><span class="rotulo">Comparar</span></a>
-      <a href="#descobertas" data-ico="album"><span class="rotulo">Minhas descobertas</span> <span class="contador" id="contador">0</span></a>
+      <a href="#bichos" data-ico="busca"><span class="rotulo">Explorar</span></a>
+      <a href="comparar.html" class="so-largo" data-ico="comparar"><span class="rotulo">Comparar</span></a>
+      <a href="#missao" data-ico="alvo"><span class="rotulo">Missões</span></a>
+      <a href="#descobertas" class="nav-bolso" data-ico="bolso"><span class="rotulo">Meu Bolso</span> <span class="contador" id="contador">0</span></a>
     </nav>
   </div>
 </header>
@@ -52,15 +52,15 @@
 <main class="wrap">
   <section class="hero" id="topo">
     <div class="hero-txt">
-      <h1>Qual bicho vamos descobrir hoje?</h1>
-      <p>Explore animais incríveis, veja de pertinho e comece sua coleção.</p>
+      <h1>Um mundo de bichos no seu bolso.</h1>
+      <p>Explore animais em 3D, encontre bichos de verdade e monte sua coleção.</p>
       <form class="busca" id="busca" role="search">
         <span data-ico="busca"></span>
         <label class="sr" for="q">Procure um animal</label>
         <input id="q" type="search" placeholder="Procure um animal…" autocomplete="off">
         <button type="submit" aria-label="Procurar" data-ico="seta"></button>
       </form>
-      <div class="hero-acoes"><a class="btn btn-primario" href="#bichos">Explorar os bichos</a></div>
+      <div class="hero-acoes"><a class="btn btn-primario" href="#bichos">Explorar bichos</a><button class="btn btn-3d" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
     </div>
     <div class="hero-foto">
       <img src="img/animais/abelha-1.jpg" alt="Abelha-europeia pousada numa flor amarela, coberta de pólen">
@@ -71,7 +71,7 @@
 
   <section class="secao" id="bichos" aria-labelledby="tbichos">
     <div class="secao-topo"><div>
-      <h2 id="tbichos">Todos os bichos</h2>
+      <h2 id="tbichos">Qual você quer descobrir?</h2>
       <p>Toque num bicho para conhecer: fotos reais, ciclo de vida e curiosidades.</p>
     </div></div>
     <div class="primeira" id="primeira" hidden><img class="mascote" src="img/mascote/mascote-lupa.jpg" alt="" width="64" height="64"><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
@@ -90,15 +90,16 @@
 
   <section class="secao" id="descobertas" aria-labelledby="tdesc">
     <div class="secao-topo"><div>
-      <h2 id="tdesc">Cada descoberta tem uma história.</h2>
-      <p>Complete seu álbum com os bichos que encontrou.</p>
+      <h2 id="tdesc">Meu Bolso</h2>
+      <p>Cada bicho que você descobre vira uma carta no seu bolso.</p>
     </div></div>
     <div class="descobertas">
       <div class="painel">
+        <div class="nivel" id="nivel"></div>
         <div class="progresso-txt"><b id="prog-n"></b><span id="prog-de"></span></div>
         <div class="barra" aria-hidden="true"><span id="prog-barra"></span></div>
         <ul class="por-grupo" id="por-grupo" aria-label="Bichos encontrados por grupo"></ul>
-        <div class="album" id="album" aria-label="Meus bichos encontrados"></div>
+        <div class="album" id="album" aria-label="Cartas do meu bolso"></div>
       </div>
       <div class="painel missao" id="missao"></div>
     </div>
@@ -124,7 +125,7 @@
     <div class="rodape-marca"><span class="logo-txt"><img src="img/mascote/mascote-lupa.jpg" alt="" width="48" height="48"><span><b>Bicho</b> <i>no Bolso</i></span></span></div>
     <p id="offline" class="offline" hidden></p>
     <p>Explore. Descubra. Colecione. · Grátis, sem anúncios e sem coleta de dados.<br>
-      <a href="qr.html">QR code para imprimir</a> · <button id="apagar" type="button">apagar meus bichos encontrados</button></p>
+      <a href="qr.html">QR code para imprimir</a> · <button id="apagar" type="button">esvaziar meu bolso</button></p>
     <details class="creditos"><summary>Créditos das fotos (iNaturalist, Creative Commons)</summary><ul id="creditos"></ul></details>
   </div>
 </footer>

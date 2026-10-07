@@ -64,7 +64,7 @@ const Ficha = (function () {
   .ficha .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .ficha .selos span { font-size: 14px; font-weight: 800; background: #fff; border: 2px solid var(--line, #f0e2c4); border-radius: 999px; padding: 1px 10px; opacity: .45; }
   .ficha .vi { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin: 4px 0 12px; border-radius: 999px; border: 2px dashed var(--color-primary, #c9a227); background: transparent; font: inherit; font-weight: 800; font-size: 17px; color: var(--color-nature, #4a2a12); cursor: pointer; }
-  .ficha .vi.ok { border-style: solid; background: var(--color-primary-soft, #fff1c4); cursor: default; }
+  .ficha .vi.ok { border-style: solid; background: var(--color-primary-soft, #fff1c4); }
   .ficha .selos span.ok { opacity: 1; background: var(--color-accent-soft, #fff1c4); border-color: var(--color-accent, #ffd23f); }
   .tool.ficha-tool button { background: #fff !important; }
   @media (min-width: 900px) and (orientation: landscape) {
@@ -135,9 +135,8 @@ const Ficha = (function () {
       // no catálogo, leva para a experiência 3D (dentro dela, não precisa)
       if (A.pagina && !location.pathname.endsWith('/' + A.pagina)) h += '<a class="btn" href="' + A.pagina + '">▶ Explorar ' + A.nome + ' em 3D</a>';
       // encontrar no mundo real (sem foto, sem dados: só marca neste aparelho)
-      if (typeof Progresso !== 'undefined') h += Progresso.feito(A.id, 'vi')
-        ? '<button class="vi ok" type="button" disabled>✅ Você já viu um bicho assim de verdade!</button>'
-        : '<button class="vi" type="button" data-vi>👀 Eu vi um bicho assim de verdade!</button>';
+      if (typeof Progresso !== 'undefined') { const v = Progresso.vezes(A.id);
+        h += '<button class="vi' + (v ? ' ok' : '') + '" type="button" data-vi>' + (v ? '👀 Encontrei outr' + (A.art === 'o' ? 'o' : 'a') + '! (' + v + (v === 1 ? ' observação' : ' observações') + ')' : '👀 Encontrei um de verdade!') + '</button>'; }
       if (C) h += '<div class="casta"><h3>' + C.emoji + ' ' + C.nome + '</h3>' + linhas(C.linhas) + '</div>';
       h += linhas(A.ficha);
     } else if (aba === 'vida') {

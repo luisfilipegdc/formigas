@@ -83,20 +83,50 @@
 .progresso-txt { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .progresso-txt b { font-size: 22px; color: var(--color-nature); }
 .barra { height: 12px; border-radius: 999px; background: var(--color-primary-soft); overflow: hidden; }
-.barra span { display: block; height: 100%; border-radius: inherit; background: var(--color-primary); transition: width .5s ease; }
+.barra span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--color-leaf), var(--color-lime)); transition: width .5s ease; }
 .por-grupo { list-style: none; margin: 14px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .por-grupo li { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: 15px; }
 .por-grupo .ico { color: var(--color-primary); }
-.album { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
-.figurinha {
-  position: relative; aspect-ratio: 1; border-radius: var(--radius-s); overflow: hidden; border: 0; padding: 0; cursor: pointer;
-  background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--line);
+.album { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+/* cartas do bolso */
+.carta {
+  position: relative; aspect-ratio: 3 / 4; border-radius: var(--radius-s); overflow: hidden; border: 3px solid #fff; padding: 0; cursor: pointer;
+  background: var(--color-primary-soft); box-shadow: var(--shadow-s); font: inherit; color: inherit; text-align: center;
 }
-.figurinha img { width: 100%; height: 100%; object-fit: cover; }
-.figurinha span { position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 4px; font-size: 11px; font-weight: 800; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .65)); text-align: center; line-height: 1.2; }
-.figurinha.falta { display: grid; place-items: center; color: #A3AA9F; }
-.figurinha.falta .ico { width: 28px; height: 28px; }
-.figurinha.falta span { background: none; color: var(--text-soft); }
+.carta img { width: 100%; height: 100%; object-fit: cover; }
+.carta span { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 4px 5px; font-size: 12px; font-weight: 900; color: #fff; background: linear-gradient(transparent, rgba(22, 74, 58, .9)); line-height: 1.15; }
+.carta em { position: absolute; top: 5px; left: 5px; font-style: normal; font-size: 11px; font-weight: 900; background: var(--color-accent); color: var(--text); border-radius: 999px; padding: 0 6px; }
+.carta i { position: absolute; top: 5px; right: 5px; font-style: normal; font-size: 11px; font-weight: 900; background: #fff; border-radius: 999px; padding: 0 6px; }
+.carta.falta { background: repeating-linear-gradient(135deg, #F6EBD2 0 8px, #F1E3C4 8px 16px); border-color: #F6EBD2; box-shadow: inset 0 0 0 1.5px var(--line); }
+.carta.falta em { background: #fff; color: var(--text-soft); }
+.carta.falta .frente, .carta.falta .verso { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 8px; background: none; color: var(--text-soft); font-size: 12px; font-weight: 800; line-height: 1.25; }
+.carta.falta .frente .ico { width: 26px; height: 26px; color: #C8B48F; }
+.carta.falta .frente b { font-size: 18px; letter-spacing: 2px; }
+.carta.falta .verso { opacity: 0; background: var(--color-accent-soft); color: var(--text); }
+.carta.falta .verso b { color: var(--color-nature); font-size: 13px; }
+.carta.falta .verso u { margin-top: 2px; color: var(--color-primary); font-weight: 900; }
+.carta.falta.virada .frente { opacity: 0; }
+.carta.falta.virada .verso { opacity: 1; }
+.carta.falta.virada { animation: vira .35s ease; }
+@keyframes vira { 50% { transform: scaleX(.05); } }
+/* nível de explorador */
+.nivel { display: flex; align-items: center; gap: 12px; background: var(--color-accent-soft); border-radius: var(--radius-m); padding: 10px 14px; margin-bottom: 14px; color: var(--text-soft); font-size: 15px; }
+.nivel b { display: block; color: var(--color-nature); font-size: 19px; }
+.nivel-emoji { font-size: 34px; line-height: 1; }
+/* janela "Que bicho você encontrou?" */
+.janela { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; background: rgba(15, 53, 41, .55); }
+.janela .caixa { position: relative; width: min(620px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--surface); border-radius: var(--radius-l); padding: 22px 18px 18px; box-shadow: 0 20px 50px rgba(0, 0, 0, .25); }
+.janela h2 { margin: 0 40px 4px 0; font-size: 26px; font-weight: 900; color: var(--color-nature); }
+.janela .caixa > p { margin: 0 0 12px; color: var(--text-soft); }
+.janela .fechar { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--bg); cursor: pointer; display: grid; place-items: center; }
+.escolha { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+.escolha button { position: relative; aspect-ratio: 1; border-radius: var(--radius-m); overflow: hidden; border: 3px solid #fff; padding: 0; cursor: pointer; box-shadow: var(--shadow-s); background: var(--color-primary-soft); }
+.escolha img { width: 100%; height: 100%; object-fit: cover; }
+.escolha span { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 4px 5px; font-size: 13px; font-weight: 900; color: #fff; background: linear-gradient(transparent, rgba(22, 74, 58, .9)); line-height: 1.15; }
+.escolha button:active { transform: scale(.95); }
+.aviso-seg { margin: 14px 0 4px; background: var(--color-accent-soft); border-radius: var(--radius-s); padding: 8px 12px; font-weight: 800; font-size: 15px; }
+.em-breve { margin: 6px 0 0; font-size: 14px; color: var(--text-soft); }
+.hero-acoes .btn .ico { width: 1.3em; height: 1.3em; }
 .missao h3 { margin: 6px 0 4px; font-size: 22px; font-weight: 900; color: var(--color-nature); }
 .missao > p { margin: 0 0 12px; color: var(--text-soft); }
 .missao ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }

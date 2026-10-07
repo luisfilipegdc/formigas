@@ -29,6 +29,8 @@ const Icone = (function () {
     info: '<circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.4"/>',
     fechar: '<path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
     folha: '<path d="M20.5 3.5C11 3 4 7.5 4 14.5c0 1.6.4 3 1.1 4.3 1.4-4.9 4.6-8.3 9-10.3-3.6 2.6-6.2 6.2-7.3 11.5 1.3.6 2.7 1 4.2 1 6.6 0 9.7-6.6 9.5-17.5Z"/>',
+    bolso: '<path d="M4 5h16v7.5a8 8 0 0 1-16 0Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M4 9h16" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="5.5" r="1.6"/><circle cx="14.5" cy="5.5" r="1.6"/><ellipse cx="12" cy="15" rx="2.6" ry="2.1"/>',
+    alvo: '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="1.8"/>',
     pata: '<ellipse cx="12" cy="15.6" rx="4.6" ry="3.9"/><ellipse cx="6" cy="10.4" rx="1.9" ry="2.4"/><ellipse cx="9.6" cy="6.6" rx="1.9" ry="2.5"/><ellipse cx="14.4" cy="6.6" rx="1.9" ry="2.5"/><ellipse cx="18" cy="10.4" rx="1.9" ry="2.4"/>'
   };
   return function (nome, cls) {
