@@ -6,9 +6,11 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 
 ## Direção do projeto (outubro de 2026)
 O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (nome de trabalho: *Natureza no Bolso*, ainda não validado; o site continua publicado como **Bicho no Bolso**). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
-- `docs/DIRECAO.md`: direção, com o que está decidido, o que é proposta e o que está pendente.
-- `docs/PROPOSTA-CATALOGO.md`: auditoria do código, modelo de catálogo, mapa de telas e adaptações.
-- `docs/PLANO.md`: etapas pequenas de implementação e backlog do 3D.
+- `docs/product-direction.md`: direção, decisões, hipóteses, pendências e etapas.
+- `docs/technical-audit.md`: auditoria técnica do código atual (rotas, dados, armazenamento, PWA, motor 3D).
+- `docs/catalog-model.md`: modelo de catálogo genérico, mapa de telas V2 e adaptações da home, da busca, da ficha e do Meu Bolso.
+- `docs/photo-identification.md`: descobrir por foto (casos A/B/C) e contribuições.
+- `docs/backlog-3d.md`: experiências 3D planejadas e a validação exigida antes de modelar.
 
 ## Páginas
 - `index.html`: home do Bicho no Bolso (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.

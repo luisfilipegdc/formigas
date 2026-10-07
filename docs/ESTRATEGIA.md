@@ -1,6 +1,6 @@
 # Estratégia: comportamento, UX/UI, dados reais, monetização e tecnologia
 
-> **Nota (outubro de 2026):** documento da fase "Catálogo 3D de Animais". Os princípios (ética para o público infantil, sem anúncios, nada de "porta falsa") continuam valendo. O escopo e o modelo de negócio foram atualizados em [`DIRECAO.md`](DIRECAO.md).
+> **Nota (outubro de 2026):** documento da fase "Catálogo 3D de Animais". Os princípios (ética para o público infantil, sem anúncios, nada de "porta falsa") continuam valendo. O escopo e o modelo de negócio foram atualizados em [`product-direction.md`](product-direction.md).
 
 Documento de produto do **Catálogo 3D de Animais**. Público: crianças a partir de 5 anos (que muitas vezes ainda não leem), professores e pais. Uso principal: celular e iPad, no Safari, muitas vezes a partir do QR code impresso.
 
