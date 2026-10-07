@@ -101,10 +101,10 @@
 /* boas-vindas do primeiro acesso */
 .boas-vindas { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(15, 53, 41, .55); }
 .boas-vindas .caixa {
-  width: min(440px, 100%); background: var(--surface); border-radius: var(--radius-l); padding: 26px 22px 22px; text-align: center;
+  width: min(440px, calc(100vw - 40px)); margin-top: 80px; background: var(--surface); border-radius: var(--radius-l); padding: 26px 22px 22px; text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, .25); animation: sobe .4s ease both;
 }
-.boas-vindas img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: -70px auto 8px; border: 5px solid #fff; box-shadow: var(--shadow-m); }
+.boas-vindas img { width: 170px; height: 170px; border-radius: 50%; object-fit: cover; margin: -100px auto 8px; border: 5px solid #fff; box-shadow: var(--shadow-m); }
 .boas-vindas h2 { margin: 0; font-size: 30px; font-weight: 900; color: var(--color-nature); }
 .boas-vindas p { margin: 6px 0 18px; font-size: 19px; color: var(--text-soft); }
 .boas-vindas .btn { width: 100%; margin-top: 8px; }
