@@ -1,5 +1,7 @@
 # Escola × Família: o que o pacote founder-skill concluiu
 
+> **Nome:** o produto agora se chama **Bio no Bolso**; os textos abaixo usam o nome de trabalho da época.
+>
 > Rodado em outubro de 2026 com o pacote [founder-skill](https://github.com/Jakeschincariol/founder-skill) (MIT). **As respostas do painel são simuladas.** Use-as para achar objeções e decidir o que testar com pessoas reais, nunca como depoimento nem como previsão de vendas. Custos marcados "estimativa" não foram medidos, e o pró-labore de R$ 3.000 é provisório.
 
 ## Em uma tabela

@@ -1,5 +1,5 @@
 /* =====================================================================
-   catalogo.js — dados do Natureza no Bolso (edite à vontade)
+   catalogo.js — dados do Bio no Bolso (edite à vontade)
 
    Cada animal tem:
      id, nome, cientifico, grupo, emoji, cor, pagina (null = "em breve")

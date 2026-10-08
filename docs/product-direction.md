@@ -38,7 +38,8 @@ AGORA: descoberta da natureza → ficha enciclopédica → experiências dispon�
 
 ## 2. Nome
 
-- **DECIDIDO (outubro de 2026):** o produto passa a se chamar **Natureza no Bolso**. O nome já aparece no site: títulos, nome do app, rodapé, slogan "Um mundo de natureza no seu bolso." e textos com a marca. A logo nova será aplicada quando o arquivo for recebido. Até lá, as imagens de logo ainda mostram "Bicho no Bolso".
+- **DECIDIDO (outubro de 2026):** o produto passa a se chamar **Bio no Bolso**, de Biologia (antes "Natureza no Bolso" e "Bicho no Bolso"). O nome já aparece no site: títulos, nome do app, rodapé, slogan "Um mundo de vida no seu bolso." e textos com a marca. A logo nova será aplicada quando o arquivo for recebido. Até lá, as imagens de logo ainda mostram o nome antigo.
+  - Consequência: "Bio" cobre seres vivos (animais, plantas, fungos, micromundo). **Rochas, minerais e fenômenos ficam fora da marca**; se entrarem, será como apoio (ex.: o solo onde a formiga vive), não como universo próprio.
 - **DECIDIDO:** domínio, projeto na Vercel e repositório no GitHub **não mudam** nesta etapa. As chaves internas do aparelho (`progresso1` e outras) também não, para não apagar o Meu Bolso de ninguém.
 - **DECIDIDO:** a arquitetura nova não se amarra ao nome. Campos, arquivos e funções novos usam `item` ou `elemento`, não "bicho".
 - **PENDENTE:**
@@ -187,7 +188,7 @@ Cada etapa é pequena, publicável sozinha e não quebra o que existe. Os ids at
 
 ## 9. Pendências do fundador
 
-1. ~~Nome~~ ✅ Natureza no Bolso. Falta registrar marca e domínio.
+1. ~~Nome~~ ✅ Bio no Bolso. Falta registrar marca e domínio.
 2. Quem faz a revisão científica (biologia, micologia, microbiologia, geologia) e como ela é registrada.
 3. Se universos ainda sem ficha aparecem na home ([`catalog-model.md`](catalog-model.md) §4).
 4. Mecanismo de reconhecimento e orçamento para o teste de custo.

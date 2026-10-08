@@ -1,11 +1,11 @@
 # Marca (comum às duas ofertas)
 
-> **PENDENTE:** o fundador ainda não bateu o martelo no nome. "Natureza no Bolso" está no site desde outubro de 2026, e o logo novo ainda não foi recebido no repositório.
+> **DECIDIDO (outubro de 2026):** o nome é **Bio no Bolso**, de Biologia. Os documentos deste pacote foram escritos quando o nome de trabalho era "Natureza no Bolso". O logo novo ainda não foi recebido no repositório.
 
 ## Nome
-- **Natureza no Bolso** cobre a direção de enciclopédia (bichos, plantas, rochas), é fácil de dizer e soletrar e conversa com o "Meu Bolso".
-- **Risco:** é genérico para busca e para registro de marca. Antes de investir, faça uma busca no INPI (classes 9, 41 e 42) e confira o domínio `.com.br`.
-- **Alternativa:** manter "Bicho no Bolso" enquanto o produto só tiver bichos, que é mais concreto para crianças. Trocar o nome depois custa pouco no código (`docs/technical-audit.md` §8).
+- **Bio no Bolso** é curto, fácil de dizer e conversa com o "Meu Bolso" e com a disciplina de Ciências/Biologia, o que ajuda na venda para escolas.
+- **Escopo:** "Bio" cobre seres vivos. Rochas, minerais e fenômenos ficam fora da marca, ou entram só como apoio.
+- **Risco:** "Bio" é muito usado em nomes de marca. Antes de investir, faça uma busca no INPI (classes 9, 41 e 42) e confira o domínio `.com.br`.
 
 ## Promessa em uma frase
 - **Escola:** "Aulas de ciências prontas, com bichos em 3D por dentro."

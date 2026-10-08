@@ -1,10 +1,10 @@
 /* =====================================================================
-   marca.css — identidade visual "Natureza no Bolso"
+   marca.css — identidade visual "Bio no Bolso"
    Variáveis (cores, raios, sombras) e componentes comuns: cabeçalho,
    logo, botões, chips, seções e rodapé. Referência: design/*.png
    ===================================================================== */
 :root {
-  /* cores — paleta Natureza no Bolso */
+  /* cores — paleta Bio no Bolso */
   --color-nature: #164A3A;      /* verde floresta: marca, títulos */
   --color-primary: #2F8A47;     /* verde-folha (escurecido p/ contraste com texto branco): botões, chip ativo */
   --color-leaf: #46A758;        /* verde-folha original: ícones e enfeites */
@@ -20,7 +20,7 @@
   --text: #493528;              /* marrom quente */
   --text-soft: #7A6656;
   --line: #EFE2C6;
-  /* tokens do MIV Natureza no Bolso v1.0 (mesmas cores, nomes oficiais) */
+  /* tokens do MIV Bio no Bolso v1.0 (mesmas cores, nomes oficiais) */
   --forest: #164A3A;
   --leaf: #46A758;
   --lime: #A8D94A;
