@@ -35,7 +35,7 @@ const Progresso = (function () {
   function aviso(txt) {
     if (!toastEl) {
       const st = document.createElement('style');
-      st.textContent = '.prog-toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-160%);z-index:60;background:var(--surface,#fff);color:var(--text,#4a2a12);border:3px solid var(--color-primary,#ffd23f);border-radius:20px;padding:8px 18px;font:inherit;font-weight:800;font-size:17px;box-shadow:0 8px 24px rgba(0,0,0,.16);transition:transform .35s cubic-bezier(.25,1.3,.5,1);width:max-content;max-width:92vw;text-align:center;line-height:1.25;pointer-events:none}.prog-toast b{display:block;color:var(--color-nature,inherit);font-size:18px}.prog-toast.on{transform:translate(-50%,0)}';
+      st.textContent = '.prog-toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-160%);z-index:60;background:var(--surface,#fff);color:var(--text,#4a2a12);border:3px solid var(--color-primary,#ffd23f);border-radius:20px;padding:8px 18px;font:inherit;font-weight:800;font-size:17px;box-shadow:0 8px 24px rgba(0,0,0,.16);opacity:0;visibility:hidden;transition:transform .35s cubic-bezier(.25,1.3,.5,1),opacity .25s,visibility .35s;width:max-content;max-width:92vw;text-align:center;line-height:1.25;pointer-events:none}.prog-toast b{display:block;color:var(--color-nature,inherit);font-size:18px}.prog-toast.on{transform:translate(-50%,0);opacity:1;visibility:visible}';
       document.head.appendChild(st);
       toastEl = document.createElement('div'); toastEl.className = 'prog-toast'; toastEl.setAttribute('role', 'status');
       document.body.appendChild(toastEl);

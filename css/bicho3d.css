@@ -7,17 +7,22 @@ body { background: #dcebd4; }
 #palco { position: fixed; inset: 0; }
 #palco canvas { display: block; touch-action: none; }
 
+:root { --topo-h: 76px; }   /* altura real do cabeçalho: medida pelo bicho3d.js */
+/* cabeçalho padrão de todo bicho 3D:
+   linha 1 = voltar · nome · Pequeno/Explorador   |   linha 2 = abas (rolam para o lado se não couberem)
+   em telas largas (iPad deitado) tudo cabe numa linha só */
 .topo3d { position: fixed; z-index: 10; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right));
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; pointer-events: none; }
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px 10px; pointer-events: none; }
 .topo3d > * { pointer-events: auto; }
 .voltar { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; text-decoration: none; color: var(--color-nature); font-size: 24px; font-weight: 900; box-shadow: var(--shadow-m); }
-.topo3d h1 { margin: 0; background: rgba(255, 255, 255, .94); border-radius: 999px; padding: 8px 18px; font-size: 20px; font-weight: 900; color: var(--color-nature); box-shadow: var(--shadow-s); }
-.abas { display: flex; gap: 4px; background: rgba(255, 255, 255, .94); border-radius: 999px; padding: 4px; box-shadow: var(--shadow-s); }
+.topo3d h1 { justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0; background: rgba(255, 255, 255, .94); border-radius: 999px; padding: 8px 18px; font-size: 20px; font-weight: 900; color: var(--color-nature); box-shadow: var(--shadow-s); }
+.abas { grid-column: 1 / -1; justify-self: start; max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; display: flex; gap: 4px; background: rgba(255, 255, 255, .94); border-radius: 999px; padding: 4px; box-shadow: var(--shadow-s); }
 .abas:empty { display: none; }
-.abas button { border: 0; background: none; border-radius: 999px; padding: 8px 14px; min-height: 40px; font-weight: 800; font-size: 15px; cursor: pointer; color: var(--text); }
+.abas::-webkit-scrollbar { display: none; }
+.abas button { flex: none; white-space: nowrap; border: 0; background: none; border-radius: 999px; padding: 8px 14px; min-height: 40px; font-weight: 800; font-size: 15px; cursor: pointer; color: var(--text); }
 .abas button.on { background: var(--color-accent); }
 
-.acoes { position: fixed; z-index: 10; right: max(12px, env(safe-area-inset-right)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
+.acoes { position: fixed; z-index: 10; right: max(12px, env(safe-area-inset-right)); top: calc(var(--topo-h) + 12px); display: flex; flex-direction: column; gap: 8px; }
 .acao { width: 76px; min-height: 66px; border-radius: 20px; border: 0; background: rgba(255, 255, 255, .95); box-shadow: var(--shadow-m); cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 4px; color: var(--color-nature); }
 .acao b { font-size: 24px; line-height: 1; }
@@ -34,8 +39,8 @@ body { background: #dcebd4; }
 .etq { position: absolute; left: 0; top: 0; pointer-events: auto; border: 2px solid #fff; background: var(--color-nature); color: #fff; font: inherit; font-weight: 900; font-size: 13px; border-radius: 999px; padding: 4px 10px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, .25); }
 .etq.on { background: var(--color-accent); color: var(--text); }
 .cartao { position: fixed; z-index: 12; left: max(12px, env(safe-area-inset-left)); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 60px); width: min(420px, calc(100vw - 120px)); background: #fff; border-radius: 20px; padding: 14px 16px; box-shadow: var(--shadow-m); }
-.cartao.topo { bottom: auto; top: calc(max(12px, env(safe-area-inset-top)) + 64px); }
-.prog-toast { top: calc(max(12px, env(safe-area-inset-top)) + 64px) !important; }
+.cartao.topo { bottom: auto; top: calc(var(--topo-h) + 8px); }
+.prog-toast { top: calc(var(--topo-h) + 8px) !important; }
 .cartao b { display: block; font-size: 19px; color: var(--color-nature); margin-right: 36px; }
 .cartao p { margin: 4px 0 0; font-size: 16px; line-height: 1.35; }
 .cartao-prox { margin-top: 10px; border: 0; border-radius: 999px; min-height: 44px; padding: 0 18px; font: inherit; font-weight: 900; font-size: 15px; background: var(--color-primary); color: #fff; cursor: pointer; }
@@ -46,7 +51,7 @@ body { background: #dcebd4; }
 .curu.on { transform: none; }
 .curu img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none; }
 .curu span { font-weight: 800; font-size: 15px; line-height: 1.25; }
-.aviso3d { position: fixed; z-index: 13; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 64px); transform: translate(-50%, -20px); opacity: 0; transition: .3s; background: var(--color-nature); color: #fff; border-radius: 999px; padding: 8px 18px; font-weight: 900; pointer-events: none; text-align: center; max-width: 90vw; }
+.aviso3d { position: fixed; z-index: 13; left: 50%; top: calc(var(--topo-h) + 8px); transform: translate(-50%, -20px); opacity: 0; transition: .3s; background: var(--color-nature); color: #fff; border-radius: 999px; padding: 8px 18px; font-weight: 900; pointer-events: none; text-align: center; max-width: 90vw; }
 .aviso3d.on { opacity: 1; transform: translate(-50%, 0); }
 .carregando { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: var(--bg); color: var(--color-nature); font-size: 22px; font-weight: 900; transition: opacity .5s; }
 .carregando.fora { opacity: 0; pointer-events: none; }
@@ -56,7 +61,7 @@ body.limpo .topo3d, body.limpo .acoes, body.limpo .base3d, body.limpo .cartao, b
 body.limpo .voltar-ui { display: block; }
 
 /* ---------- Por Dentro do Bicho ---------- */
-.idade { margin-left: auto; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .94); min-height: 44px; padding: 0 14px; font-weight: 900; font-size: 14px; color: var(--color-nature); box-shadow: var(--shadow-s); cursor: pointer; margin-right: 88px; }
+.idade { grid-column: 3; grid-row: 1; justify-self: end; white-space: nowrap; margin-left: 0; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .94); min-height: 44px; padding: 0 14px; font-weight: 900; font-size: 14px; color: var(--color-nature); box-shadow: var(--shadow-s); cursor: pointer; margin-right: 0; }
 .modos { position: fixed; z-index: 10; left: 50%; transform: translateX(-50%); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 62px); display: flex; gap: 6px; background: rgba(255, 255, 255, .95); border-radius: 26px; padding: 6px; box-shadow: var(--shadow-m); }
 .modos button { border: 0; background: none; border-radius: 20px; min-height: 58px; padding: 4px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--color-nature); cursor: pointer; }
 .modos button b { font-size: 22px; line-height: 1.1; }
@@ -93,4 +98,10 @@ body.limpo .modos, body.limpo .passos3d, body.limpo .idade { display: none; }
   .base3d .acao-ficha { flex: none; }
   .cartao { width: calc(100vw - 100px); }
   body.com-modos .cartao:not(.topo) { bottom: calc(max(14px, env(safe-area-inset-bottom)) + 116px); }
+}
+
+@media (min-width: 1000px) {
+  .topo3d { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+  .abas { grid-column: 3; grid-row: 1; }
+  .idade { grid-column: 4; }
 }

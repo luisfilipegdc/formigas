@@ -87,6 +87,14 @@ No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a veloc
 ## Celular
 Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra embaixo) e o 3D fica mais leve (menos pelos e sombras menores).
 
+## Padrão da tela 3D (vale para todo bicho)
+- **Cabeçalho:** linha 1 = ← voltar · nome (encolhe com "…" se for longo) · 🧸 Pequeno/🧒 Explorador; linha 2 = abas. No iPad deitado, tudo numa linha.
+- **Abas:** primeiro as formas do bicho (operária, rainha, adulta, ninfa…), por último a casa ou o lugar (🏠 formigueiro, 🍯 colmeia). Se não couberem, rolam para o lado.
+- **Coluna da direita, sempre nesta ordem:** até 3 ações do próprio bicho (voar, cantar, folha…) → 🔎 Partes → 📏 Tamanho → 🔄 Câmera → 👁 Só o bicho. Ações que não valem para uma forma somem (`ocultar` na forma).
+- **Embaixo:** barra 🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona? (só com o que existe), cartão de texto à esquerda e "No meu bolso" + ℹ️ Ficha.
+- **Avisos** (conquista, dicas) aparecem logo abaixo do cabeçalho, um de cada vez.
+- Conferido sem sobreposição em celular pequeno (375×667), celular (390×844), iPad em pé (820×1180) e deitado (1180×820).
+
 ## Organização do código 3D
 
 - `bicho3d.html` + `css/bicho3d.css`: a tela padrão do Modo Explorar.

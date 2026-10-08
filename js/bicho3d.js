@@ -42,6 +42,11 @@ function iniciar3d(id) {
   const M = Modelos3D[id];
   if (!A || !M) { $('carregando').textContent = 'Bicho não encontrado.'; return; }
   document.title = A.nome + ' em 3D · Natureza no Bolso';
+  // o cabeçalho muda de altura (1 ou 2 linhas): avisos, cartão e botões ficam sempre abaixo dele
+  const topo = document.querySelector('.topo3d');
+  const medeTopo = () => document.documentElement.style.setProperty('--topo-h', Math.round(topo.getBoundingClientRect().bottom) + 'px');
+  medeTopo(); addEventListener('resize', medeTopo);
+  if (window.ResizeObserver) new ResizeObserver(medeTopo).observe(topo);
   $('nome').textContent = A.nome;
   $('carregando').textContent = 'Montando ' + (A.art || 'a') + ' ' + (A.curto || A.nome.toLowerCase()) + '…';
 
@@ -238,7 +243,10 @@ function iniciar3d(id) {
     if (ets.length) ets[(passeioI + 1) % ets.length].click();
   });
   $('cartao-x').addEventListener('click', () => { $('cartao').hidden = true; if (partesOn) partes(); if (tamanhoOn) tamanho(); });
-  function avisoRapido(txt) { const a = $('aviso'); a.textContent = txt; a.classList.add('on'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('on'), 2600); }
+  function avisoRapido(txt) {
+    const t = document.querySelector('.prog-toast.on');          // espera o aviso de conquista sumir (não ficam um em cima do outro)
+    if (t) { setTimeout(() => avisoRapido(txt), 2400); return; }
+    const a = $('aviso'); a.textContent = txt; a.classList.add('on'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('on'), 2600); }
 
   /* ---------- interface ---------- */
   const lado = $('acoes');
