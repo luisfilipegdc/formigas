@@ -325,7 +325,7 @@ function iniciar3d(id) {
     $('cartao-prox').hidden = !(partesOn && passeio);
     $('cartao').hidden = !partesOn;
     $('cartao').classList.remove('topo');
-    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', idade === 'cientista' && A && A.comp && A.comp.tax ? 'Classificação: ' + A.comp.tax.join(' › ') + (A.cientifico ? ' › ' + A.cientifico : '') + '. Toque numa etiqueta para ver o nome científico e a função de cada parte.' : 'Toque numa etiqueta para saber para que serve cada parte.'); }
+    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', idade === 'cientista' && A && A.comp && A.comp.tax ? 'Classificação: ' + A.comp.tax.join(' › ') + (A.cientifico ? ' › ' + A.cientifico : '').replace(/\.$/, '') + '. Toque numa etiqueta para ver o nome científico e a função de cada parte.' : 'Toque numa etiqueta para saber para que serve cada parte.'); }
   }
   const _v = new V3();
   function moverEtiquetas() {
