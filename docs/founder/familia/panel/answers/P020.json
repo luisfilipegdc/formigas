@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Eu uso só o que é grátis; meu filho ia curtir as fichas e o Meu Bolso, que é tipo completar álbum, mas quando pedir R$ 19,90 pra tirar foto eu paro por aí, como faço com todo app.",
+  "objection": "Não quero ficar mandando foto pra um app identificar e guardando coleção do meu filho na nuvem; já tenho streaming demais pra pagar mais uma assinatura.",
+  "would_change_my_mind": "Se a identificação por foto fosse grátis e ficasse claro que nenhuma foto nem dado do meu filho sai do aparelho.",
+  "price_too_cheap": 3,
+  "price_cheap": 6,
+  "price_expensive": 12,
+  "price_too_expensive": 18
+}

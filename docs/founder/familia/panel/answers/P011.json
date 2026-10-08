@@ -1,0 +1,13 @@
+{
+  "id": "P011",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Eu uso a parte grátis e pronto. As fichas e os bichos em 3D já distraem meu filho no carro e no restaurante, e quando aparece cobrança eu não assino, deixo de lado.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo. Pagar R$ 19,90 por mês para o app ficar dizendo 'talvez seja isso' não me convence, e ainda é mais uma assinatura além dos streamings.",
+  "would_change_my_mind": "Um teste grátis do reconhecimento por foto, uns 7 dias, onde eu visse que ele acerta os bichos e plantas daqui e meu filho usasse sem eu pedir.",
+  "price_too_cheap": 2,
+  "price_cheap": 5,
+  "price_expensive": 10,
+  "price_too_expensive": 15
+}

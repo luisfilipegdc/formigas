@@ -1,0 +1,13 @@
+{
+  "id": "P012",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "Já pago Netflix e Spotify e vivo pensando em cortar uma delas, não vou colocar mais R$ 19,90 todo mês. Aqui em casa a tela é pouca e a gente prefere ir pra rua, e a parte grátis com as fichas e os bichos em 3D já dá conta.",
+  "objection": "Mais uma assinatura todo mês só pra tirar foto de bicho e o app dizer o que acha que é. Isso a criança faz uma ou duas vezes no passeio e esquece, e eu continuo pagando.",
+  "would_change_my_mind": "Se custasse menos de R$ 10 por mês ou tivesse um pagamento único, e eu visse meu filho usando de verdade lá fora, no parque ou na praça.",
+  "price_too_cheap": 2,
+  "price_cheap": 5,
+  "price_expensive": 10,
+  "price_too_expensive": 15
+}

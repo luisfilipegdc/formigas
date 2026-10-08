@@ -1,0 +1,156 @@
+{
+ "business": "Natureza no Bolso Família (app educativo de natureza para crianças, assinatura para os pais)",
+ "seed": 7,
+ "dealt": 20,
+ "answered": 20,
+ "skipped": [],
+ "buys": 0,
+ "passes": 20,
+ "buy_rate": 0.0,
+ "by_segment": [
+  [
+   "Família classe A, paga cursos e apps para os filhos",
+   4,
+   0.0
+  ],
+  [
+   "Família classe B, já paga alguns streamings",
+   9,
+   0.0
+  ],
+  [
+   "Família classe C, orçamento apertado",
+   7,
+   0.0
+  ]
+ ],
+ "by_behaviour": [
+  [
+   "Já paga app educativo",
+   3,
+   0.0
+  ],
+  [
+   "Lê avaliações antes",
+   2,
+   0.0
+  ],
+  [
+   "Compra por indicação",
+   2,
+   0.0
+  ],
+  [
+   "Controla o tempo de tela",
+   3,
+   0.0
+  ],
+  [
+   "Só usa o que é grátis",
+   5,
+   0.0
+  ],
+  [
+   "Testa e cancela",
+   2,
+   0.0
+  ],
+  [
+   "Família que sai para a natureza",
+   3,
+   0.0
+  ]
+ ],
+ "by_income": [
+  [
+   "$159,000 and up",
+   7,
+   0.0
+  ],
+  [
+   "$80,000 to $159,000",
+   8,
+   0.0
+  ],
+  [
+   "under $80,000",
+   5,
+   0.0
+  ]
+ ],
+ "why_not": [
+  [
+   "price",
+   8,
+   [
+    "R$ 19,90 por mês é caro para um app de criança, quase o preço de um streaming que a família inteira usa. Para o trabalho da escola, as fichas e os bichos em 3D grátis já resolvem, e a foto eu tiro com a câmera e pesquiso depois.",
+    "Eu uso a parte grátis numa boa, as fichas e os bichos em 3D já distraem as crianças. Pagar R$ 19,90 por mês só pra tirar foto e o app adivinhar o bicho? Isso o Google já faz de graça no meu celular."
+   ],
+   [
+    "P002",
+    "P005"
+   ]
+  ],
+  [
+   "trust",
+   6,
+   [
+    "Ninguém da escola nem outro pai me indicou, e não vou pagar um app novo que pede para meu filho tirar fotos com o celular. A parte grátis até pode ser legal no parque do lago, mas assinar agora, não.",
+    "Dinheiro não é o problema, meu filho pergunta o nome de todo bicho do quintal. Mas é um app pelo navegador, sem nota nem comentários na loja para eu conferir, então eu deixaria ele usar a parte grátis primeiro e não assinaria logo de cara."
+   ],
+   [
+    "P003",
+    "P013"
+   ]
+  ],
+  [
+   "need",
+   4,
+   [
+    "Eu deixaria meu filho usar a parte grátis no carro e no restaurante, mas a parte paga é tirar foto de bicho e planta, e no dia a dia dele isso quase não acontece. Já pago um app de leitura, não vou assinar outro antes de ver se ele sequer volta para o grátis.",
+    "A parte paga é justamente tirar foto e identificar o bicho, e isso o Google Lens já faz de graça no meu celular. Quando estamos ao ar livre eu quero meus filhos olhando o bicho, não a tela, então a parte grátis já basta se eles quiserem ver alguma ficha."
+   ],
+   [
+    "P001",
+    "P004"
+   ]
+  ],
+  [
+   "habit",
+   2,
+   [
+    "Eu uso a parte grátis e pronto. As fichas e os bichos em 3D já distraem meu filho no carro e no restaurante, e quando aparece cobrança eu não assino, deixo de lado.",
+    "Eu uso só o que é grátis; meu filho ia curtir as fichas e o Meu Bolso, que é tipo completar álbum, mas quando pedir R$ 19,90 pra tirar foto eu paro por aí, como faço com todo app."
+   ],
+   [
+    "P011",
+    "P020"
+   ]
+  ]
+ ],
+ "why_yes": [],
+ "flip": [
+  "Ver meu filho pedindo para usar sozinho depois de umas semanas na versão grátis, ou uma viagem de férias para praia ou fazenda onde ele ia querer fotografar tudo.",
+  "Um teste grátis de uns 7 dias da parte da foto, junto com avaliações de outros pais que eu possa ler, e um preço perto de R$ 9,90.",
+  "A escola ou pais que eu conheço recomendarem e usarem, com uma explicação clara de que as fotos não ficam guardadas nem são usadas para outra coisa.",
+  "Se tivesse algo que tirasse as crianças de casa de verdade, tipo trilhas ou desafios de exploração ao ar livre com pouco tempo de tela, algo que o Google Lens não oferece.",
+  "Se custasse uns R$ 5 por mês ou fosse um pagamento único baratinho, talvez eu pensasse.",
+  "Se custasse uns R$ 9,90 por mês, ou tivesse um teste grátis em que eu visse ele usando no quintal todo dia.",
+  "Um teste grátis de verdade em que eu visse meu filho abrindo o app sozinho quase todo dia, de preferência levando ele pra fora de casa, no parque ou na praia, e não grudado no sofá.",
+  "Um preço bem mais baixo, tipo R$ 7,90 por mês ou um plano anual barato, e testar de graça uns dias pra ver se meu filho realmente usa mais que o Google Lens.",
+  "Se, depois de usar a versão grátis por umas semanas, meu filho pedisse de verdade para identificar bichos e plantas no sítio da avó ou nas férias; aí talvez eu assinasse um mês e cancelasse depois.",
+  "Se fosse bem mais barato, tipo uns R$ 7 ou R$ 9 por mês, ou se a escola recomendasse e eu visse ele usando lá fora, no parque, e não trancado no quarto.",
+  "Um teste grátis do reconhecimento por foto, uns 7 dias, onde eu visse que ele acerta os bichos e plantas daqui e meu filho usasse sem eu pedir.",
+  "Se custasse menos de R$ 10 por mês ou tivesse um pagamento único, e eu visse meu filho usando de verdade lá fora, no parque ou na praça.",
+  "Um teste grátis da identificação por foto, para eu ver acertando os bichos do nosso quintal, ou avaliações de outros pais que eu possa ler.",
+  "Uma política de privacidade clara e curta dizendo que as fotos não ficam guardadas nem são usadas para nada além da identificação, sem pedir nenhum dado da criança, e um mês grátis da assinatura para eu ver se ele usa de verdade lá fora.",
+  "A professora ou outros pais da turma indicarem e eu ver meu filho voltando sozinho ao app por algumas semanas na versão grátis.",
+  "Se a identificação por foto fosse grátis, mesmo com um limite por mês, e deixasse bem claro que as fotos não ficam guardadas nem servem pra nada além disso.",
+  "Poder testar a foto de graça por um tempo e ver que acerta os bichos daqui, e um preço bem menor, tipo uns R$ 5 por mês.",
+  "Poder testar a foto de graça por uma ou duas semanas no parque ou no sítio e ver que ele acerta a maioria dos bichos daqui.",
+  "Um teste grátis de verdade, deixando claro que a foto é só do bicho ou da planta, não fica guardada e ninguém mais vê. Se meu filho usasse todo domingo no parque durante o teste, eu talvez mantivesse.",
+  "Se a identificação por foto fosse grátis e ficasse claro que nenhuma foto nem dado do meu filho sai do aparelho."
+ ],
+ "purchases_first_month_per_buyer": null,
+ "price_answers": 20
+}

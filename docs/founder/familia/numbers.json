@@ -1,0 +1,27 @@
+{
+  "business": "Natureza no Bolso Família (assinatura mensal, cenário-base a R$ 9,90; ver o 'what if' de R$ 19,90 em cfo.md)",
+  "unit": "assinatura-mês",
+  "price": 9.90,
+  "variable": [
+    {"label": "Imposto sobre a receita (Simples Nacional, estimativa 6%)", "cost": 0.59},
+    {"label": "Taxa de cartão/Pix recorrente (estimativa ~4% + R$ 0,40)", "cost": 0.80},
+    {"label": "Reconhecimento por foto: API de terceiros (ESTIMATIVA NÃO MEDIDA, ~30 fotos/mês)", "cost": 1.50},
+    {"label": "Sincronização e armazenamento da coleção (estimativa)", "cost": 0.10}
+  ],
+  "fixed_monthly": [
+    {"label": "Pró-labore do fundador (VALOR PROVISÓRIO: o fundador precisa definir)", "cost": 3000},
+    {"label": "Revisão científica: biólogo, ~10 h/mês a R$ 150 (estimativa)", "cost": 1500},
+    {"label": "Contador (estimativa)", "cost": 300},
+    {"label": "Banco de dados e contas: plano pago tipo Supabase Pro, US$ 25 (estimativa em R$)", "cost": 140},
+    {"label": "Hospedagem: Vercel Pro, US$ 20 (estimativa em R$)", "cost": 110},
+    {"label": "Domínio .com.br, R$ 40/ano", "cost": 3.33},
+    {"label": "Marketing pago e conteúdo para redes (estimativa)", "cost": 1000}
+  ],
+  "startup": [
+    {"label": "Parecer de LGPD, termos e consentimento parental (advogado, estimativa)", "cost": 3000},
+    {"label": "Abertura de empresa / CNPJ (estimativa)", "cost": 1000},
+    {"label": "Integração de pagamento recorrente e testes (estimativa)", "cost": 500}
+  ],
+  "days_per_month": 1,
+  "ramp_per_day": [0, 0, 20, 40, 70, 100, 140, 180, 230, 280, 340, 400]
+}

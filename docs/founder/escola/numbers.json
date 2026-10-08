@@ -1,0 +1,29 @@
+{
+  "business": "Natureza no Bolso Escola (licença anual por unidade, cobrada como mês de licença)",
+  "unit": "escola-mês",
+  "price": 250,
+  "variable": [
+    {"label": "Imposto sobre a receita (Simples Nacional, estimativa 6%)", "cost": 15},
+    {"label": "Cobrança por boleto/Pix (estimativa)", "cost": 3.5},
+    {"label": "Suporte e formação do professor (estimativa: 1 h/mês a R$ 60)", "cost": 60},
+    {"label": "Servidor e armazenamento por escola (estimativa)", "cost": 5}
+  ],
+  "fixed_monthly": [
+    {"label": "Pró-labore do fundador (VALOR PROVISÓRIO: o fundador precisa definir)", "cost": 3000},
+    {"label": "Revisão científica: biólogo, ~10 h/mês a R$ 150 (estimativa)", "cost": 1500},
+    {"label": "Contador (estimativa)", "cost": 300},
+    {"label": "Banco de dados e contas: plano pago tipo Supabase Pro, US$ 25 (estimativa em R$)", "cost": 140},
+    {"label": "Hospedagem: Vercel Pro, US$ 20 (estimativa em R$)", "cost": 110},
+    {"label": "Domínio .com.br, R$ 40/ano", "cost": 3.33}
+  ],
+  "startup": [
+    {"label": "Parecer de LGPD e termos (advogado, estimativa)", "cost": 3000},
+    {"label": "Abertura de empresa / CNPJ (estimativa)", "cost": 1000},
+    {"label": "Material de venda e QR impressos (estimativa)", "cost": 500},
+    {"label": "Deslocamento para pilotos e reuniões (estimativa)", "cost": 1500}
+  ],
+  "days_per_month": 1,
+  "capacity_per_day": 30,
+  "plan_per_day": 8,
+  "ramp_per_day": [0, 0, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8]
+}

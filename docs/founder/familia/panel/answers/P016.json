@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "A parte grátis das fichas e dos bichos em 3D eu até deixaria meu filho usar, mas R$ 19,90 por mês pra identificar passarinho no parque não cabe no nosso orçamento. Quando aparecer a cobrança, a gente fica só no grátis ou larga.",
+  "objection": "Pagar todo mês por uma coisa que é só um extra, e ainda ter que mandar foto pelo celular do meu filho pra um app que eu não conheço. Não sei pra onde vão essas fotos e esses dados.",
+  "would_change_my_mind": "Se a identificação por foto fosse grátis, mesmo com um limite por mês, e deixasse bem claro que as fotos não ficam guardadas nem servem pra nada além disso.",
+  "price_too_cheap": 2,
+  "price_cheap": 5,
+  "price_expensive": 9.9,
+  "price_too_expensive": 15
+}

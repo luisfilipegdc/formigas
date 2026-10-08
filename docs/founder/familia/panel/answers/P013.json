@@ -1,0 +1,13 @@
+{
+  "id": "P013",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "Dinheiro não é o problema, meu filho pergunta o nome de todo bicho do quintal. Mas é um app pelo navegador, sem nota nem comentários na loja para eu conferir, então eu deixaria ele usar a parte grátis primeiro e não assinaria logo de cara.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo. Se errar o bicho na frente dele, ele aprende errado, e não tenho avaliação de outros pais para saber se funciona.",
+  "would_change_my_mind": "Um teste grátis da identificação por foto, para eu ver acertando os bichos do nosso quintal, ou avaliações de outros pais que eu possa ler.",
+  "price_too_cheap": 5,
+  "price_cheap": 12,
+  "price_expensive": 35,
+  "price_too_expensive": 60
+}
