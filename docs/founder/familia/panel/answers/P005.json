@@ -1,0 +1,13 @@
+{
+  "id": "P005",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "Eu uso a parte grátis numa boa, as fichas e os bichos em 3D já distraem as crianças. Pagar R$ 19,90 por mês só pra tirar foto e o app adivinhar o bicho? Isso o Google já faz de graça no meu celular.",
+  "objection": "R$ 19,90 é caro para um app de criança. Já pago Netflix e Spotify e vivo querendo cortar uma, não vou somar mais uma assinatura por causa de uma câmera que identifica planta.",
+  "would_change_my_mind": "Se custasse uns R$ 5 por mês ou fosse um pagamento único baratinho, talvez eu pensasse.",
+  "price_too_cheap": 1,
+  "price_cheap": 4.9,
+  "price_expensive": 9.9,
+  "price_too_expensive": 14.9
+}

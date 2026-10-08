@@ -1,0 +1,13 @@
+{
+  "id": "P006",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "Meu filho ia adorar, mas a parte grátis já tem as fichas, os bichos em 3D e a coleção, então eu deixaria ele usar só isso. Já pago um app de leitura e não cabe mais R$ 19,90 todo mês só pra tirar foto de bicho.",
+  "objection": "R$ 19,90 é caro pra um app de criança, ainda mais quando a foto só sugere o que pode ser e eu já pago outro app pra ele.",
+  "would_change_my_mind": "Se custasse uns R$ 9,90 por mês, ou tivesse um teste grátis em que eu visse ele usando no quintal todo dia.",
+  "price_too_cheap": 3,
+  "price_cheap": 6.9,
+  "price_expensive": 12.9,
+  "price_too_expensive": 19.9
+}

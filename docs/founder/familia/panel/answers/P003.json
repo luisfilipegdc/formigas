@@ -1,0 +1,13 @@
+{
+  "id": "P003",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "Ninguém da escola nem outro pai me indicou, e não vou pagar um app novo que pede para meu filho tirar fotos com o celular. A parte grátis até pode ser legal no parque do lago, mas assinar agora, não.",
+  "objection": "Para onde vão essas fotos e os perfis das crianças? Não está claro quem guarda isso nem o que fazem com os dados do meu filho.",
+  "would_change_my_mind": "A escola ou pais que eu conheço recomendarem e usarem, com uma explicação clara de que as fotos não ficam guardadas nem são usadas para outra coisa.",
+  "price_too_cheap": 4,
+  "price_cheap": 9.9,
+  "price_expensive": 19.9,
+  "price_too_expensive": 29.9
+}

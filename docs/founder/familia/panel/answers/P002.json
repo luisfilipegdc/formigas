@@ -1,0 +1,13 @@
+{
+  "id": "P002",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "R$ 19,90 por mês é caro para um app de criança, quase o preço de um streaming que a família inteira usa. Para o trabalho da escola, as fichas e os bichos em 3D grátis já resolvem, e a foto eu tiro com a câmera e pesquiso depois.",
+  "objection": "Não está na loja, então não tenho nota nem comentários de outros pais para ver se o reconhecimento por foto funciona mesmo ou se erra tudo. Não pago por app que eu não consigo checar antes.",
+  "would_change_my_mind": "Um teste grátis de uns 7 dias da parte da foto, junto com avaliações de outros pais que eu possa ler, e um preço perto de R$ 9,90.",
+  "price_too_cheap": 3,
+  "price_cheap": 7.9,
+  "price_expensive": 12.9,
+  "price_too_expensive": 19.9
+}
