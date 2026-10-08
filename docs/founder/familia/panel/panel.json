@@ -1,0 +1,95 @@
+{
+ "n": 20,
+ "seed": 7,
+ "customer": {
+  "business": "Natureza no Bolso Família (app educativo de natureza para crianças, assinatura para os pais)",
+  "target": "Pais e mães brasileiros de crianças de 5 a 12 anos que dão celular ou iPad aos filhos e querem tela de qualidade (IMPORTANTE: você é brasileiro; todos os valores, inclusive a renda acima, estão em reais R$; responda os preços em reais POR MÊS de assinatura; escreva os textos em português)",
+  "where": "Brasil, cidades médias e grandes, online",
+  "age": [
+   28,
+   46
+  ],
+  "segments": [
+   {
+    "name": "Família classe C, orçamento apertado",
+    "share": 0.35,
+    "income": [
+     36000,
+     84000
+    ]
+   },
+   {
+    "name": "Família classe B, já paga alguns streamings",
+    "share": 0.45,
+    "income": [
+     84000,
+     216000
+    ]
+   },
+   {
+    "name": "Família classe A, paga cursos e apps para os filhos",
+    "share": 0.2,
+    "income": [
+     216000,
+     480000
+    ]
+   }
+  ],
+  "behaviours": [
+   {
+    "name": "Só usa o que é grátis",
+    "share": 0.22,
+    "how": "Baixa apps grátis e desinstala quando aparece cobrança."
+   },
+   {
+    "name": "Já paga app educativo",
+    "share": 0.14,
+    "how": "Assina um app de leitura ou matemática para o filho."
+   },
+   {
+    "name": "Controla o tempo de tela",
+    "share": 0.16,
+    "how": "Limita a tela a pouco tempo por dia e prefere atividades ao ar livre."
+   },
+   {
+    "name": "Família que sai para a natureza",
+    "share": 0.14,
+    "how": "Leva as crianças a parque, praia ou sítio quase todo fim de semana."
+   },
+   {
+    "name": "Compra por indicação",
+    "share": 0.12,
+    "how": "Só experimenta o que outros pais ou a escola indicaram."
+   },
+   {
+    "name": "Testa e cancela",
+    "share": 0.12,
+    "how": "Faz o teste grátis e cancela antes de cobrar, a não ser que o filho use todo dia."
+   },
+   {
+    "name": "Lê avaliações antes",
+    "share": 0.1,
+    "how": "Confere nota na loja e comentários antes de pagar qualquer app."
+   }
+  ],
+  "objections": [
+   "O Google Lens já identifica bicho de graça",
+   "Mais uma assinatura todo mês?",
+   "Meu filho enjoa rápido de qualquer app",
+   "Prefiro que ele fique menos tempo na tela",
+   "Não sei se o reconhecimento por foto acerta mesmo",
+   "Tenho receio de dar foto e dados do meu filho para um app",
+   "R$ 19,90 é caro para um app de criança",
+   "Se a parte grátis já é boa, para que pagar?"
+  ],
+  "habits": [
+   "seu filho pergunta o nome de todo bicho que vê no quintal",
+   "vocês passam o domingo num parque com lago e muitos passarinhos",
+   "seu filho usa o tablet no carro e no restaurante",
+   "você paga Netflix e Spotify e sempre pensa em cortar alguma assinatura",
+   "a escola do seu filho pediu um trabalho sobre animais do bairro",
+   "seu filho coleciona figurinhas e adora completar álbuns"
+  ]
+ },
+ "pitch": "Natureza no Bolso: app de natureza para crianças de 5 a 14 anos, no celular e no iPad (pelo navegador, sem instalar pela loja).\nGrátis para sempre: fichas de animais com fotos reais, bichos em 3D para girar e ver por dentro, e o \"Meu Bolso\", a coleção de descobertas da criança.\nAssinatura Família, R$ 19,90 por mês: tire uma foto de um bicho ou de uma planta e o app sugere o que pode ser, dizendo o quanto tem certeza; abre a ficha e guarda a descoberta no bolso.\nNa assinatura, a coleção fica salva em todos os aparelhos da família, com até 4 perfis de criança (a criança não precisa de e-mail).\nSem anúncios. Cancele quando quiser."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Já temos a plataforma do sistema de ensino com material digital de ciências, e a direção quer cortar custos no ano que vem. Não vou colocar mais uma ferramenta paga para os professores aprenderem, ainda mais com só 13 animais.",
+  "objection": "Com 13 bichos e 4 em 3D, não vejo como isso cobre o currículo de ciências do 1º ao 9º ano nem como encaixa no planejamento que já seguimos com o sistema de ensino. Seria um complemento bonito, mas a direção vai perguntar por que pagar se o sistema já tem conteúdo.",
+  "would_change_my_mind": "Um piloto gratuito de um semestre com os roteiros mostrando, aula a aula, onde se encaixam no planejamento do nosso sistema de ensino e nas habilidades da BNCC, e um catálogo bem maior de conteúdo.",
+  "price_too_cheap": 300,
+  "price_cheap": 1000,
+  "price_expensive": 2000,
+  "price_too_expensive": 3500
+}

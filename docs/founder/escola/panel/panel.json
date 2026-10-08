@@ -1,0 +1,95 @@
+{
+ "n": 20,
+ "seed": 7,
+ "customer": {
+  "business": "Natureza no Bolso Escola (plataforma de ciências com bichos em 3D e modo turma, licença anual por unidade escolar)",
+  "target": "Coordenadores pedagógicos e diretores de escolas particulares brasileiras de ensino fundamental que decidem ou indicam a compra de recursos digitais (IMPORTANTE: você é brasileiro; todos os valores, inclusive a renda acima, estão em reais R$; responda os preços em reais POR ANO para a sua unidade escolar inteira; escreva os textos em português)",
+  "where": "Brasil, escolas particulares",
+  "age": [
+   32,
+   58
+  ],
+  "segments": [
+   {
+    "name": "Escola pequena independente (até 300 alunos, orçamento curto)",
+    "share": 0.4,
+    "income": [
+     54000,
+     96000
+    ]
+   },
+   {
+    "name": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+    "share": 0.4,
+    "income": [
+     84000,
+     156000
+    ]
+   },
+   {
+    "name": "Unidade de rede grande (decisão com a mantenedora)",
+    "share": 0.2,
+    "income": [
+     120000,
+     240000
+    ]
+   }
+  ],
+  "behaviours": [
+   {
+    "name": "Já tem plataforma do sistema de ensino",
+    "share": 0.22,
+    "how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta."
+   },
+   {
+    "name": "Busca diferencial para captar matrículas",
+    "share": 0.16,
+    "how": "Procura algo novo e visível para mostrar aos pais na visita e nas redes."
+   },
+   {
+    "name": "Ciências é prioridade",
+    "share": 0.14,
+    "how": "Investe em laboratório, saídas de campo e projetos de ciências."
+   },
+   {
+    "name": "Professores resistem a tecnologia",
+    "share": 0.14,
+    "how": "Já comprou ferramenta que ninguém usou e ficou com o pé atrás."
+   },
+   {
+    "name": "Compra no planejamento do ano seguinte",
+    "share": 0.12,
+    "how": "Fecha orçamento entre outubro e dezembro; fora disso, só com piloto grátis."
+   },
+   {
+    "name": "Decide com a mantenedora ou rede",
+    "share": 0.12,
+    "how": "Pode indicar, mas quem assina é a rede, que pede proposta formal e LGPD."
+   },
+   {
+    "name": "Testa com piloto antes",
+    "share": 0.1,
+    "how": "Só compra depois de um semestre de teste com uma turma."
+   }
+  ],
+  "objections": [
+   "Já temos a plataforma do nosso sistema de ensino",
+   "Nossos iPads e o Wi-Fi da escola não dão conta",
+   "Os professores não têm tempo de aprender mais uma ferramenta",
+   "O orçamento deste ano já está fechado",
+   "Só 13 animais é muito pouco conteúdo para um ano inteiro",
+   "Precisa estar alinhado à BNCC e ao nosso planejamento",
+   "Como fica a LGPD com dados dos alunos?",
+   "Quem garante que o conteúdo científico está correto?"
+  ],
+  "habits": [
+   "a escola faz uma feira de ciências todo ano em setembro",
+   "os pais cobram uso de tecnologia nas aulas",
+   "a escola tem um carrinho com 30 iPads compartilhado entre as turmas",
+   "você recebe visitas de vendedores de plataformas toda semana",
+   "o 2º ano estuda animais e plantas no segundo bimestre",
+   "a direção quer reduzir custos no próximo ano"
+  ]
+ },
+ "pitch": "Natureza no Bolso Escola: ciências com bichos em 3D, fotos reais e missões de observação no pátio, no iPad e no celular, pelo navegador; funciona sem internet depois de instalado.\nPara turmas do 1º ao 9º ano, com três níveis de profundidade (Pequeno, Explorador e Cientista) e roteiros de aula alinhados à BNCC.\nModo turma: painel do professor, desafios e ranking da turma inteira (sem expor alunos individualmente) e relatório do que a turma explorou.\nHoje são 13 animais com fichas revisadas por etapas, 4 deles em 3D interativo (formiga, abelha, cigarra e aranha); novos bichos entram ao longo do ano.\nR$ 3.000 por unidade escolar por ano, todas as turmas. Piloto de um semestre com 40% de desconto.\nSem anúncios; dados mínimos dos alunos, conforme a LGPD."
+}

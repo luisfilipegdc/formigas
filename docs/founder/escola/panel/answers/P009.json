@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "Eu fecharia o piloto de um semestre com desconto: bicho em 3D no iPad e missão no pátio rende foto bonita para as redes e para mostrar aos pais na visita, e encaixa bem no 2º ano, que estuda animais e plantas no segundo bimestre. Por R$ 1.800 o risco é pequeno para a escola inteira.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta, e 13 bichos com só 4 em 3D é pouco conteúdo. Se ninguém usar depois da novidade, vira só mais um login esquecido e não renovo.",
+  "would_change_my_mind": "Se no piloto eu perceber que o professor precisa de mais de uma reunião de formação para conseguir usar, ou se não aparecerem bichos novos durante o semestre, eu não renovo o ano cheio.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 6000,
+  "price_too_expensive": 12000
+}

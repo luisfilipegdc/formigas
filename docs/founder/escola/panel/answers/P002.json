@@ -1,0 +1,13 @@
+{
+  "id": "P002",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "O 2º ano estuda animais e plantas no segundo bimestre, e missão de observação no pátio com bicho em 3D encaixa direitinho. Com 40% de desconto no piloto dá R$ 1.800 pelo semestre, então eu fecho só o piloto com uma turma e decido a renovação depois de ver se os professores usam de verdade.",
+  "objection": "Só 13 animais e 4 em 3D é pouco para dizer 'do 1º ao 9º ano'. E 'dados mínimos conforme a LGPD' não me diz nada: quero ver o contrato de tratamento de dados, quem é o operador, onde ficam os dados e se o aluno precisa de login nominal antes de colocar qualquer criança lá.",
+  "would_change_my_mind": "Se não me mandarem um termo de tratamento de dados por escrito antes do piloto, eu não assino nem o piloto.",
+  "price_too_cheap": 600,
+  "price_cheap": 1500,
+  "price_expensive": 3500,
+  "price_too_expensive": 6000
+}

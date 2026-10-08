@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "quality",
+  "reason": "O preço é baixo para a gente, mas 13 bichos e só 4 em 3D não impressionam pai nenhum na visita nem rendem post nas redes. E a compra não é minha: teria que levar à mantenedora algo que ainda parece pequeno e de um fornecedor que ninguém conhece.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta, e com o carrinho de 30 iPads dividido entre todas as turmas isso vai ser usado uma vez por bimestre e esquecido. Pagar por algo que ninguém usa me queima com a mantenedora.",
+  "would_change_my_mind": "Um catálogo bem maior em 3D, de impacto visual de verdade, mais uma demonstração pronta que o professor rode sem treinamento e que a rede já use em outra unidade.",
+  "price_too_cheap": 600,
+  "price_cheap": 1500,
+  "price_expensive": 5000,
+  "price_too_expensive": 9000
+}

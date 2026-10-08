@@ -1,0 +1,13 @@
+{
+  "id": "P017",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Já temos a plataforma do nosso sistema de ensino, com material digital de ciências incluído, e eu evito colocar mais uma ferramenta para os professores aprenderem. Com 13 bichos, 4 em 3D, é pouco para justificar R$ 3.000 num orçamento apertado.",
+  "objection": "É mais uma plataforma com conteúdo ainda pequeno, que se sobrepõe ao que o sistema de ensino já entrega; não sei se os professores vão usar de verdade depois da novidade.",
+  "would_change_my_mind": "Um piloto gratuito no 2º ano durante o bimestre de animais e plantas, mostrando que os professores usam e que encaixa no material do sistema sem trabalho extra.",
+  "price_too_cheap": 300,
+  "price_cheap": 800,
+  "price_expensive": 1500,
+  "price_too_expensive": 2500
+}

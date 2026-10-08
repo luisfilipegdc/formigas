@@ -1,0 +1,13 @@
+{
+  "id": "P014",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "Ciências é a nossa bandeira e os pais cobram tecnologia em aula; funcionar sem internet resolve o meu medo do Wi-Fi e dos iPads. Com o piloto a R$ 1.800 no semestre, o risco é baixo e eu testo com duas ou três turmas antes de decidir.",
+  "objection": "13 animais e só 4 em 3D é muito pouco para cobrir do 1º ao 9º ano; no 8º e 9º isso se esgota em poucas aulas e eu fico pagando por promessa de bicho novo.",
+  "would_change_my_mind": "Se no piloto os professores largarem de usar depois de um mês por falta de conteúdo, ou se a instalação offline não rodar nos nossos iPads antigos, eu não renovo.",
+  "price_too_cheap": 600,
+  "price_cheap": 1800,
+  "price_expensive": 5000,
+  "price_too_expensive": 9000
+}

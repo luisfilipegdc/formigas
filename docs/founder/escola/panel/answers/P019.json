@@ -1,0 +1,13 @@
+{
+  "id": "P019",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Meus professores já estão no limite e não vão parar para aprender mais uma ferramenta por causa de 13 bichos, 4 em 3D. E nem sou eu quem assina: teria que levar para a rede com proposta formal e documentação de LGPD, e com o que tem hoje não vale o meu desgaste.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta, e com só 13 animais o conteúdo acaba em poucas aulas. Com um carrinho de 30 iPads dividido entre todas as turmas, quase não sobra horário para usar.",
+  "would_change_my_mind": "Um piloto gratuito de um semestre, com proposta formal e termo de LGPD prontos para eu entregar à rede, e uma aula que o professor consiga dar sem preparo nenhum.",
+  "price_too_cheap": 500,
+  "price_cheap": 1200,
+  "price_expensive": 2400,
+  "price_too_expensive": 3500
+}

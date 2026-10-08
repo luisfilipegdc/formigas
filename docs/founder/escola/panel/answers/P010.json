@@ -1,0 +1,13 @@
+{
+  "id": "P010",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Já temos a plataforma do nosso sistema de ensino e meus professores mal usam o que já existe. Já paguei por ferramenta que ficou parada, e 13 bichos não me convencem a brigar com a equipe por mais uma.",
+  "objection": "Medo de pagar e ninguém usar: professor resistente a tecnologia, conteúdo ainda pequeno, e 3 mil reais pesam no nosso orçamento apertado.",
+  "would_change_my_mind": "Um piloto gratuito de um mês com algumas turmas, de preferência perto da feira de ciências em setembro, mostrando que os professores realmente usaram.",
+  "price_too_cheap": 300,
+  "price_cheap": 800,
+  "price_expensive": 1800,
+  "price_too_expensive": 3000
+}

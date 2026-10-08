@@ -1,0 +1,13 @@
+{
+  "id": "P006",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "Gostei da ideia de mostrar bichos em 3D e missões no pátio para os pais na visita, mas não vejo quem assina o conteúdo científico e são só 13 animais, 4 em 3D. Com a direção mandando cortar custos, não consigo defender R$ 3.000 por ano por algo que ainda parece pequeno e sem respaldo.",
+  "objection": "Quem garante que o conteúdo científico está correto? 'Fichas revisadas por etapas' não me diz nada: quero saber qual biólogo ou instituição revisou, porque se um pai ou professor achar um erro, quem passa vergonha é a escola.",
+  "would_change_my_mind": "Ver o nome de uma universidade ou especialista reconhecido validando o conteúdo, mais um piloto curto sem custo ou bem barato que eu pudesse mostrar para a direção e para os pais antes de assumir o valor do ano.",
+  "price_too_cheap": 400,
+  "price_cheap": 1200,
+  "price_expensive": 2500,
+  "price_too_expensive": 4000
+}

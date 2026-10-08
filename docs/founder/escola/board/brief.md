@@ -1,0 +1,15 @@
+# Natureza no Bolso Escola (nome de trabalho)
+
+- What it is: plataforma de ciências para escolas, com bichos em 3D, fotos reais, fichas e missões de observação no mundo real, que funciona no navegador do iPad e do celular (e sem internet depois de instalada).
+- Who it is for: coordenação pedagógica e direção de escolas particulares de ensino fundamental (anos iniciais, 1º ao 5º, e anos finais, 6º ao 9º) no Brasil; quem usa no dia a dia é o professor de ciências com a turma.
+- What it sells, at what price: licença anual por unidade escolar, todas as turmas, com "modo turma" (painel do professor, desafios e ranking coletivo da turma sem expor alunos, relatório do que a turma explorou, roteiros de aula alinhados à BNCC). Preço em teste: R$ 3.000 por unidade por ano (meio da faixa de hipótese R$ 1.500–5.000 do docs/PILOTO.md). Piloto de um semestre com 30–50% de desconto.
+- Where and how: online (site/PWA, sem loja de apps). Venda direta pelo fundador a escolas da região, começando por um piloto (ex.: rede Marista); o QR code impresso leva a turma ao app.
+- Budget and constraints: fundador praticamente sozinho, desenvolvendo com IA; orçamento em dinheiro não informado. Hoje o produto tem 13 animais (4 com 3D), sem contas nem servidor: o modo turma, os três níveis e os roteiros ainda precisam ser construídos. Exige revisão de LGPD (dados de alunos) e revisão científica do conteúdo. Sem anúncios.
+
+## Contexto adicional (para quem não viu a conversa)
+
+- O produto hoje (outubro de 2026) é um site/PWA grátis chamado até pouco tempo "Bicho no Bolso", publicado em formigas-beta.vercel.app, com mascote (o sapinho Curu), identidade visual pronta, 13 fichas de animais com 3 fotos reais licenciadas cada, 4 animais em 3D interativo (formiga-saúva com formigueiro em corte, abelha com colmeia e processo "como nasce o mel", cigarra com "por dentro" do canto, aranha de teia dourada), comparador de tamanhos, coleção "Meu Bolso" com níveis e selos, guardada só no aparelho.
+- Funciona no Safari do iPad e no celular, inclusive sem internet depois de instalado. Foi testado informalmente com crianças; um piloto com escola (rede Marista) está planejado, ainda não feito.
+- O fundador também considera ampliar para uma "enciclopédia da natureza" (plantas, fungos, microrganismos, rochas), mas o pai dele achou rochas um exagero; o foco atual são seres vivos.
+- Restrições éticas já decididas: sem anúncios, sem coletar dados de crianças sem conta do adulto, sem ranking individual entre crianças, conteúdo marcado "em revisão científica" até um especialista revisar.
+- Não há números de mercado, custo de aquisição de cliente ou orçamento. Se uma lente precisar deles, deve marcar como pergunta em aberto.

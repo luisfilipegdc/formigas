@@ -1,0 +1,222 @@
+[
+ {
+  "id": "P001",
+  "name": "Omar",
+  "age": 28,
+  "segment": "Família classe A, paga cursos e apps para os filhos",
+  "income": 344000,
+  "behaviour": "Já paga app educativo",
+  "behaviour_how": "Assina um app de leitura ou matemática para o filho.",
+  "objection": "Meu filho enjoa rápido de qualquer app",
+  "habit": "seu filho usa o tablet no carro e no restaurante"
+ },
+ {
+  "id": "P002",
+  "name": "Raj",
+  "age": 37,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 85000,
+  "behaviour": "Lê avaliações antes",
+  "behaviour_how": "Confere nota na loja e comentários antes de pagar qualquer app.",
+  "objection": "R$ 19,90 é caro para um app de criança",
+  "habit": "a escola do seu filho pediu um trabalho sobre animais do bairro"
+ },
+ {
+  "id": "P003",
+  "name": "Emil",
+  "age": 39,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 164000,
+  "behaviour": "Compra por indicação",
+  "behaviour_how": "Só experimenta o que outros pais ou a escola indicaram.",
+  "objection": "Tenho receio de dar foto e dados do meu filho para um app",
+  "habit": "vocês passam o domingo num parque com lago e muitos passarinhos"
+ },
+ {
+  "id": "P004",
+  "name": "Owen",
+  "age": 44,
+  "segment": "Família classe A, paga cursos e apps para os filhos",
+  "income": 467000,
+  "behaviour": "Controla o tempo de tela",
+  "behaviour_how": "Limita a tela a pouco tempo por dia e prefere atividades ao ar livre.",
+  "objection": "O Google Lens já identifica bicho de graça",
+  "habit": "você paga Netflix e Spotify e sempre pensa em cortar alguma assinatura"
+ },
+ {
+  "id": "P005",
+  "name": "Sana",
+  "age": 45,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 136000,
+  "behaviour": "Só usa o que é grátis",
+  "behaviour_how": "Baixa apps grátis e desinstala quando aparece cobrança.",
+  "objection": "R$ 19,90 é caro para um app de criança",
+  "habit": "você paga Netflix e Spotify e sempre pensa em cortar alguma assinatura"
+ },
+ {
+  "id": "P006",
+  "name": "Maya",
+  "age": 31,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 59000,
+  "behaviour": "Já paga app educativo",
+  "behaviour_how": "Assina um app de leitura ou matemática para o filho.",
+  "objection": "R$ 19,90 é caro para um app de criança",
+  "habit": "seu filho pergunta o nome de todo bicho que vê no quintal"
+ },
+ {
+  "id": "P007",
+  "name": "Selin",
+  "age": 34,
+  "segment": "Família classe A, paga cursos e apps para os filhos",
+  "income": 234000,
+  "behaviour": "Testa e cancela",
+  "behaviour_how": "Faz o teste grátis e cancela antes de cobrar, a não ser que o filho use todo dia.",
+  "objection": "Prefiro que ele fique menos tempo na tela",
+  "habit": "você paga Netflix e Spotify e sempre pensa em cortar alguma assinatura"
+ },
+ {
+  "id": "P008",
+  "name": "Ruby",
+  "age": 33,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 41000,
+  "behaviour": "Família que sai para a natureza",
+  "behaviour_how": "Leva as crianças a parque, praia ou sítio quase todo fim de semana.",
+  "objection": "O Google Lens já identifica bicho de graça",
+  "habit": "seu filho pergunta o nome de todo bicho que vê no quintal"
+ },
+ {
+  "id": "P009",
+  "name": "Nora",
+  "age": 28,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 159000,
+  "behaviour": "Já paga app educativo",
+  "behaviour_how": "Assina um app de leitura ou matemática para o filho.",
+  "objection": "Mais uma assinatura todo mês?",
+  "habit": "seu filho usa o tablet no carro e no restaurante"
+ },
+ {
+  "id": "P010",
+  "name": "Fatima",
+  "age": 28,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 39000,
+  "behaviour": "Família que sai para a natureza",
+  "behaviour_how": "Leva as crianças a parque, praia ou sítio quase todo fim de semana.",
+  "objection": "Prefiro que ele fique menos tempo na tela",
+  "habit": "a escola do seu filho pediu um trabalho sobre animais do bairro"
+ },
+ {
+  "id": "P011",
+  "name": "Tariq",
+  "age": 40,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 104000,
+  "behaviour": "Só usa o que é grátis",
+  "behaviour_how": "Baixa apps grátis e desinstala quando aparece cobrança.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo",
+  "habit": "seu filho usa o tablet no carro e no restaurante"
+ },
+ {
+  "id": "P012",
+  "name": "Felix",
+  "age": 39,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 59000,
+  "behaviour": "Controla o tempo de tela",
+  "behaviour_how": "Limita a tela a pouco tempo por dia e prefere atividades ao ar livre.",
+  "objection": "Mais uma assinatura todo mês?",
+  "habit": "você paga Netflix e Spotify e sempre pensa em cortar alguma assinatura"
+ },
+ {
+  "id": "P013",
+  "name": "Zoe",
+  "age": 42,
+  "segment": "Família classe A, paga cursos e apps para os filhos",
+  "income": 343000,
+  "behaviour": "Lê avaliações antes",
+  "behaviour_how": "Confere nota na loja e comentários antes de pagar qualquer app.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo",
+  "habit": "seu filho pergunta o nome de todo bicho que vê no quintal"
+ },
+ {
+  "id": "P014",
+  "name": "Dev",
+  "age": 32,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 97000,
+  "behaviour": "Controla o tempo de tela",
+  "behaviour_how": "Limita a tela a pouco tempo por dia e prefere atividades ao ar livre.",
+  "objection": "Tenho receio de dar foto e dados do meu filho para um app",
+  "habit": "seu filho coleciona figurinhas e adora completar álbuns"
+ },
+ {
+  "id": "P015",
+  "name": "Yusuf",
+  "age": 36,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 147000,
+  "behaviour": "Compra por indicação",
+  "behaviour_how": "Só experimenta o que outros pais ou a escola indicaram.",
+  "objection": "Meu filho enjoa rápido de qualquer app",
+  "habit": "a escola do seu filho pediu um trabalho sobre animais do bairro"
+ },
+ {
+  "id": "P016",
+  "name": "Theo",
+  "age": 28,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 46000,
+  "behaviour": "Só usa o que é grátis",
+  "behaviour_how": "Baixa apps grátis e desinstala quando aparece cobrança.",
+  "objection": "Tenho receio de dar foto e dados do meu filho para um app",
+  "habit": "vocês passam o domingo num parque com lago e muitos passarinhos"
+ },
+ {
+  "id": "P017",
+  "name": "Alma",
+  "age": 45,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 80000,
+  "behaviour": "Só usa o que é grátis",
+  "behaviour_how": "Baixa apps grátis e desinstala quando aparece cobrança.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo",
+  "habit": "seu filho coleciona figurinhas e adora completar álbuns"
+ },
+ {
+  "id": "P018",
+  "name": "Freya",
+  "age": 30,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 176000,
+  "behaviour": "Família que sai para a natureza",
+  "behaviour_how": "Leva as crianças a parque, praia ou sítio quase todo fim de semana.",
+  "objection": "Não sei se o reconhecimento por foto acerta mesmo",
+  "habit": "a escola do seu filho pediu um trabalho sobre animais do bairro"
+ },
+ {
+  "id": "P019",
+  "name": "Harper",
+  "age": 39,
+  "segment": "Família classe C, orçamento apertado",
+  "income": 80000,
+  "behaviour": "Testa e cancela",
+  "behaviour_how": "Faz o teste grátis e cancela antes de cobrar, a não ser que o filho use todo dia.",
+  "objection": "Tenho receio de dar foto e dados do meu filho para um app",
+  "habit": "vocês passam o domingo num parque com lago e muitos passarinhos"
+ },
+ {
+  "id": "P020",
+  "name": "Emma",
+  "age": 45,
+  "segment": "Família classe B, já paga alguns streamings",
+  "income": 155000,
+  "behaviour": "Só usa o que é grátis",
+  "behaviour_how": "Baixa apps grátis e desinstala quando aparece cobrança.",
+  "objection": "Tenho receio de dar foto e dados do meu filho para um app",
+  "habit": "seu filho coleciona figurinhas e adora completar álbuns"
+ }
+]

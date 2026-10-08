@@ -1,0 +1,13 @@
+{
+  "id": "P011",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "A gente já paga o sistema de ensino, que tem material digital de ciências, e a direção quer cortar custo no ano que vem. Mais uma plataforma, com só 13 bichos, eu não consigo justificar nem os professores vão ter tempo de aprender.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta, e o conteúdo ainda é pequeno demais para competir com o que já vem no sistema de ensino.",
+  "would_change_my_mind": "Se viesse integrado ou incluído na plataforma do nosso sistema de ensino, sem custo a mais e sem login novo para os professores.",
+  "price_too_cheap": 300,
+  "price_cheap": 800,
+  "price_expensive": 1500,
+  "price_too_expensive": 2500
+}

@@ -1,0 +1,222 @@
+[
+ {
+  "id": "P001",
+  "name": "Omar",
+  "age": 32,
+  "segment": "Unidade de rede grande (decisão com a mantenedora)",
+  "income": 178000,
+  "behaviour": "Busca diferencial para captar matrículas",
+  "behaviour_how": "Procura algo novo e visível para mostrar aos pais na visita e nas redes.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta",
+  "habit": "a escola tem um carrinho com 30 iPads compartilhado entre as turmas"
+ },
+ {
+  "id": "P002",
+  "name": "Raj",
+  "age": 41,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 84000,
+  "behaviour": "Testa com piloto antes",
+  "behaviour_how": "Só compra depois de um semestre de teste com uma turma.",
+  "objection": "Como fica a LGPD com dados dos alunos?",
+  "habit": "o 2º ano estuda animais e plantas no segundo bimestre"
+ },
+ {
+  "id": "P003",
+  "name": "Emil",
+  "age": 43,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 128000,
+  "behaviour": "Compra no planejamento do ano seguinte",
+  "behaviour_how": "Fecha orçamento entre outubro e dezembro; fora disso, só com piloto grátis.",
+  "objection": "Precisa estar alinhado à BNCC e ao nosso planejamento",
+  "habit": "os pais cobram uso de tecnologia nas aulas"
+ },
+ {
+  "id": "P004",
+  "name": "Owen",
+  "age": 54,
+  "segment": "Unidade de rede grande (decisão com a mantenedora)",
+  "income": 223000,
+  "behaviour": "Ciências é prioridade",
+  "behaviour_how": "Investe em laboratório, saídas de campo e projetos de ciências.",
+  "objection": "Já temos a plataforma do nosso sistema de ensino",
+  "habit": "você recebe visitas de vendedores de plataformas toda semana"
+ },
+ {
+  "id": "P005",
+  "name": "Sana",
+  "age": 56,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 94000,
+  "behaviour": "Já tem plataforma do sistema de ensino",
+  "behaviour_how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta.",
+  "objection": "Como fica a LGPD com dados dos alunos?",
+  "habit": "você recebe visitas de vendedores de plataformas toda semana"
+ },
+ {
+  "id": "P006",
+  "name": "Maya",
+  "age": 44,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 71000,
+  "behaviour": "Busca diferencial para captar matrículas",
+  "behaviour_how": "Procura algo novo e visível para mostrar aos pais na visita e nas redes.",
+  "objection": "Quem garante que o conteúdo científico está correto?",
+  "habit": "a direção quer reduzir custos no próximo ano"
+ },
+ {
+  "id": "P007",
+  "name": "Selin",
+  "age": 44,
+  "segment": "Unidade de rede grande (decisão com a mantenedora)",
+  "income": 127000,
+  "behaviour": "Decide com a mantenedora ou rede",
+  "behaviour_how": "Pode indicar, mas quem assina é a rede, que pede proposta formal e LGPD.",
+  "objection": "Nossos iPads e o Wi-Fi da escola não dão conta",
+  "habit": "os pais cobram uso de tecnologia nas aulas"
+ },
+ {
+  "id": "P008",
+  "name": "Ruby",
+  "age": 46,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 61000,
+  "behaviour": "Professores resistem a tecnologia",
+  "behaviour_how": "Já comprou ferramenta que ninguém usou e ficou com o pé atrás.",
+  "objection": "Precisa estar alinhado à BNCC e ao nosso planejamento",
+  "habit": "o 2º ano estuda animais e plantas no segundo bimestre"
+ },
+ {
+  "id": "P009",
+  "name": "Nora",
+  "age": 33,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 91000,
+  "behaviour": "Busca diferencial para captar matrículas",
+  "behaviour_how": "Procura algo novo e visível para mostrar aos pais na visita e nas redes.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta",
+  "habit": "o 2º ano estuda animais e plantas no segundo bimestre"
+ },
+ {
+  "id": "P010",
+  "name": "Fatima",
+  "age": 35,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 94000,
+  "behaviour": "Professores resistem a tecnologia",
+  "behaviour_how": "Já comprou ferramenta que ninguém usou e ficou com o pé atrás.",
+  "objection": "Já temos a plataforma do nosso sistema de ensino",
+  "habit": "a escola faz uma feira de ciências todo ano em setembro"
+ },
+ {
+  "id": "P011",
+  "name": "Tariq",
+  "age": 38,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 128000,
+  "behaviour": "Já tem plataforma do sistema de ensino",
+  "behaviour_how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta",
+  "habit": "a direção quer reduzir custos no próximo ano"
+ },
+ {
+  "id": "P012",
+  "name": "Felix",
+  "age": 40,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 94000,
+  "behaviour": "Ciências é prioridade",
+  "behaviour_how": "Investe em laboratório, saídas de campo e projetos de ciências.",
+  "objection": "Precisa estar alinhado à BNCC e ao nosso planejamento",
+  "habit": "você recebe visitas de vendedores de plataformas toda semana"
+ },
+ {
+  "id": "P013",
+  "name": "Zoe",
+  "age": 35,
+  "segment": "Unidade de rede grande (decisão com a mantenedora)",
+  "income": 134000,
+  "behaviour": "Testa com piloto antes",
+  "behaviour_how": "Só compra depois de um semestre de teste com uma turma.",
+  "objection": "Quem garante que o conteúdo científico está correto?",
+  "habit": "você recebe visitas de vendedores de plataformas toda semana"
+ },
+ {
+  "id": "P014",
+  "name": "Dev",
+  "age": 47,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 119000,
+  "behaviour": "Ciências é prioridade",
+  "behaviour_how": "Investe em laboratório, saídas de campo e projetos de ciências.",
+  "objection": "Nossos iPads e o Wi-Fi da escola não dão conta",
+  "habit": "os pais cobram uso de tecnologia nas aulas"
+ },
+ {
+  "id": "P015",
+  "name": "Yusuf",
+  "age": 35,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 138000,
+  "behaviour": "Compra no planejamento do ano seguinte",
+  "behaviour_how": "Fecha orçamento entre outubro e dezembro; fora disso, só com piloto grátis.",
+  "objection": "Só 13 animais é muito pouco conteúdo para um ano inteiro",
+  "habit": "você recebe visitas de vendedores de plataformas toda semana"
+ },
+ {
+  "id": "P016",
+  "name": "Theo",
+  "age": 58,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 83000,
+  "behaviour": "Já tem plataforma do sistema de ensino",
+  "behaviour_how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta.",
+  "objection": "Já temos a plataforma do nosso sistema de ensino",
+  "habit": "os pais cobram uso de tecnologia nas aulas"
+ },
+ {
+  "id": "P017",
+  "name": "Alma",
+  "age": 48,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 69000,
+  "behaviour": "Já tem plataforma do sistema de ensino",
+  "behaviour_how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta.",
+  "objection": "Já temos a plataforma do nosso sistema de ensino",
+  "habit": "o 2º ano estuda animais e plantas no segundo bimestre"
+ },
+ {
+  "id": "P018",
+  "name": "Freya",
+  "age": 41,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 154000,
+  "behaviour": "Professores resistem a tecnologia",
+  "behaviour_how": "Já comprou ferramenta que ninguém usou e ficou com o pé atrás.",
+  "objection": "Nossos iPads e o Wi-Fi da escola não dão conta",
+  "habit": "a direção quer reduzir custos no próximo ano"
+ },
+ {
+  "id": "P019",
+  "name": "Harper",
+  "age": 40,
+  "segment": "Escola pequena independente (até 300 alunos, orçamento curto)",
+  "income": 76000,
+  "behaviour": "Decide com a mantenedora ou rede",
+  "behaviour_how": "Pode indicar, mas quem assina é a rede, que pede proposta formal e LGPD.",
+  "objection": "Os professores não têm tempo de aprender mais uma ferramenta",
+  "habit": "a escola tem um carrinho com 30 iPads compartilhado entre as turmas"
+ },
+ {
+  "id": "P020",
+  "name": "Emma",
+  "age": 56,
+  "segment": "Escola média (300 a 1.000 alunos), compra de sistema de ensino",
+  "income": 100000,
+  "behaviour": "Já tem plataforma do sistema de ensino",
+  "behaviour_how": "Usa o material digital que vem no sistema de ensino e evita mais uma ferramenta.",
+  "objection": "Precisa estar alinhado à BNCC e ao nosso planejamento",
+  "habit": "a direção quer reduzir custos no próximo ano"
+ }
+]
