@@ -886,6 +886,7 @@ const state = {
   biteT: -1, carrying: false,
   flyT: -1, fly: 0              // voo nupcial (rainha e zangão): tempo e quanto está no ar (0..1)
 };
+const hChao = (x, z) => (ctx && ctx.alturaChao ? ctx.alturaChao(x, z) : 0);   // altura do chão (moeda, arroz e régua do Tamanho real)
 const VOO = { subir: 1.2, pairar: 5.5, descer: 1.6, altura: 7 };   // segundos e altura (mm)
 const SWING = 0.42;          // fração do passo com a pata no ar
 const STRIDE = 3.4;          // mm por ciclo
@@ -930,13 +931,13 @@ function updateWalk(dt) {
       : T < VOO.subir + VOO.pairar ? 1 : 1 - smooth(T, VOO.subir + VOO.pairar, total);
     if (T >= total) {                                // pousou: patas firmes no chão, corpo nivelado
       state.flyT = -1; state.fly = 0;
-      ant.position.y = 0; ant.rotation.z = 0;
+      ant.position.y = state.hBase = hChao(ant.position.x, ant.position.z); ant.rotation.z = 0;
       ant.updateMatrixWorld(true);
-      legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld).setY(0.05 * CA.escala); });
+      legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(ant.matrixWorld); l.foot.y = 0.05 * CA.escala + hChao(l.foot.x, l.foot.z); });
     }
   }
   if (state.fly > 0) {
-    ant.position.y = state.fly * VOO.altura * CA.escala + Math.sin(performance.now() / 260) * 0.25 * state.fly;
+    ant.position.y = hChao(ant.position.x, ant.position.z) + state.fly * VOO.altura * CA.escala + Math.sin(performance.now() / 260) * 0.25 * state.fly;
     ant.rotation.z = 0.12 * state.fly;              // nariz um pouco para cima
     ant.updateMatrixWorld(true);
     // matriz "nivelada" (sem a inclinação), para calcular onde as patas pousam
@@ -944,7 +945,7 @@ function updateWalk(dt) {
     inv.copy(ant.matrixWorld).invert();
     for (const leg of legs) {
       // ponto de pouso: logo abaixo do corpo, no chão (atualizado enquanto voa/anda no ar)
-      leg.foot.copy(leg.neutral).applyMatrix4(_lvl); leg.foot.y = 0.05 * CA.escala;
+      leg.foot.copy(leg.neutral).applyMatrix4(_lvl); leg.foot.y = 0.05 * CA.escala + hChao(leg.foot.x, leg.foot.z);
       _w.copy(leg.foot).applyMatrix4(inv);           // pé no chão (coordenadas locais)
       _l.copy(leg.neutral).multiplyScalar(0.7).setY(-0.9);   // pendurado
       _l.x += leg.C.x * 0.3; _l.z += leg.C.z * 0.3;
@@ -960,7 +961,8 @@ function updateWalk(dt) {
   const far = legs.some((l) => _w.copy(l.neutral).applyMatrix4(ant.matrixWorld).setY(0).distanceTo(_l.copy(l.foot).setY(0)) > 0.45 * CA.escala);
   const rate = Math.max(state.speed / (STRIDE * CA.escala), Math.abs(state.yawRate) * 0.9, (anySwing || far) ? 1.6 : 0);
   state.phase = (state.phase + dt * rate) % 1;
-  ant.position.y = state.speed > 0.5 ? 0.04 * CA.escala * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0;
+  state.hBase = (state.hBase || 0) + (hChao(ant.position.x, ant.position.z) - (state.hBase || 0)) * Math.min(1, dt * 6);   // sobe e desce de leve na moeda
+  ant.position.y = state.hBase + (state.speed > 0.5 ? 0.04 * CA.escala * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0);
   ant.updateMatrixWorld(true);
   inv.copy(ant.matrixWorld).invert();
   const swingTime = SWING / Math.max(rate, 0.01);
@@ -972,7 +974,7 @@ function updateWalk(dt) {
       leg.start.copy(leg.foot);
       leg.target.copy(leg.neutral).applyMatrix4(ant.matrixWorld)
         .addScaledVector(vel, swingTime + (1 - SWING) / Math.max(rate, 0.01) * 0.5);
-      leg.target.y = 0.05 * CA.escala;
+      leg.target.y = 0.05 * CA.escala + hChao(leg.target.x, leg.target.z);
     } else if (!inSwing && leg.swing) {
       leg.swing = false;
       leg.foot.copy(leg.target);
@@ -980,7 +982,7 @@ function updateWalk(dt) {
     if (leg.swing) {
       const s = smooth(ph / SWING, 0, 1);
       leg.foot.lerpVectors(leg.start, leg.target, s);
-      leg.foot.y = (0.05 + 0.7 * Math.sin(Math.PI * ph / SWING)) * CA.escala;
+      leg.foot.y = leg.start.y + (leg.target.y - leg.start.y) * s + 0.7 * Math.sin(Math.PI * ph / SWING) * CA.escala;
     }
     solveLeg(leg, _l.copy(leg.foot).applyMatrix4(inv));
   }

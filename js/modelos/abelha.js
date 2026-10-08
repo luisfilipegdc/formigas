@@ -558,6 +558,8 @@ const state = {
   wander: false, wait: 0, tongueBtn: false, hoverT: 0,
   dust: 0, groomT: 0
 };
+const hChao = (x, z) => (ctx && ctx.alturaChao ? ctx.alturaChao(x, z) : 0);   // altura do chão (moeda, arroz e régua do Tamanho real)
+const chaoEm = (x, z) => (state.ground === 0 ? hChao(x, z) : state.ground);   // na flor: altura da flor
 const GROOM = 3.2;      // segundos se penteando
 const SWING = 0.42, STRIDE = 3.2;
 const fwd = new V3(), vel = new V3(), _w = new V3(), _l = new V3(), inv = new THREE.Matrix4();
@@ -580,7 +582,7 @@ function flowerUnder(x, z) {
 }
 function plantFeet() {
   bee.updateMatrixWorld(true);
-  legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(bee.matrixWorld); l.foot.y = state.ground + 0.05 * CA.escala; });
+  legs.forEach((l) => { l.swing = false; l.foot.copy(l.neutral).applyMatrix4(bee.matrixWorld); l.foot.y = chaoEm(l.foot.x, l.foot.z) + 0.05 * CA.escala; });
 }
 // voa da posição atual até "dest" (com altura); ao chegar pousa e chama onLand
 function flyTo(dest, flowerIdx) {
@@ -613,8 +615,8 @@ function updateBee(dt, t) {
         state.yaw += clamp(diff, -3 * dt, 3 * dt);
       }
       if (F.k >= 1) {                         // pousou
-        state.mode = 'chao'; state.ground = F.E.y; state.fly = 0; state.fl = null;
-        p.y = state.ground; bee.rotation.z = 0;
+        state.mode = 'chao'; state.ground = F.flower >= 0 ? F.E.y : 0; state.fly = 0; state.fl = null;
+        p.y = F.E.y; state.hBase = F.E.y; bee.rotation.z = 0;
         state.flower = F.flower;
         bee.rotation.y = state.yaw;
         plantFeet();
@@ -690,7 +692,8 @@ function updateBee(dt, t) {
   const far = legs.some((l) => _w.copy(l.neutral).applyMatrix4(bee.matrixWorld).setY(0).distanceTo(_l.copy(l.foot).setY(0)) > 0.45 * esc);
   const rate = Math.max(state.speed / (STRIDE * esc), Math.abs(state.yawRate) * 0.9, (anySwing || far) ? 1.6 : 0);
   state.phase = (state.phase + dt * rate) % 1;
-  bee.position.y = state.ground + (state.speed > 0.5 ? 0.04 * esc * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0);
+  state.hBase = (state.hBase || 0) + (chaoEm(bee.position.x, bee.position.z) - (state.hBase || 0)) * Math.min(1, dt * 6);   // sobe e desce de leve na moeda
+  bee.position.y = state.hBase + (state.speed > 0.5 ? 0.04 * esc * Math.abs(Math.sin(state.phase * Math.PI * 2)) : 0);
   bee.updateMatrixWorld(true);
   inv.copy(bee.matrixWorld).invert();
   const swingTime = SWING / Math.max(rate, 0.01);
@@ -700,11 +703,12 @@ function updateBee(dt, t) {
     if (inSwing && !leg.swing) {
       leg.swing = true; leg.start.copy(leg.foot);
       leg.target.copy(leg.neutral).applyMatrix4(bee.matrixWorld).addScaledVector(vel, swingTime + (1 - SWING) / Math.max(rate, 0.01) * 0.5);
-      leg.target.y = state.ground + 0.05 * esc;
+      leg.target.y = chaoEm(leg.target.x, leg.target.z) + 0.05 * esc;
     } else if (!inSwing && leg.swing) { leg.swing = false; leg.foot.copy(leg.target); }
     if (leg.swing) {
-      leg.foot.lerpVectors(leg.start, leg.target, smooth(ph / SWING, 0, 1));
-      leg.foot.y = state.ground + (0.05 + 0.6 * Math.sin(Math.PI * ph / SWING)) * esc;
+      const sk = smooth(ph / SWING, 0, 1);
+      leg.foot.lerpVectors(leg.start, leg.target, sk);
+      leg.foot.y = leg.start.y + (leg.target.y - leg.start.y) * sk + 0.6 * Math.sin(Math.PI * ph / SWING) * esc;
     }
     _l.copy(leg.foot).applyMatrix4(inv);
     const gw = state.groomT > 0 ? smooth(state.groomT, 0, 0.4) * smooth(GROOM - state.groomT, 0, 0.4) : 0;
@@ -778,7 +782,7 @@ function toqueCena(c, ray) {
   }
   const hit = ray.intersectObject(ground)[0];
   if (hit) {
-    const p = hit.point.setY(0);
+    const p = hit.point.setY(0); p.y = hChao(p.x, p.z);              // na moeda: pousa em cima dela
     const dist = Math.hypot(p.x - bee.position.x, p.z - bee.position.z);
     if (state.mode === 'chao' && state.ground === 0 && dist < 30) state.target = p;   // perto: vai andando
     else flyTo(p, -1);                                                                // longe ou numa flor: vai voando
@@ -1371,7 +1375,7 @@ function vestir(name) {
   if (!CA.cesta) { state.pollen = 0; state.dust = 0; }
   centerLocal.copy(m.center);
   radius = m.radius * CA.escala;
-  if (state.mode === 'chao') { bee.position.y = state.ground; plantFeet(); legs.forEach((l) => solveLeg(l, l.neutral)); }
+  if (state.mode === 'chao') { bee.position.y = chaoEm(bee.position.x, bee.position.z); plantFeet(); legs.forEach((l) => solveLeg(l, l.neutral)); }
 }
 function switchCaste(name) {
   return new Promise((res) => {

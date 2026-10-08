@@ -265,6 +265,19 @@ function iniciar3d(id) {
     [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach(([x, y, z]) => pts.push(c.clone().add(new V3(x * rb, y * rb, z * rb))));
     quadro = { pts };
   }
+  // altura do "chão" num ponto (mm): com o Tamanho real ligado, o bicho que anda sobe na moeda, no arroz e na régua
+  const _q = new V3();
+  ctx.alturaChao = (x, z) => {
+    if (!tamanhoOn || !refs || M.cena === 'teia') return 0;
+    const u = refs.userData;
+    refs.worldToLocal(_q.set(x, 0, z));
+    let h = 0;
+    const m = u.moeda.position; if (Math.hypot(_q.x - m.x, _q.z - m.z) < 13.5) h = Math.max(h, 1.95);
+    const a = u.arroz.position, ex = (_q.x - a.x) / 3.5, ez = (_q.z - a.z) / 1.3, e = ex * ex + ez * ez;
+    if (e < 1) h = Math.max(h, 1.1 + 1.1 * Math.sqrt(1 - e));
+    if (u.regua) { const rg = u.regua.position; if (_q.x >= rg.x && _q.x <= rg.x + u.L && Math.abs(_q.z - rg.z) <= 4.5) h = Math.max(h, 0.85); }
+    return h;
+  };
   function tamanho() {
     tamanhoOn = !tamanhoOn;
     if (!refs) refs = montarRefs();
