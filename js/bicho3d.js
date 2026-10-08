@@ -139,6 +139,7 @@ function iniciar3d(id) {
   let raio = 30, centro = new V3(0, 10, 0);
   function home(fator) {
     if (M.home && M.home(ctx, fator)) return;
+    if (quadro) return enquadrarPontos(quadro.pts);                   // tamanho real: bicho + referências
     if (M.centroAtual) centro = M.centroAtual(ctx);
     const vfov = camera.fov * Math.PI / 180, hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
     // o bicho ocupa ~60% da altura útil
@@ -155,45 +156,124 @@ function iniciar3d(id) {
     Object.assign(sol.shadow.camera, { left: -s, right: s, top: s, bottom: -s, near: 1, far: raio * 20 });
     sol.shadow.camera.updateProjectionMatrix();
   }
+  // espaço da tela que não está coberto por cabeçalho, cartão, botões e barra de baixo
+  function areaLivre() {
+    const W = innerWidth, H = innerHeight, caixa = (el) => el && !el.hidden && el.getBoundingClientRect();
+    let top = document.querySelector('.topo3d').getBoundingClientRect().bottom + 8, right = W - 8, bottom = H - 8;
+    const ca = caixa($('cartao')); if (ca && ca.height) top = Math.max(top, ca.bottom + 8);
+    const ac = caixa($('acoes')); if (ac && ac.width) right = Math.min(right, ac.left - 8);
+    ['.base3d', '#modos'].forEach((q) => { const r = caixa(document.querySelector(q)); if (r && r.height) bottom = Math.min(bottom, r.top - 8); });
+    return { left: 8, right, top, bottom: Math.max(bottom, top + 120) };
+  }
+  // encaixa uma caixa 3D no espaço livre da tela, mantendo a direção atual da câmera
+  const _p = new V3();
+  function enquadrarPontos(pts) {
+    const L = areaLivre(), fw = L.right - L.left, fh = L.bottom - L.top, W = innerWidth, H = innerHeight;
+    const c = new THREE.Box3().setFromPoints(pts).getCenter(new V3()), dir = new V3().subVectors(camera.position, controls.target).normalize();
+    const medir = (d) => {
+      camera.position.copy(c).addScaledVector(dir, d); camera.lookAt(c); camera.updateMatrixWorld();
+      const m = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 };
+      pts.forEach((q) => { _p.copy(q).project(camera); const px = (_p.x + 1) / 2 * W, py = (1 - _p.y) / 2 * H; m.x0 = Math.min(m.x0, px); m.x1 = Math.max(m.x1, px); m.y0 = Math.min(m.y0, py); m.y1 = Math.max(m.y1, py); });
+      return m;
+    };
+    let lo = 1, hi = 6000;
+    for (let k = 0; k < 32; k++) { const mid = (lo + hi) / 2, m = medir(mid); if (m.x1 - m.x0 <= fw * 0.92 && m.y1 - m.y0 <= fh * 0.92) hi = mid; else lo = mid; }
+    const m = medir(hi);
+    const wpp = 2 * hi * Math.tan(camera.fov * Math.PI / 360) / H;            // mm por pixel na distância do alvo
+    const dx = (L.left + L.right) / 2 - (m.x0 + m.x1) / 2, dy = (L.top + L.bottom) / 2 - (m.y0 + m.y1) / 2;
+    const desloc = new V3().setFromMatrixColumn(camera.matrixWorld, 0).multiplyScalar(-dx * wpp).add(new V3().setFromMatrixColumn(camera.matrixWorld, 1).multiplyScalar(dy * wpp));
+    controls.target.copy(c).add(desloc);
+    camera.position.copy(c).addScaledVector(dir, hi).add(desloc);
+    controls.maxDistance = Math.max(controls.maxDistance, hi * 1.5); controls.minDistance = Math.min(controls.minDistance, hi * 0.3);
+    if (scene.fog) {                                                         // afasta a neblina para a cena enquadrada não sumir
+      if (!neblina) neblina = { near: scene.fog.near, far: scene.fog.far };
+      scene.fog.near = Math.max(neblina.near, hi * 1.3); scene.fog.far = Math.max(neblina.far, hi * 3.5);
+    }
+    controls.update();
+  }
+  let neblina = null;
+  function restaurarNeblina() { if (neblina && scene.fog) { scene.fog.near = neblina.near; scene.fog.far = neblina.far; } neblina = null; }
   ctx.home = home;
+  ctx.refsTamanho = () => refs;   // para testes
   window.__bicho3d = ctx;    // para testes
   ctx.foco = (c, r) => { centro = c; raio = r; home(); };
   addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 
-  /* ---------- tamanho real: grão de arroz, moeda e régua na mesma escala ---------- */
-  let refs = null, tamanhoOn = false;
+  /* ---------- tamanho real: grão de arroz, moeda e régua na mesma escala ----------
+     Montados num "chão local": x = direita da câmera, z = frente (para a câmera ou para
+     baixo, na teia). Arroz e moeda ficam à direita do bicho e a régua na frente, sempre
+     fora da área dele; depois a câmera enquadra tudo junto. */
+  let refs = null, tamanhoOn = false, quadro = null;
+  const matRegua = new THREE.MeshStandardMaterial({ color: '#f5c451', roughness: 0.6 }), matTraco = new THREE.MeshBasicMaterial({ color: '#493528' });
+  function regua(L) {                                    // régua de L mm, com traços de milímetro
+    const g = new THREE.Group();
+    const base = shadowy(new THREE.Mesh(new THREE.BoxGeometry(L, 0.8, 9), matRegua));
+    base.position.set(L / 2, 0.4, 0); g.add(base);
+    for (let mm = 0; mm <= L; mm++) {
+      const h = mm % 10 === 0 ? 5 : mm % 5 === 0 ? 3.5 : 2;
+      const tk = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.2, h), matTraco); tk.position.set(mm, 0.85, -4.5 + h / 2); g.add(tk);
+    }
+    return g;
+  }
   function montarRefs() {
     const g = new THREE.Group();
     const arroz = shadowy(new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), new THREE.MeshStandardMaterial({ color: '#f4efe2', roughness: 0.55 })));
-    arroz.scale.set(3.5, 1.1, 1.3); arroz.position.set(0, 1.1, 0); g.add(arroz);
+    arroz.scale.set(3.5, 1.1, 1.3); g.add(arroz);
     const moeda = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(13.5, 13.5, 1.95, 48), new THREE.MeshStandardMaterial({ color: '#d8b45a', metalness: 0.85, roughness: 0.3 })));
-    moeda.position.set(0, 0.98, 24); g.add(moeda);
-    const regua = new THREE.Group();
-    const base = shadowy(new THREE.Mesh(new THREE.BoxGeometry(100, 0.8, 9), new THREE.MeshStandardMaterial({ color: '#f5c451', roughness: 0.6 })));
-    base.position.set(50, 0.4, 0); regua.add(base);
-    const mt = new THREE.MeshBasicMaterial({ color: '#493528' });
-    for (let mm = 0; mm <= 100; mm++) {
-      const h = mm % 10 === 0 ? 5 : mm % 5 === 0 ? 3.5 : 2;
-      const tk = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.2, h), mt); tk.position.set(mm, 0.85, -4.5 + h / 2); regua.add(tk);
-    }
-    regua.position.set(-10, 0, 46); g.add(regua);
+    g.add(moeda);
+    g.userData = { arroz, moeda, regua: null, L: 0 };
     g.visible = false;
     scene.add(g);
     return g;
+  }
+  function posicionarRefs() {
+    const u = refs.userData;
+    // tamanho do bicho em volta do centro (na teia, o "raio" da cena é a teia toda: usa o tamanho do catálogo)
+    const r = Math.max(M.cena === 'teia' && A.comp && A.comp.mm ? A.comp.mm * 1.4 : raio, 4);
+    const L = clamp(Math.ceil(r * 2.5 / 10) * 10, 30, 100);         // régua proporcional ao bicho (3 a 10 cm)
+    if (u.L !== L) { if (u.regua) refs.remove(u.regua); u.regua = regua(L); refs.add(u.regua); u.L = L; }
+    const folga = r + 6;
+    if (camera.aspect < 0.9) {                                       // tela em pé: arroz e moeda na frente, régua depois
+      u.arroz.position.set(-9, 1.1, folga);
+      u.moeda.position.set(10, 0.98, folga + 10);
+      u.regua.position.set(-L / 2, 0, folga + 30);
+    } else {                                                         // tela deitada: arroz e moeda ao lado, régua na frente
+      u.arroz.position.set(folga + 3.5, 1.1, 0);
+      u.moeda.position.set(folga + 7 + 3 + 13.5, 0.98, 0);
+      u.regua.position.set(-Math.min(r, L / 2), 0, r + 9);
+    }
+    const c = M.centroAtual ? M.centroAtual(ctx) : centro;
+    if (M.cena === 'teia') {                                         // na teia: tudo em pé, virado para a câmera
+      refs.position.set(c.x, c.y, c.z + 4);
+      refs.rotation.set(Math.PI / 2, 0, 0);
+    } else {                                                         // no chão: alinhado com a direita da câmera
+      const frente = new V3().subVectors(camera.position, controls.target).setY(0);
+      if (frente.lengthSq() < 1e-6) frente.set(0, 0, 1);
+      frente.normalize();
+      const direita = new V3().crossVectors(UP, frente);
+      refs.position.set(c.x, 0, c.z);
+      refs.rotation.set(0, Math.atan2(-direita.z, direita.x), 0);
+    }
+    refs.updateMatrixWorld(true);
+    // enquadra o bicho e as referências juntos
+    // pontos que precisam caber na tela: cantos das referências (no chão local, girado) + o bicho em volta do centro
+    const local = new THREE.Box3();
+    refs.children.forEach((o) => { o.updateMatrix(); if (o.geometry) { o.geometry.computeBoundingBox(); local.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrix)); } else local.union(new THREE.Box3().setFromObject(o).applyMatrix4(new THREE.Matrix4().copy(refs.matrixWorld).invert())); });
+    const pts = [];
+    for (const x of [local.min.x, local.max.x]) for (const y of [local.min.y, local.max.y]) for (const z of [local.min.z, local.max.z]) pts.push(new V3(x, y, z).applyMatrix4(refs.matrixWorld));
+    const rb = r * 0.75;
+    [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach(([x, y, z]) => pts.push(c.clone().add(new V3(x * rb, y * rb, z * rb))));
+    quadro = { pts };
   }
   function tamanho() {
     tamanhoOn = !tamanhoOn;
     if (!refs) refs = montarRefs();
     refs.visible = tamanhoOn;
-    if (tamanhoOn) {
-      if (M.cena === 'teia') { refs.position.set(centro.x + raio * 0.75, centro.y - raio * 0.15, 3); refs.rotation.set(Math.PI / 2, 0, 0); }
-      else { refs.position.set(centro.x + raio * 0.55, 0, centro.z - raio * 0.6); refs.rotation.set(0, 0.735, 0); }
-      etiqueta('tam', true);
-      home(1.25);
-    } else { etiqueta('tam', false); home(); }
     $('cartao').hidden = !tamanhoOn;
     $('cartao').classList.toggle('topo', tamanhoOn);
-    if (tamanhoOn) cartao('📏 Tamanho real', 'Grão de arroz, moeda de R$ 1 e régua em centímetros, na mesma escala ' + (A.art === 'o' ? 'do ' : 'da ') + (A.curto || A.nome) + ' (' + (A.comp ? A.comp.tam : '') + ').');
+    if (tamanhoOn) cartao('📏 Tamanho real', 'Grão de arroz, moeda de R$ 1 e régua em centímetros, na mesma escala ' + (A.art === 'o' ? 'do ' : 'da ') + (A.curto || A.nome) + '.' + (A.comp && A.comp.tam ? ' Tamanho: ' + A.comp.tam + '.' : ''));
+    if (tamanhoOn) { posicionarRefs(); etiqueta('tam', true); controls.autoRotate = false; home(); }   // depois do cartão: enquadra no espaço que sobrou
+    else { quadro = null; restaurarNeblina(); etiqueta('tam', false); home(); }
   }
 
   /* ---------- partes ---------- */
