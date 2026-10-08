@@ -324,6 +324,27 @@
   }
 
   Modelos3D.cigarra = {
+    // 🔬 Cientista (anos finais): termo científico e texto técnico, por nome da parte e por passo do canto. Em revisão científica.
+    cientista: {
+      'Tímbalos': { termo: 'tímbalos', texto: 'Membranas rígidas e curvas, com nervuras, nas laterais do primeiro segmento do abdômen do macho. Quando se deformam, cada nervura estala e produz um pulso de som.' },
+      'Músculo do tímbalo': { termo: 'músculo timbálico', texto: 'Contrai-se centenas de vezes por segundo, puxando o tímbalo para dentro. Quando relaxa, o tímbalo, que é elástico, volta sozinho.' },
+      'Barriga oca': { termo: 'saco aéreo (câmara de ressonância)', texto: 'Grande parte do abdômen do macho é um saco de ar ligado ao sistema traqueal. Ele ressoa na frequência do canto e amplifica o som.' },
+      'Músculos das asas': { termo: 'músculos do voo', texto: 'Músculos no tórax que movem os dois pares de asas.' },
+      'Tubo da seiva': { termo: 'bomba cibarial', texto: 'A cigarra se alimenta de xilema, uma seiva pobre em nutrientes. Uma bomba muscular na cabeça (o cibário) suga a seiva pelo rostro até o intestino.' },
+      'Olhos compostos': { termo: 'omatídeos', texto: 'Dois olhos compostos, formados por muitas unidades chamadas omatídeos; cada uma capta um pedacinho da imagem.' },
+      'Ocelos': { termo: 'ocelos', texto: 'Três olhos simples que detectam variações de luz.' },
+      'Antenas': { termo: 'antenas setiformes', texto: 'Antenas curtas, em forma de cerda, típicas das cigarras.' },
+      'Bico (rostro)': { termo: 'aparelho bucal picador-sugador', texto: 'O rostro guarda estiletes finos que perfuram o caule até o xilema. É o aparelho bucal típico dos hemípteros, grupo dos percevejos e pulgões.' },
+      'Tórax': { termo: 'pro, meso e metatórax', texto: 'Três segmentos. Cada um tem um par de pernas; os dois últimos também têm um par de asas.' },
+      'Asas': { termo: 'asas membranosas', texto: 'Dois pares de asas membranosas com nervuras. Em repouso, ficam inclinadas sobre o corpo, como um telhado.' },
+      'Patas': { termo: 'pernas fossoriais', texto: 'Seis pernas articuladas. As da frente são mais grossas: na ninfa, servem para cavar o solo.' },
+      passos: [
+        'O tímbalo é uma membrana rígida com nervuras, no 1º segmento do abdômen. Toque nele!',
+        'Clique! O músculo timbálico se contrai, a membrana se deforma e as nervuras estalam uma a uma. Toque rápido, várias vezes!',
+        'Repetidos centenas de vezes por segundo, os cliques viram um som contínuo. O saco aéreo ressoa e amplifica o canto, que em algumas espécies passa de 90 decibéis.',
+        'Só os machos têm tímbalos funcionais: o canto atrai fêmeas da mesma espécie, e cada espécie tem um canto próprio. Missão: no verão, grave o canto de duas cigarras e compare.'
+      ]
+    },
     cena: 'chao',
     formas: [{ id: 'adulta', nome: 'Adulta' }, { id: 'ninfa', nome: 'Ninfa' }, { id: 'casca', nome: 'Casca' }],
     acoes: [

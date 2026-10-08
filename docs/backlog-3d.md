@@ -16,13 +16,15 @@
 1. Espécie e casta (ou forma) definidas.
 2. Fontes da anatomia e do processo: artigo, livro didático ou especialista.
 3. Tipo de representação: didática ou fiel.
-4. Roteiro em passos em que a criança **provoca** cada etapa, nas versões 🧸 Pequeno e 🧒 Explorador.
+4. Roteiro em passos em que a criança **provoca** cada etapa, nas versões 🧸 Pequeno, 🧒 Explorador e 🔬 Cientista.
 5. Revisão do roteiro antes de publicar. Até lá, o processo aparece como "em revisão científica".
 
 ## 3. Já existe
-- **Motor reutilizável** (`js/bicho3d.js` + `bicho3d.html`): modos 🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona?, seletor Pequeno / Explorador e passos guiados. Formato dos campos `dentro` e `processo` no topo de `js/bicho3d.js`.
+- **Motor reutilizável** (`js/bicho3d.js` + `bicho3d.html`): modos 🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona?, seletor Pequeno / Explorador / Cientista e passos guiados. Formato dos campos `dentro` e `processo` no topo de `js/bicho3d.js`.
 - **Cigarra:** "Por dentro" (corpo transparente com tímbalos, músculos, saco de ar, músculos das asas e tubo da seiva) e "Como nasce o canto". Protótipo, **didático**, marcado como "em revisão científica".
 - **Formiga e abelha:** ✅ migradas para o motor reutilizável (outubro de 2026), com a colmeia aberta e o formigueiro em corte como abas de passeio. Os endereços antigos redirecionam.
+
+- **🔬 Nível Cientista (outubro de 2026):** terceiro nível do seletor, para os anos finais (11+). Formiga, abelha, cigarra e aranha têm termo científico e texto técnico em todas as partes, nos passeios do formigueiro e da colmeia e nos passos de "Como nasce o mel" e "Como nasce o canto". O cartão de Partes mostra a classificação (filo › classe › ordem › família › espécie). **Textos em revisão científica.** Falta: fichas (`ficha.js`) e home ainda não têm versão Cientista.
 
 ## 4. Pré-requisitos (PROPOSTA)
 

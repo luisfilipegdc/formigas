@@ -1543,6 +1543,39 @@ const processoMel = {
    11) REGISTRO NO MOTOR
    ===================================================================== */
 Modelos3D.abelha = {
+  // 🔬 Cientista (anos finais): termo científico e texto técnico, por nome da parte e por passo do mel. Em revisão científica.
+  cientista: {
+    'Olhos': { termo: 'olhos compostos e ocelos', texto: 'Cada olho composto tem milhares de omatídeos. A abelha enxerga o ultravioleta, mas não distingue bem o vermelho. Os 3 ocelos, no alto da cabeça, medem a intensidade da luz.' },
+    'Olhos enormes': { termo: 'olhos compostos', texto: 'Os olhos do zangão têm mais omatídeos que os da operária e se encostam no alto da cabeça. Isso ajuda o macho a localizar a rainha em pleno voo.' },
+    'Antenas': { termo: 'sensilas', texto: 'Antenas com milhares de sensilas, que detectam cheiros, feromônios, vibrações e umidade. Com elas a abelha reconhece as flores e o cheiro da própria colônia.' },
+    'Língua': { termo: 'probóscide (glossa)', texto: 'Aparelho bucal lambedor-sugador. A glossa, uma língua peluda, se estende para lamber o néctar e levá-lo à boca.' },
+    'Asas': { termo: 'hâmulos', texto: 'Dois pares de asas membranosas, unidos por ganchinhos (hâmulos) que fazem cada lado bater como uma asa só. Os músculos do tórax as movem cerca de 230 vezes por segundo.' },
+    'Pelos': { termo: 'cerdas plumosas', texto: 'Os pelos são ramificados, como plumas, e o corpo fica com carga elétrica durante o voo: o pólen gruda. Por isso a abelha é uma polinizadora tão eficiente.' },
+    'Cesta de pólen': { termo: 'corbícula', texto: 'Na tíbia da perna de trás há uma área côncava cercada de pelos, a corbícula. A abelha penteia o pólen do corpo, umedece com néctar e prensa numa bolinha.' },
+    'Ferrão': { termo: 'ovipositor modificado', texto: 'O ferrão é um ovipositor modificado; por isso só as fêmeas têm. O da operária tem farpas e fica preso na pele de mamíferos. O da rainha é liso.' },
+    'Sem ferrão': { termo: 'macho haploide', texto: 'O zangão vem de um ovo não fertilizado (haplodiploidia) e não tem ovipositor, logo não tem ferrão.' },
+    'Favo': { termo: 'alvéolos hexagonais', texto: 'Os alvéolos são prismas de seis lados feitos de cera, produzida por glândulas no abdômen das operárias jovens. O hexágono cobre o plano sem deixar vãos e guarda muito com pouca cera.' },
+    'Mel': { termo: 'opérculo', texto: 'Mel é néctar concentrado: enzimas das abelhas quebram a sacarose em glicose e frutose, e a água evapora até ficar perto de 18%. Então o alvéolo é selado com uma tampa de cera, o opérculo.' },
+    'Pólen': { termo: 'pão de abelha', texto: 'O pólen é a fonte de proteína da colônia. Guardado nos alvéolos, fermenta levemente e vira o "pão de abelha", que alimenta larvas e operárias jovens.' },
+    'Ovos': { termo: 'haplodiploidia', texto: 'A rainha põe um ovo em cada alvéolo. Ovo fertilizado vira fêmea (operária ou rainha); ovo não fertilizado vira zangão.' },
+    'Larvas': { termo: 'geleia real', texto: 'Nos primeiros dias, todas as larvas recebem geleia real das abelhas nutrizes. Depois, as futuras operárias passam a receber uma mistura com pólen e mel.' },
+    'Pupas': { termo: 'metamorfose completa', texto: 'O alvéolo é operculado e a larva tece um casulo. Da postura ao nascimento são cerca de 21 dias na operária, 16 na rainha e 24 no zangão.' },
+    'Rainha': { termo: 'feromônio da rainha', texto: 'A única fêmea fértil. Na primavera pode pôr mais de mil ovos por dia. Os feromônios que ela libera mantêm a colônia coesa e inibem a criação de novas rainhas.' },
+    'Realeira': { termo: 'realeira', texto: 'Alvéolo grande e vertical onde se cria uma rainha. A larva é alimentada só com geleia real durante todo o desenvolvimento e vira uma fêmea fértil.' },
+    'Dança': { termo: 'dança do requebrado', texto: 'O ângulo da corrida em relação à vertical indica a direção da flor em relação ao Sol, e a duração do requebrado indica a distância. Foi decifrada por Karl von Frisch (Nobel de 1973).' },
+    'Entrada': { termo: 'guardas e ventiladoras', texto: 'As guardas checam com as antenas o cheiro de quem chega: cada colônia tem um odor próprio. Perto dali, operárias abanam as asas para controlar temperatura e umidade.' },
+    'Própolis': { termo: 'própolis', texto: 'Resina de plantas misturada com cera e secreções das abelhas. Tem ação antimicrobiana e veda frestas, ajudando a manter a colmeia limpa e protegida.' },
+    'Zangões': { termo: 'machos haploides', texto: 'Vêm de ovos não fertilizados. Não coletam alimento: sua função é acasalar com rainhas no voo nupcial. No fim da estação, podem ser expulsos da colmeia.' },
+    passos: [
+      'A campeira pousa na flor e estende a probóscide para lamber o néctar, uma solução de açúcares (principalmente sacarose) e água. Toque numa flor!',
+      'O néctar vai para a vesícula melífera (papo de mel), uma dilatação do esôfago antes do intestino. Ali a enzima invertase já começa a agir.',
+      'Papo cheio: ela pode carregar quase metade do próprio peso em néctar. Agora volta para a colmeia. Toque em "Próximo".',
+      'Trofalaxia: a campeira regurgita o néctar para uma operária de colmeia. Passando de boca em boca, ele recebe mais invertase, que quebra a sacarose em glicose e frutose.',
+      'O néctar ainda tem muita água. As operárias espalham o néctar nos alvéolos e abanam as asas para circular o ar e evaporar a água. Toque perto do alvéolo que brilha!',
+      'Com cerca de 18% de água, o mel fica concentrado demais para fungos e bactérias crescerem. Toque no alvéolo para as abelhas o selarem com cera (opérculo).',
+      'Mel armazenado: reserva de energia (carboidratos) para quando faltam flores. Uma operária produz só uma fração de colher de chá de mel na vida inteira.'
+    ]
+  },
   cena: 'chao',
   cenario: 'proprio',
   formas: [

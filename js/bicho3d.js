@@ -293,7 +293,17 @@ function iniciar3d(id) {
   let partesOn = false, modo = 'fora', passeioI = -1;
   let idade = 'pequeno'; try { idade = localStorage.getItem('bnb-idade') || 'pequeno'; } catch (e) {}
   ctx.idade = () => idade;
-  const txt = (o) => (idade === 'pequeno' && o.pequeno) || o.texto;
+  // 🔬 Cientista (anos finais, 11+): termo científico e texto mais técnico. Vem de p.cientista ou de
+  // M.cientista[nome] (objeto { termo, texto } ou função (ctx) → objeto); passos em M.cientista.passos[i].
+  const CI = M.cientista || {};
+  const ci = (o, i) => {
+    if (idade !== 'cientista') return null;
+    let c = o.cientista || (i != null && CI.passos && CI.passos[i]) || (o.nome && CI[o.nome]);
+    if (typeof c === 'function') c = c(ctx);
+    return typeof c === 'string' ? { texto: c } : c || null;
+  };
+  const txt = (o, i) => { const c = ci(o, i); return (c && c.texto) || (idade === 'pequeno' && o.pequeno) || o.texto; };
+  const titulo = (o) => { const c = ci(o); return o.nome + (c && c.termo ? ' · ' + c.termo : ''); };
   const labels = $('etiquetas');
   function partes() {
     partesOn = !partesOn;
@@ -307,7 +317,7 @@ function iniciar3d(id) {
       b.className = 'etq'; b.type = 'button'; b.textContent = (idade === 'pequeno' && p.emoji ? p.emoji + ' ' : (p.emoji && passeio ? p.emoji + ' ' : (i + 1) + ' ')) + (idade === 'pequeno' && p.curto ? p.curto : p.nome);
       b.addEventListener('click', () => {
         labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b));
-        passeioI = i; cartao((p.emoji && passeio ? p.emoji + ' ' : '') + p.nome, txt(p));
+        passeioI = i; cartao((p.emoji && passeio ? p.emoji + ' ' : '') + titulo(p), txt(p));
         if (p.ir) p.ir(ctx);
       });
       b._p = p; labels.appendChild(b);
@@ -315,7 +325,7 @@ function iniciar3d(id) {
     $('cartao-prox').hidden = !(partesOn && passeio);
     $('cartao').hidden = !partesOn;
     $('cartao').classList.remove('topo');
-    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', 'Toque numa etiqueta para saber para que serve cada parte.'); }
+    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', idade === 'cientista' && A && A.comp && A.comp.tax ? 'Classificação: ' + A.comp.tax.join(' › ') + (A.cientifico ? ' › ' + A.cientifico : '') + '. Toque numa etiqueta para ver o nome científico e a função de cada parte.' : 'Toque numa etiqueta para saber para que serve cada parte.'); }
   }
   const _v = new V3();
   function moverEtiquetas() {
@@ -373,7 +383,7 @@ function iniciar3d(id) {
     modo = m;
     $('modos').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
     if (M.dentro) M.dentro.ligar(ctx, m !== 'fora');
-    if (m === 'dentro') { controls.autoRotate = false; partes(); cartao('🫀 Por dentro', idade === 'pequeno' ? 'Olha o que tem dentro da ' + (A.curto || 'bicho') + '! Toque nos nomes.' : 'O corpo fica transparente para ver o que tem lá dentro. Toque nas etiquetas.'); Progresso.marcar(A.id, 'dentro'); }
+    if (m === 'dentro') { controls.autoRotate = false; partes(); cartao('🫀 Por dentro', idade === 'pequeno' ? 'Olha o que tem dentro da ' + (A.curto || 'bicho') + '! Toque nos nomes.' : idade === 'cientista' ? 'O exoesqueleto fica transparente para ver órgãos e músculos. Toque nas etiquetas para ver o nome científico e a função.' : 'O corpo fica transparente para ver o que tem lá dentro. Toque nas etiquetas.'); Progresso.marcar(A.id, 'dentro'); }
     if (m === 'funciona') iniciarProcesso();
     if (m === 'fora') home();
   }
@@ -388,7 +398,7 @@ function iniciar3d(id) {
     const P = M.processo.passos, p = P[proc.i];
     $('passos').hidden = false;
     $('passo-t').textContent = M.processo.titulo;
-    $('passo-p').textContent = txt(p);
+    $('passo-p').textContent = txt(p, proc.i);
     $('passo-dots').innerHTML = P.map((_, k) => '<i class="' + (k <= proc.i ? 'on' : '') + '"></i>').join('');
     $('passo-rev').hidden = M.processo.revisado !== false;
     const fim = proc.i === P.length - 1;
@@ -409,13 +419,20 @@ function iniciar3d(id) {
     if (!M.dentro) $('modos').querySelector('[data-m="dentro"]').remove();
   }
   const bIdade = $('idade');
-  const pintaIdade = () => { bIdade.textContent = idade === 'pequeno' ? '🧸 Pequeno' : '🧒 Explorador'; bIdade.setAttribute('aria-label', 'Modo ' + (idade === 'pequeno' ? 'Pequeno (até 6 anos)' : 'Explorador (7 anos ou mais)') + '. Toque para trocar.'); };
+  const IDADES = {
+    pequeno: ['🧸 Pequeno', 'Pequeno (até 6 anos)', 'Modo Pequeno: frases curtas, uma coisa de cada vez.'],
+    explorador: ['🧒 Explorador', 'Explorador (7 a 10 anos)', 'Modo Explorador: nomes e mais informações.'],
+    cientista: ['🔬 Cientista', 'Cientista (11 anos ou mais)', 'Modo Cientista: nomes científicos e como cada parte funciona. Textos em revisão científica.']
+  };
+  const ORDEM = ['pequeno', 'explorador', 'cientista'];
+  if (!IDADES[idade]) idade = 'pequeno';
+  const pintaIdade = () => { bIdade.textContent = IDADES[idade][0]; bIdade.setAttribute('aria-label', 'Modo ' + IDADES[idade][1] + '. Toque para trocar.'); document.body.classList.toggle('cientista', idade === 'cientista'); };
   pintaIdade();
   bIdade.addEventListener('click', () => {
-    idade = idade === 'pequeno' ? 'explorador' : 'pequeno';
+    idade = ORDEM[(ORDEM.indexOf(idade) + 1) % ORDEM.length];
     try { localStorage.setItem('bnb-idade', idade); } catch (e) {}
     pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno');
-    avisoRapido(idade === 'pequeno' ? 'Modo Pequeno: frases curtas, uma coisa de cada vez.' : 'Modo Explorador: nomes e mais informações.');
+    avisoRapido(IDADES[idade][2]);
     if (proc.ativo) mostrarPasso();
     if (partesOn) { partes(); partes(); }
   });

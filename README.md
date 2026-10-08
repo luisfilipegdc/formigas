@@ -42,7 +42,7 @@ O projeto está sendo ampliado para uma **enciclopédia interativa da natureza**
 Em qualquer bicho 3D (`bicho3d.html?id=…`):
 - **Abas no topo:** trocam a forma (operária, rainha, zangão…) ou abrem a casa (🏠 formigueiro, 🍯 colmeia), com etiquetas e o botão "Próxima ⏭" para o passeio.
 - **Botões do lado:** ações do bicho (voar, passear, folha, língua, cantar…), 🔎 Partes, 📏 Tamanho real, 🔄 Câmera e 👁 Só o bicho.
-- **🧸 Pequeno / 🧒 Explorador:** frases curtas ou mais informações.
+- **🧸 Pequeno / 🧒 Explorador / 🔬 Cientista:** frases curtas (até 6 anos), mais informações (7 a 10) ou nome científico e função de cada parte (anos finais, 11+). O Cientista mostra a classificação do bicho e textos próprios nas partes, no passeio e nos passos do "Como funciona?". No modelo, os textos ficam em `cientista: { 'Nome da parte': { termo, texto }, passos: [...] }`. Conteúdo **em revisão científica**.
 - **Girar:** arraste com um dedo. **Zoom:** pinça com dois dedos. **Mover a câmera:** arraste com dois dedos.
 
 Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR ficam em `vendor/` e as fotos em `img/animais/`. Fora do site só ficam a fonte (se não carregar, aparece a fonte do aparelho) e os dados extras da aba 📷 Real.
@@ -88,7 +88,7 @@ No `index.html`, procure o bloco `AJUSTES`: lá estão as cores (`COR`), a veloc
 Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra embaixo) e o 3D fica mais leve (menos pelos e sombras menores).
 
 ## Padrão da tela 3D (vale para todo bicho)
-- **Cabeçalho:** linha 1 = ← voltar · nome (encolhe com "…" se for longo) · 🧸 Pequeno/🧒 Explorador; linha 2 = abas. No iPad deitado, tudo numa linha.
+- **Cabeçalho:** linha 1 = ← voltar · nome (encolhe com "…" se for longo) · 🧸 Pequeno/🧒 Explorador/🔬 Cientista; linha 2 = abas. No iPad deitado, tudo numa linha.
 - **Abas:** primeiro as formas do bicho (operária, rainha, adulta, ninfa…), por último a casa ou o lugar (🏠 formigueiro, 🍯 colmeia). Se não couberem, rolam para o lado.
 - **Coluna da direita, sempre nesta ordem:** até 3 ações do próprio bicho (voar, cantar, folha…) → 🔎 Partes → 📏 Tamanho → 🔄 Câmera → 👁 Só o bicho. Ações que não valem para uma forma somem (`ocultar` na forma).
 - **Embaixo:** barra 🐾 Por fora · 🫀 Por dentro · ▶️ Como funciona? (só com o que existe), cartão de texto à esquerda e "No meu bolso" + ℹ️ Ficha.

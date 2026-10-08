@@ -1859,6 +1859,33 @@ function partesFormigueiro() {
    11) REGISTRO NO MOTOR
    ===================================================================== */
 Modelos3D.formiga = {
+  // 🔬 Cientista (anos finais): termo científico e texto técnico, por nome da parte. Em revisão científica.
+  cientista: {
+    'Antenas': { termo: 'antenas geniculadas', texto: 'Antenas em forma de cotovelo, com um primeiro segmento longo, o escapo. São cobertas de sensilas, que captam moléculas de cheiro: os feromônios que marcam a trilha e identificam as companheiras da colônia.' },
+    'Mandíbulas': () => CA.folha
+      ? { termo: 'mandíbulas', texto: 'Peças bucais fortes, movidas por grandes músculos dentro da cabeça. A operária recorta a folha girando o corpo enquanto abre e fecha as mandíbulas. O pedaço não é comido: vai alimentar o fungo cultivado no ninho.' }
+      : CASTES.zangao === CA
+        ? { termo: 'mandíbulas reduzidas', texto: 'Os machos (bitus) têm mandíbulas pequenas: não cortam folhas nem trabalham no ninho. Vivem só até o voo nupcial.' }
+        : { termo: 'mandíbulas', texto: 'Depois do voo nupcial, a rainha (içá) usa as mandíbulas para escavar sozinha a primeira câmara da nova colônia.' },
+    'Olhos': () => CA.ocelos
+      ? { termo: 'olhos compostos e ocelos', texto: 'Olhos compostos grandes e três ocelos (olhos simples) no alto da cabeça, que medem a luz e ajudam a manter o rumo durante o voo.' }
+      : { termo: 'olhos compostos', texto: 'Olhos compostos pequenos, com poucos omatídeos. No escuro do ninho, a comunicação é química: feromônios e toques de antena.' },
+    'Pernas': { termo: 'pernas articuladas', texto: 'Três pares presos ao tórax, cada perna com coxa, trocânter, fêmur, tíbia e tarso. A formiga anda em trípode alternado: três pernas no chão enquanto as outras três avançam.' },
+    'Gáster': { termo: 'gáster (abdômen)', texto: 'O abdômen das formigas é separado do tórax por uma cintura fina; nas saúvas ela tem dois segmentos (pecíolo e pós-pecíolo). No gáster ficam o papo (inglúvio), parte do sistema digestório e glândulas que produzem feromônios, inclusive o de trilha.' },
+    'Asas': { termo: 'asas membranosas', texto: 'Dois pares de asas membranosas presas ao tórax. Rainhas (içás) e machos (bitus) saem juntos na revoada. Depois do acasalamento, a rainha perde as asas e funda sozinha uma nova colônia.' },
+    'O formigueiro': { texto: 'Ninho subterrâneo de saúva: pode ter centenas de câmaras e vários metros de profundidade. A colônia funciona como um superorganismo, com divisão de trabalho entre castas.' },
+    'Murundu': { texto: 'Terra retirada das escavações e depositada na superfície. Em colônias adultas, pode cobrir dezenas de metros quadrados.' },
+    'Olheiros': { texto: 'Aberturas do ninho na superfície. Além de entrada e saída, ajudam na ventilação: o ar circula pelos túneis e leva embora o gás carbônico produzido pelo fungo e pelas formigas.' },
+    'Trilha': { termo: 'feromônio de trilha', texto: 'As operárias marcam o caminho com feromônio. As outras seguem o cheiro com as antenas, e a trilha fica mais forte quanto mais formigas passam: é uma retroalimentação positiva.' },
+    'Túneis': { termo: 'galerias', texto: 'Galerias que ligam as câmaras e trazem o ar de fora para dentro do ninho.' },
+    'Jardim de fungo': { termo: 'mutualismo', texto: 'As saúvas cultivam um fungo (Leucoagaricus gongylophorus) sobre folhas picadas. O fungo digere a celulose, que a formiga não consegue digerir, e produz estruturas nutritivas, os gongilídios, que alimentam larvas e adultas. Os dois dependem um do outro.' },
+    'Berçário': { termo: 'holometabolia', texto: 'As formigas têm metamorfose completa: ovo → larva → pupa → adulto. As larvas ficam no meio do jardim de fungo e são alimentadas pelas operárias.' },
+    'Ovos': { termo: 'haplodiploidia', texto: 'Ovos fertilizados viram fêmeas (operárias ou rainhas); ovos não fertilizados viram machos. Esse sistema de determinação do sexo se chama haplodiploidia.' },
+    'Larvas': { termo: 'larva ápoda', texto: 'Larvas sem pernas, que comem os gongilídios do fungo e crescem trocando de pele (muda) algumas vezes.' },
+    'Pupas': { termo: 'pupa', texto: 'Na pupa, o corpo da larva é reorganizado em corpo de adulto. Nas saúvas, a pupa fica exposta, sem casulo.' },
+    'Rainha': { termo: 'espermateca', texto: 'A única fêmea fértil da colônia. Ela guarda o esperma do voo nupcial numa bolsa, a espermateca, e o usa a vida inteira, que pode passar de 10 anos, pondo milhões de ovos.' },
+    'Lixo': { termo: 'higiene social', texto: 'As operárias levam restos de fungo e formigas mortas para câmaras de lixo afastadas. Isso diminui o risco de doenças e de fungos parasitas no jardim.' }
+  },
   cena: 'chao',
   cenario: 'proprio',
   formas: [

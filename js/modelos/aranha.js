@@ -195,6 +195,16 @@
   }
 
   Modelos3D.aranha = {
+    // 🔬 Cientista (anos finais): termo científico e texto técnico, por nome da parte. Em revisão científica.
+    cientista: {
+      'Olhos': { termo: 'ocelos', texto: 'Oito olhos simples. Nas aranhas que fazem teia, a visão é fraca: elas percebem a presa pelas vibrações dos fios.' },
+      'Quelíceras': { termo: 'quelíceras', texto: 'Apêndices da boca com uma garra na ponta, ligada a uma glândula de veneno. O veneno paralisa a presa, e enzimas começam a digeri-la fora do corpo (digestão extracorpórea).' },
+      'Pedipalpos': { termo: 'pedipalpos', texto: 'Segundo par de apêndices. Ajudam a manipular a presa; nos machos, a ponta serve para transferir o esperma.' },
+      'Cefalotórax': { termo: 'prossoma', texto: 'Cabeça e tórax fundidos. Nele ficam os olhos, as quelíceras, os pedipalpos e os quatro pares de pernas; dentro, o cérebro e o estômago sugador.' },
+      'Abdômen': { termo: 'opistossoma', texto: 'Parte de trás, ligada ao cefalotórax por uma cintura fina (pedicelo). Guarda o coração, os pulmões foliáceos, os ovários e as glândulas de seda.' },
+      'Fiandeiras': { termo: 'fiandeiras', texto: 'Apêndices que liberam a seda das glândulas. A seda sai líquida e endurece ao ser esticada; cada tipo de glândula produz um fio diferente (estrutura, captura, casulo).' },
+      'Patas': { termo: 'aracnídeo', texto: 'Oito pernas articuladas, com sete segmentos cada. Aranhas não são insetos: são aracnídeos, com 4 pares de pernas e sem antenas.' }
+    },
     cena: 'teia',
     formas: [{ id: 'femea', nome: 'Fêmea' }, { id: 'macho', nome: 'Macho' }],
     acoes: [
