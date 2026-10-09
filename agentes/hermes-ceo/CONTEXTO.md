@@ -16,7 +16,7 @@
 | Banco próprio | Dados abertos (iNaturalist, depois GBIF, ICMBio, xeno-canto) importados para Postgres próprio; só fotos CC0, CC BY e CC BY-SA; IUCN não vai para o produto pago |
 | Gamificação | XP, níveis, álbum de figurinhas, coleções, missões; sem ranking individual até 11 anos; nada se perde |
 | Escolas | Kits por bicho: plano de aula BNCC + atividades para imprimir (ex.: quebra-cabeça A3 da formiga) + sequência de 6 aulas |
-| Domínio | **estudodebolso.com.br** (decidido em 09/10/2026; DNS na Cloudflare apontando para a VPS) |
+| Domínio | **estudodebolso.com.br** (no ar em 09/10/2026: site servido pela VPS, Cloudflare na frente; push no repo publica em até 5 min) |
 | Banco | Postgres 17 próprio na VPS, instalado em 09/10/2026 |
 | Visual | Guia de campo profissional: verde floresta #164A3A, areia #F5EFE3, âmbar #E3A21A; Fraunces + Inter; ícones de linha |
 
