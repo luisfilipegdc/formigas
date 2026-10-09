@@ -1,8 +1,54 @@
 {
   "redirects": [
-    { "source": "/docs", "destination": "/", "permanent": false },
-    { "source": "/docs/:path*", "destination": "/", "permanent": false },
-    { "source": "/design", "destination": "/", "permanent": false },
-    { "source": "/design/:path*", "destination": "/", "permanent": false }
+    {
+      "source": "/docs",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/docs/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/design",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/design/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/banco",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/banco/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/infra",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/infra/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/agentes",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/agentes/:path*",
+      "destination": "/",
+      "permanent": false
+    }
   ]
 }

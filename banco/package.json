@@ -1,0 +1,17 @@
+{
+  "name": "bio-dados",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Importador do banco de dados próprio do Bio no Bolso",
+  "type": "module",
+  "scripts": {
+    "importar": "node importar.mjs",
+    "seed": "node gerar-seed.mjs"
+  },
+  "dependencies": {
+    "h3-js": "^4.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}
