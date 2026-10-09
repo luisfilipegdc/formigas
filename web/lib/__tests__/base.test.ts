@@ -55,6 +55,9 @@ describe("código da família", () => {
   it("formato BICHO-NNN e normalização", () => {
     expect(gerarCodigoFamilia()).toMatch(/^[A-Z]+-\d{3}$/);
     expect(normalizarCodigo(" onca_421 ")).toBe("ONCA-421");
+    expect(normalizarCodigo("cigarra 389")).toBe("CIGARRA-389");
+    expect(normalizarCodigo("CIGARRA389")).toBe("CIGARRA-389");
+    expect(normalizarCodigo("Onça-421")).toBe("ONCA-421");
   });
 });
 

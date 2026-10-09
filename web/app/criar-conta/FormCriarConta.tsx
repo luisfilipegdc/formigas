@@ -41,7 +41,7 @@ export default function FormCriarConta() {
           <Campo nome="email" rotulo="E-mail" tipo="email" padrao={estado?.campos?.email} autoComplete="email" inputMode="email" />
           <Campo nome="senha" rotulo="Senha" tipo="password" autoComplete="new-password" dica="Pelo menos 10 caracteres." />
           <label className="flex gap-3 items-start text-sm">
-            <input type="checkbox" name="aceite" className="mt-1 h-5 w-5" required />
+            <input type="checkbox" name="aceite" className="mt-1 h-5 w-5" required defaultChecked={estado?.campos?.aceite === "1"} />
             <span>
               Li e aceito os <Link href="/termos" target="_blank" className="underline">termos de uso</Link> e a{" "}
               <Link href="/privacidade" target="_blank" className="underline">política de privacidade</Link>.

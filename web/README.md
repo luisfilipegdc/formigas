@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# App do Bio no Bolso (Next.js)
 
-## Getting Started
+Fase 1 do plano: contas por idade, identidade visual e LGPD. No ar em https://app.estudodebolso.com.br (fora do Google até o lançamento). O site estático da raiz continua em https://estudodebolso.com.br.
 
-First, run the development server:
+## O que já tem
+- Adulto cria a conta da família com e-mail e senha (ano de nascimento primeiro; menor de 18 é orientado a pedir ao adulto).
+- O adulto adiciona crianças e adolescentes: apelido, avatar e PIN, sem e-mail nem data. O modo da tela (Pequeno, Explorador, Cientista) sai do ano.
+- Criança entra com código da família (ex.: CIGARRA-389) + apelido + PIN.
+- Aceites com versão e hash do IP; exportar os dados da família (JSON); apagar tudo.
+- Sessão em banco (cookie com token; banco guarda só o sha256), limite de tentativas, log de auditoria.
+- Privacidade e termos em rascunho, aguardando revisão jurídica.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Rodar local
+1. Túnel para o Postgres da VPS: `ssh -N -L 15432:localhost:5432 root@<IP>`
+2. `web/.env.local` com `DATABASE_URL=postgresql://bio_app:SENHA@127.0.0.1:15432/bionobolso_dev` (banco de desenvolvimento; a senha está no `.env` da VPS).
+3. `npm install` e `npm run dev`. Testes: `npm test`. Tipos: `npm run typecheck`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Banco
+Migrações em `db/migrations/`, aplicadas como `bio_admin` (`bio-psql < arquivo.sql` na VPS), nos bancos `bionobolso` (produção) e `bionobolso_dev`. Tabelas com dados pessoais não dão acesso a `bio_leitura` nem a `bio_agente`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Publicar
+Na VPS, como root: `app-bionobolso-publicar` (puxa o repo, constrói a imagem e reinicia só o contêiner `bionobolso-web`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Próximos passos da Fase 1
+- Meu Bolso na nuvem (descobertas por perfil) e importar o catálogo atual (13 bichos) para o banco.
+- Adolescente com conta própria aprovada pelo responsável por e-mail (precisa de um serviço de e-mail).
+- Login com Google (precisa da credencial OAuth).
+- Trazer o motor 3D e as páginas atuais para dentro do app.

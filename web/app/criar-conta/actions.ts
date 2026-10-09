@@ -19,7 +19,7 @@ export async function criarContaAdulto(_: EstadoForm, form: FormData): Promise<E
   const email = String(form.get("email") ?? "").trim().toLowerCase().slice(0, 200);
   const senha = String(form.get("senha") ?? "");
   const aceite = form.get("aceite") === "on";
-  const campos = { ano: String(form.get("ano") ?? ""), nome, email };
+  const campos = { ano: String(form.get("ano") ?? ""), nome, email, aceite: aceite ? "1" : "" };
 
   const faixa = faixaPorAno(ano);
   if (!faixa) return { erro: "Confira o ano de nascimento.", campos };
