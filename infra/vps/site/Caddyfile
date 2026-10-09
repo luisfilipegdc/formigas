@@ -1,7 +1,7 @@
 # Bio no Bolso: site estático (repo formigas), atrás da Cloudflare.
 estudodebolso.com.br, www.estudodebolso.com.br {
 	root * /srv/estudodebolso/www
-	@interno path /docs /docs/* /design /design/* /banco /banco/* /infra /infra/* /agentes /agentes/*
+	@interno path /web /web/* /docs /docs/* /design /design/* /banco /banco/* /infra /infra/* /agentes /agentes/*
 	redir @interno / 302
 	@www host www.estudodebolso.com.br
 	redir @www https://estudodebolso.com.br{uri} 301
