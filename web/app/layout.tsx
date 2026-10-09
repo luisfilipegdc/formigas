@@ -8,9 +8,9 @@ const texto = Inter({ variable: "--fonte-texto", subsets: ["latin"], display: "s
 
 export const metadata: Metadata = {
   title: { default: "Bio no Bolso", template: "%s · Bio no Bolso" },
-  description: "Enciclopédia interativa da natureza para famílias e escolas.",
-  // Versão em construção: fora do Google até o lançamento.
-  robots: { index: false, follow: false },
+  description: "Enciclopédia interativa da natureza para famílias e escolas: fichas por idade, bichos em 3D e o mapa do que você encontrou.",
+  metadataBase: new URL("https://estudodebolso.com.br"),
+  openGraph: { siteName: "Bio no Bolso", locale: "pt_BR", type: "website" },
 };
 
 export const viewport: Viewport = {
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <a href="/planos" className="hover:text-texto">Planos</a>
             <a href="/privacidade" className="hover:text-texto">Privacidade</a>
             <a href="/termos" className="hover:text-texto">Termos de uso</a>
-            <a href="https://estudodebolso.com.br" className="hover:text-texto">Explorar os bichos</a>
+            <a href="/explorar/" className="hover:text-texto">Explorar os bichos</a>
           </div>
         </footer>
       </body>

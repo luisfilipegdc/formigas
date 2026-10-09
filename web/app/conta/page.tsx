@@ -42,7 +42,7 @@ export default async function Conta() {
         </form>
       </div>
 
-      <a href="https://estudodebolso.com.br" className="block rounded-2xl bg-marca text-marca-texto p-5">
+      <a href="/explorar/" className="block rounded-2xl bg-marca text-marca-texto p-5">
         <span className="block text-lg font-semibold">Explorar os bichos</span>
         <span className="block text-sm opacity-90">Fichas, 3D e comparador. O Meu Bolso na nuvem chega na próxima etapa.</span>
       </a>

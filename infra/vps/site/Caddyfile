@@ -1,18 +1,43 @@
-# Bio no Bolso: site estático (repo formigas), atrás da Cloudflare.
+# Bio no Bolso, atrás da Cloudflare.
+#   /            → app Next.js (contêiner bionobolso-web)
+#   /explorar/   → site estático dos bichos (repo formigas, publicado a cada 5 min)
+#   endereços antigos do site estático → /explorar/ (links e QR codes impressos continuam valendo)
 estudodebolso.com.br, www.estudodebolso.com.br {
-	root * /srv/estudodebolso/www
-	@interno path /web /web/* /docs /docs/* /design /design/* /banco /banco/* /infra /infra/* /agentes /agentes/*
-	redir @interno / 302
 	@www host www.estudodebolso.com.br
 	redir @www https://estudodebolso.com.br{uri} 301
+
 	header {
 		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options nosniff
 		Referrer-Policy strict-origin-when-cross-origin
 		-Server
 	}
-	@sw path /sw.js
-	header @sw Cache-Control "no-cache"
 	encode zstd gzip
-	file_server
+
+	# service worker antigo da raiz: troca por um que se desliga
+	handle /sw.js {
+		header Cache-Control "no-cache"
+		root * /srv/estudodebolso/raiz
+		file_server
+	}
+
+	@antigo path /index.html /bicho3d.html /formiga.html /abelha.html /comparar.html /qr.html /manifest.webmanifest /css/* /js/* /img/* /vendor/* /som/*
+	redir @antigo /explorar{uri} 301
+
+	redir /explorar /explorar/ 308
+	handle_path /explorar/* {
+		@sw path /sw.js
+		header @sw Cache-Control "no-cache"
+		root * /srv/estudodebolso/www
+		file_server
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3100
+	}
+}
+
+# Endereço provisório do app: agora redireciona para o domínio principal.
+app.estudodebolso.com.br {
+	redir https://estudodebolso.com.br{uri} 301
 }

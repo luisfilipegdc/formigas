@@ -10,3 +10,6 @@ rsync -a --delete --exclude='.git*' --exclude='.vercelignore' --exclude='vercel.
   --exclude='/docs/' --exclude='/design/' --exclude='/banco/' --exclude='/infra/' --exclude='/agentes/' --exclude='/ferramentas/' --exclude='/web/' \
   "$SRC/" "$DST/"
 echo "$(date '+%F %T') publicado $(git rev-parse --short HEAD)"
+# service worker de desligamento da raiz (ver Caddyfile)
+mkdir -p /srv/estudodebolso/raiz
+install -m 644 "$SRC/infra/vps/site/sw-raiz.js" /srv/estudodebolso/raiz/sw.js

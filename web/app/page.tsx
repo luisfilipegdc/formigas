@@ -20,7 +20,7 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
           Fichas por idade, bichos em 3D, “que bicho é esse?” por foto e um mapa do que a sua família encontrou.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <a href="https://estudodebolso.com.br" className="rounded-xl bg-marca text-marca-texto px-5 py-3 font-semibold text-center">
+          <a href="/explorar/" className="rounded-xl bg-marca text-marca-texto px-5 py-3 font-semibold text-center">
             Explorar os bichos
           </a>
           {conta ? (
