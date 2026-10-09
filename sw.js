@@ -3,7 +3,7 @@
    (por exemplo, no Wi-Fi da escola que bloqueia o endereço).
    A lista abaixo é gerada por: python3 ferramentas/atualizar-cache.py
    ===================================================================== */
-const VERSAO = 'b2c28c3121';
+const VERSAO = '8bc9912b07';
 const CACHE = 'animais3d-' + VERSAO;
 const FONTES = 'animais3d-fontes';
 const ARQUIVOS = [
@@ -150,7 +150,10 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin === location.origin) e.respondWith(doSite(req));
+  // só os arquivos do próprio site (escopo deste service worker). /api, /conta e o resto
+  // do app ficam fora: são dados da conta e precisam vir sempre do servidor.
+  const escopo = new URL(self.registration.scope).pathname;
+  if (url.origin === location.origin) { if (url.pathname.startsWith(escopo)) e.respondWith(doSite(req)); }
   else if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) e.respondWith(fonte(req));
   // APIs (iNaturalist, Wikipédia) vão direto para a rede; js/dados.js já guarda as respostas
 });

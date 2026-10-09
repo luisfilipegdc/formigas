@@ -1,16 +1,72 @@
 /* =====================================================================
    progresso.js — o "Meu Bolso": bichos encontrados, descobertas e
-   observações no mundo real, guardados só neste aparelho.
+   observações no mundo real.
+   Sem conta: fica só neste aparelho. Com conta (entrou em /entrar):
+   vai junto para a nuvem e aparece em todos os aparelhos. Num aparelho
+   compartilhado, cada conta tem o seu bolso guardado separado.
    Um bicho entra no bolso na primeira descoberta (ficha, 3D…).
    "vi" guarda QUANTAS vezes a criança encontrou o bicho de verdade.
-   Sem contas, sem sequência de dias, sem nada que se perde: cada
-   descoberta fica marcada para sempre (ou até apagar no catálogo).
+   Sem sequência de dias, sem nada que se perde: cada descoberta fica
+   marcada para sempre (ou até esvaziar o bolso).
    ===================================================================== */
 const Progresso = (function () {
-  const K = 'progresso1';
-  let d = {};
-  try { d = JSON.parse(localStorage.getItem(K)) || {}; } catch (e) {}
-  function salvar() { try { localStorage.setItem(K, JSON.stringify(d)); } catch (e) {} }
+  const BASE = 'progresso1';            // bolso sem conta
+  const MARCA = 'progresso1:conta';     // conta da última sincronização neste aparelho
+  const API = '/api/bolso';
+  let contaId = null, sessao = null, envio = 0, ultimaSinc = 0;
+  try { contaId = localStorage.getItem(MARCA); } catch (e) {}
+  const chave = () => (contaId ? BASE + ':' + contaId : BASE);
+  function ler(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }
+  let d = ler(chave());
+  function gravarLocal() { try { localStorage.setItem(chave(), JSON.stringify(d)); } catch (e) {} }
+  function salvar() {
+    gravarLocal();
+    if (contaId) { clearTimeout(envio); envio = setTimeout(enviar, 1200); }
+  }
+  // ---------- nuvem ----------
+  const podeRede = () => !!window.fetch && location.protocol !== 'file:';
+  function canon(o) { return JSON.stringify(Object.keys(o || {}).sort().map((id) => [id, Object.keys(o[id] || {}).sort().map((k) => [k, +o[id][k] || 0])])); }
+  function juntar(a, b) {
+    const r = {};
+    [a, b].forEach((f) => Object.keys(f || {}).forEach((id) => {
+      const o = (r[id] = r[id] || {});
+      Object.keys(f[id] || {}).forEach((k) => { o[k] = Math.max(o[k] || 0, +f[id][k] || 0); });
+    }));
+    return r;
+  }
+  function avisarMudou() { try { document.dispatchEvent(new Event('progresso-sincronizado')); } catch (e) {} }
+  function semConta() {
+    contaId = null; sessao = null;
+    try { localStorage.removeItem(MARCA); } catch (e) {}
+    d = ler(BASE); avisarMudou();
+  }
+  function enviar() {
+    if (!podeRede() || !contaId) return;
+    fetch(API, { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bolso: d }) })
+      .then((r) => { if (r.status === 401) semConta(); }).catch(() => {});
+  }
+  function sincronizar() {
+    if (!podeRede()) return;
+    ultimaSinc = Date.now();
+    fetch(API, { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then((j) => {
+      if (!j) return;
+      if (!j.logado) { if (contaId) semConta(); return; }
+      if (j.conta.id !== contaId) {
+        // entrou numa conta neste aparelho: o que foi descoberto sem conta vai para ela (uma vez só)
+        const semDono = contaId ? {} : d;
+        contaId = j.conta.id;
+        try { localStorage.setItem(MARCA, contaId); } catch (e) {}
+        d = juntar(juntar(ler(chave()), semDono), j.bolso);
+        if (Object.keys(semDono).length) try { localStorage.removeItem(BASE); } catch (e) {}
+      } else d = juntar(d, j.bolso);
+      sessao = { apelido: j.conta.apelido, pontos: j.pontos };
+      gravarLocal();
+      if (canon(d) !== canon(j.bolso)) enviar();
+      avisarMudou(); // sempre: a tela mostra o apelido da conta mesmo sem bolso novo
+    }).catch(() => {});
+  }
+  sincronizar();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - ultimaSinc > 60000) sincronizar(); });
   function itens(A) {
     const l = [];
     if (A.pagina) l.push(['3d', '🧊', 'Explorou em 3D']);
@@ -66,7 +122,7 @@ const Progresso = (function () {
     if (!anunciar(A, novo)) aviso('⭐ ' + it[1] + ' ' + it[2] + '!');
     return true;
   }
-  // a criança encontrou o bicho no mundo real (sem foto: só conta neste aparelho)
+  // a criança encontrou o bicho no mundo real (sem foto: conta no bolso dela)
   function observar(id) {
     const A = ANIMAIS.find((a) => a.id === id);
     if (!A) return false;
@@ -90,6 +146,9 @@ const Progresso = (function () {
   }
   function encontrados() { return ANIMAIS.filter((A) => conta(A).feitas > 0).length; }
   function total() { return ANIMAIS.reduce((s, A) => s + conta(A).feitas, 0); }
-  function apagar() { d = {}; salvar(); }
-  return { itens: itens, feito: feito, marcar: marcar, observar: observar, vezes: vezes, nivel: nivel, conta: conta, total: total, encontrados: encontrados, missaoCompleta: missaoCompleta, apagar: apagar };
+  function apagar() {
+    d = {}; gravarLocal();
+    if (contaId && podeRede()) fetch(API, { method: 'DELETE', credentials: 'same-origin' }).catch(() => {});
+  }
+  return { itens: itens, feito: feito, marcar: marcar, observar: observar, vezes: vezes, nivel: nivel, conta: conta, total: total, encontrados: encontrados, missaoCompleta: missaoCompleta, apagar: apagar, sessao: () => sessao, sincronizar: sincronizar };
 })();

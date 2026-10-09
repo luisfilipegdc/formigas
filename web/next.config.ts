@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   // Build enxuto para rodar em Docker na VPS (node server.js).
   output: "standalone",
   poweredByHeader: false,
+  // dev: não tirar a barra de /explorar/ (os caminhos do site estático são relativos)
+  skipTrailingSlashRedirect: Boolean(process.env.BIO_EXPLORAR_DEV),
   turbopack: {
     // o repositório tem outro package-lock (banco/); a raiz do app é esta pasta
     root: path.join(__dirname),
@@ -14,6 +16,12 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  // Em desenvolvimento, /explorar/* vem de um servidor estático da raiz do repo
+  // (BIO_EXPLORAR_DEV=http://127.0.0.1:8799), igual à produção, onde o Caddy serve /explorar.
+  async rewrites() {
+    const dev = process.env.BIO_EXPLORAR_DEV;
+    return dev ? [{ source: "/explorar/:caminho*", destination: `${dev}/:caminho*` }] : [];
   },
   async headers() {
     return [

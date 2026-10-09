@@ -1,6 +1,7 @@
 import { exigirConta } from "@/lib/dal";
 import { q, q1 } from "@/lib/db";
 import { AVATARES, LIMITE_CONTAS } from "@/lib/planos";
+import { nivel as nivelBolso } from "@/lib/bolso";
 import { removerMembro, sair } from "./actions";
 import { FormAdicionarMembro, FormApagarFamilia } from "./FormsConta";
 
@@ -24,6 +25,15 @@ export default async function Conta() {
         [conta.familia_id],
       )
     : [];
+  const bolso = await q1<{ bichos: string; observacoes: string; total: string }>(
+    `select count(distinct d.item_id) as bichos,
+            coalesce(sum(d.vezes) filter (where d.tipo = 'vi'), 0) as observacoes,
+            (select count(*) from itens where publicado) as total
+       from descobertas d where d.conta_id = $1`,
+    [conta.id],
+  );
+  const bichos = Number(bolso?.bichos ?? 0);
+  const nv = nivelBolso(bichos);
   const limite = LIMITE_CONTAS[(familia?.plano ?? "free") as keyof typeof LIMITE_CONTAS] ?? 1;
   const nomeAvatar = (id: string) => AVATARES.find((a) => a.id === id)?.nome ?? id;
 
@@ -34,7 +44,7 @@ export default async function Conta() {
           <p className="text-sm text-suave">{familia?.nome}</p>
           <h1 className="text-3xl font-semibold">Olá, {conta.apelido}</h1>
           <p className="text-sm text-suave mt-1">
-            Modo {MODO[conta.modo]} · {conta.xp} pontos de explorador · nível {conta.nivel}
+            Modo {MODO[conta.modo]}
           </p>
         </div>
         <form action={sair}>
@@ -42,10 +52,33 @@ export default async function Conta() {
         </form>
       </div>
 
-      <a href="/explorar/" className="block rounded-2xl bg-marca text-marca-texto p-5">
-        <span className="block text-lg font-semibold">Explorar os bichos</span>
-        <span className="block text-sm opacity-90">Fichas, 3D e comparador. O Meu Bolso na nuvem chega na próxima etapa.</span>
-      </a>
+      <section className="rounded-2xl border border-borda bg-superficie p-5 space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">Meu Bolso</h2>
+          <p className="text-sm text-suave mt-1">Guardado na sua conta: aparece em qualquer aparelho em que você entrar.</p>
+        </div>
+        <dl className="grid grid-cols-3 gap-3 text-center">
+          <div className="rounded-xl bg-fundo p-3">
+            <dt className="text-xs text-suave">Bichos</dt>
+            <dd className="text-2xl font-semibold">{bichos}<span className="text-sm text-suave"> de {bolso?.total ?? 0}</span></dd>
+          </div>
+          <div className="rounded-xl bg-fundo p-3">
+            <dt className="text-xs text-suave">Pontos</dt>
+            <dd className="text-2xl font-semibold">{conta.xp}</dd>
+          </div>
+          <div className="rounded-xl bg-fundo p-3">
+            <dt className="text-xs text-suave">Vistos de verdade</dt>
+            <dd className="text-2xl font-semibold">{bolso?.observacoes ?? 0}</dd>
+          </div>
+        </dl>
+        <p className="text-sm">
+          Nível <strong>{nv.nome}</strong>
+          {nv.falta > 0 && <span className="text-suave"> · faltam {nv.falta} bicho(s) para o próximo</span>}
+        </p>
+        <a href="/explorar/" className="block rounded-xl bg-marca text-marca-texto px-5 py-3 font-semibold text-center">
+          Explorar os bichos
+        </a>
+      </section>
 
       {responsavel && familia && (
         <>

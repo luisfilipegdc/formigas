@@ -205,8 +205,14 @@
     document.body.appendChild(dlg);
     dlg.querySelector('.fechar').focus();
   }
-  $('entrar').addEventListener('click', () => janela('<h2>Contas chegam em breve</h2><p>Por enquanto não precisa de cadastro: as descobertas do seu explorador já ficam guardadas neste aparelho.</p>' +
-    '<p>Quando as contas chegarem, um adulto poderá guardar o bolso na nuvem e usar em vários aparelhos.</p><button class="btn btn-primario btn-g" type="button" data-fechar>Continuar explorando</button>'));
+  // Entrar: leva para a conta (app na raiz do domínio). Com conta, mostra o apelido.
+  function botaoConta() {
+    const sx = Progresso.sessao();
+    $('entrar').textContent = sx ? sx.apelido : 'Entrar';
+    $('entrar').setAttribute('aria-label', sx ? 'Minha conta (' + sx.apelido + ')' : 'Entrar ou criar conta');
+  }
+  $('entrar').addEventListener('click', () => { location.href = Progresso.sessao() ? '/conta' : '/entrar'; });
+  document.addEventListener('progresso-sincronizado', () => { botaoConta(); atualizar(); });
   $('roteiro').addEventListener('click', () => janela('<h2>Uma aula com o Bio no Bolso</h2><p>"Quem vive debaixo da terra?" · 1º ao 3º ano · 45 minutos</p><ol class="roteiro">' +
     '<li><b>5 min</b> Pergunta: o que a formiga come? Anote as hipóteses.</li><li><b>10 min</b> Explorar a operária em 3D: pernas, antenas, mandíbula.</li>' +
     '<li><b>10 min</b> Passeio pelo formigueiro: fungo, berçário, rainha.</li><li><b>5 min</b> Voltar às hipóteses: elas plantam fungo!</li>' +
@@ -232,7 +238,8 @@
     ANIMAIS.flatMap((a) => (a.fotos || []).map((f) =>
       '<li>' + esc(a.nome) + ' (<i>' + esc(f.especie) + '</i>): ' + esc(f.autor) + ', ' + esc(f.lic) + '</li>')).join('');
   $('apagar').addEventListener('click', () => {
-    if (confirm('Esvaziar o bolso? Isso apaga os bichos encontrados e as descobertas deste aparelho.')) { Progresso.apagar(); atualizar(); }
+    const txt = Progresso.sessao() ? 'Esvaziar o bolso? Isso apaga os bichos encontrados e as descobertas desta conta, em todos os aparelhos.' : 'Esvaziar o bolso? Isso apaga os bichos encontrados e as descobertas deste aparelho.';
+    if (confirm(txt)) { Progresso.apagar(); atualizar(); }
   });
 
   document.addEventListener('ficha-fechou', atualizar);
