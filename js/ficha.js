@@ -71,6 +71,16 @@ const Ficha = (function () {
   .ficha .vi.ok { border-style: solid; background: var(--color-primary-soft, #fff1c4); }
   .ficha .selos span.ok { opacity: 1; background: var(--color-accent-soft, #fff1c4); border-color: var(--color-accent, #ffd23f); }
   .tool.ficha-tool button { background: #fff !important; }
+  .ficha header .ci-bt { margin-left: auto; width: auto; border-radius: 999px; padding: 0 12px; font: inherit; font-size: 15px; font-weight: 800; color: var(--text, #4a2a12); white-space: nowrap; }
+  .ficha header .ci-bt + button { margin-left: 0; }
+  .ficha header .ci-bt.on { background: var(--color-nature, #164A3A); color: #fff; }
+  .ficha .ci-box { background: #fff; border: 3px solid var(--color-nature, #164A3A); border-radius: 20px; padding: 10px 14px 6px; margin-bottom: 12px; }
+  .ficha .ci-box h3 { margin: 0 0 2px; font-size: 19px; color: var(--color-nature, #164A3A); }
+  .ficha .ci-rev { font-size: 13px; opacity: .7; margin: 4px 0 6px; }
+  .ficha .cur.ci { border: 2px solid var(--color-nature, #164A3A); }
+  .ficha .cur.ci::before { content: '🔬'; }
+  .ficha .btn { white-space: normal; }
+  @media (max-width: 480px) { .ficha header .ci-bt { width: 44px; padding: 0; } .ficha header .ci-bt span { display: none; } }
   @media (min-width: 900px) and (orientation: landscape) {
     .ficha { left: auto; right: 16px; bottom: 16px; top: 16px; width: 420px; max-height: none; border-radius: 28px; transform: translateX(120%); }
     .ficha.on { transform: none; }
@@ -84,10 +94,18 @@ const Ficha = (function () {
     const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     back = document.createElement('div'); back.className = 'ficha-back';
     el = document.createElement('section'); el.className = 'ficha'; el.setAttribute('aria-label', 'Ficha da espécie');
-    el.innerHTML = '<div class="grab"></div><header><span class="em"></span><div><h2></h2><i></i></div><button aria-label="Fechar">✕</button></header>' +
+    el.innerHTML = '<div class="grab"></div><header><span class="em"></span><div><h2></h2><i></i></div><button class="ci-bt" type="button" aria-pressed="false" aria-label="Modo Cientista">🔬<span> Cientista</span></button><button aria-label="Fechar">✕</button></header>' +
       '<nav><button data-a="ficha">📋 Ficha</button><button data-a="vida">🔄 Vida</button><button data-a="cur">💡 Sabia?</button><button data-a="real">📷 Real</button></nav><div class="body"></div>';
     document.body.append(back, el);
-    el.querySelector('header button').addEventListener('click', fechar);
+    el.querySelector('header button[aria-label="Fechar"]').addEventListener('click', fechar);
+    // 🔬 Cientista: o mesmo nível do 3D (bnb-idade); liga e desliga (desligado = Explorador)
+    el.querySelector('.ci-bt').addEventListener('click', () => {
+      const n = cientista() ? 'explorador' : 'cientista';
+      try { localStorage.setItem('bnb-idade', n); } catch (e) {}
+      document.dispatchEvent(new CustomEvent('idade-mudou', { detail: n }));
+      render();
+    });
+    document.addEventListener('idade-mudou', () => render());
     back.addEventListener('click', fechar);
     el.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => { aba = b.dataset.a; render(); }));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
@@ -128,12 +146,18 @@ const Ficha = (function () {
     }
     render();
   }
+  function cientista() { try { return localStorage.getItem('bnb-idade') === 'cientista'; } catch (e) { return false; } }
   function linhas(list) {
     return list.map(([ic, t, s]) => '<div class="row"><div class="ic">' + ic + '</div><div><b>' + t + '</b><span>' + s + '</span></div></div>').join('');
   }
   function render() {
-    if (!el) return;
+    if (!el || !A) return;
     el.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.a === aba));
+    const CI = cientista() && typeof CIENTISTA !== 'undefined' && CIENTISTA[A.id];
+    const bci = el.querySelector('.ci-bt');
+    bci.hidden = !(typeof CIENTISTA !== 'undefined' && CIENTISTA[A.id]);
+    bci.classList.toggle('on', !!CI); bci.setAttribute('aria-pressed', CI ? 'true' : 'false');
+    const rev = '<p class="ci-rev">🔬 Textos do nível Cientista em revisão científica.</p>';
     let h = '';
     if (aba === 'ficha') {
       const C = A.castas && casta && A.castas[casta];
@@ -145,12 +169,13 @@ const Ficha = (function () {
       // encontrar no mundo real (sem foto, sem dados: só marca neste aparelho)
       if (typeof Progresso !== 'undefined') { const v = Progresso.vezes(A.id);
         h += '<button class="vi' + (v ? ' ok' : '') + '" type="button" data-vi>' + (v ? '👀 Encontrei outr' + (A.art === 'o' ? 'o' : 'a') + '! (' + v + (v === 1 ? ' observação' : ' observações') + ')' : '👀 Encontrei um de verdade!') + '</button>'; }
+      if (CI && CI.ficha) h += '<div class="ci-box"><h3>🔬 Para cientistas</h3>' + linhas(CI.ficha) + rev + '</div>';
       if (C) h += '<div class="casta"><h3>' + C.emoji + ' ' + C.nome + '</h3>' + linhas(C.linhas) + '</div>';
       h += linhas(A.ficha);
     } else if (aba === 'vida') {
-      h = '<div class="ciclo">' + A.ciclo.map(([e, t, s]) => '<div class="etapa"><div class="bola">' + e + '</div><div><b>' + t + '</b><span>' + s + '</span></div></div>').join('') + '</div>';
+      h = '<div class="ciclo">' + ((CI && CI.ciclo) || A.ciclo).map(([e, t, s]) => '<div class="etapa"><div class="bola">' + e + '</div><div><b>' + t + '</b><span>' + s + '</span></div></div>').join('') + '</div>' + (CI && CI.ciclo ? rev : '');
     } else if (aba === 'cur') {
-      h = A.curiosidades.map((c) => '<div class="cur">' + c + '</div>').join('');
+      h = (CI && CI.sabia ? CI.sabia.map((c) => '<div class="cur ci">' + c + '</div>').join('') : '') + A.curiosidades.map((c) => '<div class="cur">' + c + '</div>').join('') + (CI && CI.sabia ? rev : '');
     } else {
       h = real();
     }

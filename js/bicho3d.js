@@ -428,14 +428,16 @@ function iniciar3d(id) {
   if (!IDADES[idade]) idade = 'pequeno';
   const pintaIdade = () => { bIdade.textContent = IDADES[idade][0]; bIdade.setAttribute('aria-label', 'Modo ' + IDADES[idade][1] + '. Toque para trocar.'); document.body.classList.toggle('cientista', idade === 'cientista'); };
   pintaIdade();
-  bIdade.addEventListener('click', () => {
-    idade = ORDEM[(ORDEM.indexOf(idade) + 1) % ORDEM.length];
-    try { localStorage.setItem('bnb-idade', idade); } catch (e) {}
+  function trocarIdade(n, daFicha) {
+    idade = IDADES[n] ? n : 'pequeno';
+    if (!daFicha) { try { localStorage.setItem('bnb-idade', idade); } catch (e) {} document.dispatchEvent(new CustomEvent('idade-mudou', { detail: idade })); }
     pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno');
-    avisoRapido(IDADES[idade][2]);
+    if (!daFicha) avisoRapido(IDADES[idade][2]);
     if (proc.ativo) mostrarPasso();
     if (partesOn) { partes(); partes(); }
-  });
+  }
+  bIdade.addEventListener('click', () => trocarIdade(ORDEM[(ORDEM.indexOf(idade) + 1) % ORDEM.length]));
+  document.addEventListener('idade-mudou', (e) => { if (e.detail !== idade) trocarIdade(e.detail, true); });   // botão 🔬 da ficha
   document.body.classList.toggle('pequeno', idade === 'pequeno');
 
   if (M.formas) {
