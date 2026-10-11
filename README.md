@@ -99,7 +99,7 @@ Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra emba
 
 - `bicho3d.html` + `css/bicho3d.css`: a tela padrão do Modo Explorar.
 - `js/bicho3d.js`: o motor (cena, câmera, botões, partes, tamanho real, passeio, Por dentro / Como funciona, ficha e bolso).
-- `js/modelos/<id>.js`: um arquivo por bicho (formiga, abelha, cigarra, aranha), carregado só quando o bicho é aberto.
+- `js/modelos/<id>.js`: um arquivo por bicho (formiga, abelha, cigarra, aranha, lagartixa, escorpião), carregado só quando o bicho é aberto.
 - `js/core3d.js`: peças 3D comuns (escultura SDF, pernas, texturas).
 
 A separação é estática: não exige npm, build ou backend e continua adequada para deploy direto na Vercel.

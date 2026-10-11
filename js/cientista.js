@@ -245,5 +245,44 @@ const CIENTISTA = {
       'Pesquisadores acham que a cor dourada da seda ajuda a atrair insetos no sol e a esconder a teia na sombra.',
       'A seda de aranha é estudada para criar materiais novos, como fios cirúrgicos e tecidos muito resistentes.'
     ]
+  },
+  lagartixa: {
+    ficha: [
+      ['🧬', 'Táxon', 'Hemidactylus mabouia, família Gekkonidae, ordem Squamata, classe Reptilia. É uma espécie exótica: veio da África e se espalhou junto com as pessoas.'],
+      ['🧲', 'Adesão seca', 'As lamelas dos dedos têm setas microscópicas que terminam em espátulas. Tão perto da superfície, forças de van der Waals seguram o animal, sem cola nem ventosa.'],
+      ['🌡️', 'Ectotermia', 'A temperatura do corpo depende do ambiente. Paredes que guardam o calor do dia e lâmpadas que atraem insetos fazem das casas um bom lugar para ela.'],
+      ['✂️', 'Autotomia', 'A cauda tem planos de fratura entre as vértebras. Depois de solta, regenera com um bastão de cartilagem no lugar dos ossos.'],
+      ['🌍', 'Espécie invasora', 'Por viver perto das pessoas, chegou a muitos países. Em alguns lugares compete com lagartixas nativas.']
+    ],
+    ciclo: [
+      ['🥚', 'Ovo', 'Ovípara: põe 2 ovos de casca calcária dura, às vezes em ninhos usados por várias fêmeas.'],
+      ['🦎', 'Filhote', 'Desenvolvimento direto: nasce com a forma do adulto, sem metamorfose, e já é independente.'],
+      ['🔄', 'Ecdise', 'A camada externa da pele sai em pedaços de tempos em tempos.'],
+      ['🦎', 'Adulta', 'Fica madura em cerca de um ano e pode viver alguns anos.']
+    ],
+    sabia: [
+      'Os dedos das lagartixas inspiraram fitas adesivas secas, que grudam e soltam sem deixar resto: isso é biomimética.',
+      'Alguns geckos noturnos enxergam cores com pouquíssima luz, algo que os olhos humanos não conseguem.'
+    ]
+  },
+  escorpiao: {
+    ficha: [
+      ['🧬', 'Táxon', 'Tityus serrulatus, família Buthidae, ordem Scorpiones, classe Arachnida. Buthidae é a família com as espécies de veneno mais forte.'],
+      ['🧩', 'Tagmas', 'O corpo tem prossoma (com olhos, quelíceras, pedipalpos e pernas), mesossoma (com as pectinas embaixo) e metassoma (a "cauda", com 5 segmentos e o télson).'],
+      ['👩‍👧', 'Partenogênese', 'Na maioria das populações só há fêmeas, que produzem filhas sem macho. Uma única fêmea pode iniciar uma população nova.'],
+      ['🤰', 'Viviparidade', 'Os filhotes se desenvolvem dentro da mãe e nascem vivos. Depois sobem nas costas dela.'],
+      ['🧪', 'Veneno', 'Neurotoxinas agem nos canais de sódio dos nervos. O tratamento dos casos graves usa soro antiescorpiônico, produzido no Brasil por institutos públicos, como o Butantan.'],
+      ['🔦', 'Fluorescência', 'Substâncias da camada hialina da cutícula brilham em azul-esverdeado sob luz ultravioleta. A função desse brilho ainda é estudada.']
+    ],
+    ciclo: [
+      ['🤰', 'Gestação', 'Vivíparo: os embriões se desenvolvem dentro da mãe por alguns meses.'],
+      ['👶', 'Filhotes nas costas', 'Ficam sobre a mãe até a primeira ecdise; depois se dispersam.'],
+      ['🔄', 'Mudas', 'Crescem por várias ecdises, porque o exoesqueleto não cresce.'],
+      ['🦂', 'Adulta', 'Reproduz-se por partenogênese, várias vezes ao longo da vida.']
+    ],
+    sabia: [
+      'O soro antiescorpiônico é feito com anticorpos de cavalos que receberam doses muito pequenas de veneno.',
+      'O escorpião-amarelo se adaptou às cidades: abrigo em entulho e esgoto, e muitas baratas para comer.'
+    ]
   }
 };

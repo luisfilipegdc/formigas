@@ -24,6 +24,7 @@
 - **Cigarra:** "Por dentro" (corpo transparente com tímbalos, músculos, saco de ar, músculos das asas e tubo da seiva) e "Como nasce o canto". Protótipo, **didático**, marcado como "em revisão científica".
 - **Formiga e abelha:** ✅ migradas para o motor reutilizável (outubro de 2026), com a colmeia aberta e o formigueiro em corte como abas de passeio. Os endereços antigos redirecionam.
 
+- **Lagartixa-de-parede e escorpião-amarelo (outubro de 2026):** modelos 3D novos, só "Por fora", com partes, ações e textos do nível Cientista. Representação didática, em revisão científica. Faltam fotos guardadas no site (a rede desta sessão bloqueou o iNaturalist).
 - **🔬 Nível Cientista (outubro de 2026):** terceiro nível do seletor, para os anos finais (11+). Formiga, abelha, cigarra e aranha têm termo científico e texto técnico em todas as partes, nos passeios do formigueiro e da colmeia e nos passos de "Como nasce o mel" e "Como nasce o canto". O cartão de Partes mostra a classificação (filo › classe › ordem › família › espécie). **Textos em revisão científica.** As **fichas dos 13 animais** também têm versão Cientista (`js/cientista.js`): táxon, termos técnicos, ciclo de vida e curiosidades. Falta: a home ainda não tem versão Cientista.
 
 ## 4. Pré-requisitos (PROPOSTA)

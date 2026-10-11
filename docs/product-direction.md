@@ -30,7 +30,7 @@ AGORA: descoberta da natureza → ficha enciclopédica → experiências dispon�
 - **A geração de imagens e assets da home antiga está pausada.** Primeiro vêm a arquitetura e a documentação, depois o redesenho da home para a nova abrangência.
 
 **Já existe** (ver [`technical-audit.md`](technical-audit.md)):
-- 13 animais com ficha, ciclo de vida, curiosidades e 3 fotos licenciadas cada;
+- 15 animais com ficha, ciclo de vida e curiosidades. 13 têm 3 fotos licenciadas guardadas no site; a lagartixa e o escorpião (outubro de 2026) ainda mostram só as fotos buscadas na hora no iNaturalist;
 - 3D da formiga, da abelha, da cigarra e da aranha;
 - protótipo "Por dentro / Como funciona?" só na cigarra;
 - Meu Bolso, cartas, níveis, coleções e "Encontrei um de verdade!", guardados só no aparelho;

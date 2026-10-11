@@ -495,6 +495,68 @@ const ANIMAIS = [
       'Aranha não é inseto: tem 8 patas, e os insetos têm 6.',
       'A seda de aranha é mais resistente que um fio de aço da mesma grossura.'
     ]
+  },
+  {
+    id: 'lagartixa', nome: 'Lagartixa-de-parede', cientifico: 'Hemidactylus mabouia', grupo: 'repteis', emoji: '🦎', cor: '#e6e0cf',
+    curto: 'lagartixa', pista: 'À noite eu ando pelas paredes e pelo teto, caçando mosquitos perto da luz.', procurar: 'Paredes e tetos perto de lâmpadas, à noite.',
+    pagina: 'bicho3d.html?id=lagartixa',
+    resumo: 'A caçadora de insetos que anda pelo teto da sua casa.',
+    busca: 'Hemidactylus mabouia', wiki: 'Hemidactylus mabouia',
+    destaques: ['🦎 lagartixa', '🧗 sobe na parede', '✂️ solta a cauda', '👅 lambe o olho'],
+    rapido: { tamanho: '10 a 13 cm', onde: 'Casas do Brasil', come: 'Insetos' },
+    comp: { mm: 110, tam: '10 a 13 cm, com a cauda', igual: 'um lápis pequeno', dieta: 'carnivoro', come: 'Mosquitos, mariposas, baratinhas e outros insetos.', vive: 'Alguns anos', social: 'Sozinha (os machos defendem seu pedaço de parede)', casa: 'Paredes, telhados e frestas das casas', tax: ['Chordata', 'Reptilia', 'Squamata', 'Gekkonidae'], iucn: null },
+    ficha: [
+      ['🔬', 'Nome científico', 'Hemidactylus mabouia, a lagartixa das casas brasileiras.'],
+      ['🧬', 'Classificação', 'Réptil · Ordem Squamata (lagartos e serpentes) · Família Gekkonidae (lagartixas e geckos)'],
+      ['📍', 'Onde vive', 'Veio da África, provavelmente em navios, há séculos. Hoje vive em quase todo o Brasil, perto das pessoas.'],
+      ['🍽️', 'O que come', 'Insetos, como mosquitos, mariposas e baratinhas. Caça à noite, perto das lâmpadas.'],
+      ['🧗', 'Superpoder', 'Anda na parede e no teto graças a almofadinhas embaixo dos dedos.'],
+      ['🛡️', 'É perigosa?', 'Não! Não tem veneno e ajuda a controlar os insetos da casa.']
+    ],
+    ciclo: [
+      ['🥚', 'Ovo', 'A fêmea bota 2 ovos de casca dura, escondidos em frestas.'],
+      ['🦎', 'Filhote', 'Nasce parecido com o adulto e já caça sozinho.'],
+      ['🔄', 'Crescimento', 'Troca de pele várias vezes enquanto cresce.'],
+      ['🦎', 'Adulta', 'Vive alguns anos. Se perde a cauda, nasce outra.']
+    ],
+    curiosidades: [
+      'A lagartixa não tem pálpebras: ela limpa os olhos com a língua!',
+      'Se um predador pega a cauda, ela solta e a cauda fica se mexendo para distrair. Mas isso gasta energia: nunca puxe a cauda de uma lagartixa.',
+      'Ela faz "tchk tchk": as lagartixas se comunicam com estalinhos.',
+      'Hemidactylus quer dizer "meio-dedo": as almofadinhas ficam só numa parte dos dedos.'
+    ]
+  },
+  {
+    id: 'escorpiao', art: 'o', nome: 'Escorpião-amarelo', cientifico: 'Tityus serrulatus', grupo: 'aracnideos', emoji: '🦂', cor: '#f5e3a3',
+    curto: 'escorpião', pista: 'Tenho pinças, 8 patas e uma cauda com ferrão. Na luz ultravioleta, eu brilho!', procurar: 'Não procure! Se vir um, afaste-se e chame um adulto. Ele se esconde em entulho, ralos e frestas.',
+    pagina: 'bicho3d.html?id=escorpiao',
+    resumo: 'O escorpião das cidades: ótimo para estudar, perigoso para tocar.',
+    busca: 'Tityus serrulatus', wiki: 'Tityus serrulatus',
+    destaques: ['🦂 fêmea', '👶 filhotes nas costas', '🔦 brilha na luz UV', '🛡️ posição de defesa'],
+    rapido: { tamanho: '5 a 7 cm', onde: 'Cidades do Brasil', come: 'Baratas e grilos' },
+    comp: { mm: 60, tam: '5 a 7 cm', igual: 'um dedo de adulto', dieta: 'carnivoro', come: 'Baratas, grilos e outros insetos.', vive: 'Alguns anos', social: 'Sozinho (a mãe carrega os filhotes nas costas)', casa: 'Entulho, ralos, caixas de esgoto e frestas', tax: ['Arthropoda', 'Arachnida', 'Scorpiones', 'Buthidae'], iucn: null },
+    silencio: 'O escorpião não faz som que a gente escute. Ele sente as vibrações do chão pelas patas.',
+    ficha: [
+      ['🔬', 'Nome científico', 'Tityus serrulatus. "Serrulatus" quer dizer "com serrinha", por causa da cauda.'],
+      ['🧬', 'Classificação', 'Aracnídeo (parente das aranhas) · Ordem Scorpiones · Família Buthidae'],
+      ['📍', 'Onde vive', 'No Brasil, principalmente nas cidades. Esconde-se em entulho, ralos, caixas de esgoto e frestas.'],
+      ['🍽️', 'O que come', 'Baratas, grilos e outros insetos. Por isso aparece onde há baratas.'],
+      ['👩‍👧', 'Só fêmeas', 'Quase todos são fêmeas, que têm filhotes sem precisar de macho. Por isso ele se espalha tão rápido.'],
+      ['⚠️', 'É perigoso?', 'Sim. A picada pode ser grave, principalmente para crianças. Nunca toque! Se alguém for picado, vá logo a um serviço de saúde ou ligue 192 (SAMU).'],
+      ['🏠', 'Prevenção', 'Quintal sem entulho, ralos com tela e sapatos sacudidos antes de calçar. Quem cuida disso é sempre um adulto.']
+    ],
+    ciclo: [
+      ['🤰', 'Gestação', 'Os filhotes se formam dentro da mãe e nascem vivos, já parecidos com ela.'],
+      ['👶', 'Nas costas', 'Os filhotes sobem nas costas da mãe e ficam ali até a primeira troca de pele.'],
+      ['🔄', 'Crescimento', 'Trocam de pele várias vezes até virar adultos.'],
+      ['🦂', 'Adulta', 'Já pode ter filhotes, mesmo sozinha, várias vezes na vida.']
+    ],
+    curiosidades: [
+      'Na luz ultravioleta, o escorpião brilha em azul-esverdeado! Os cientistas ainda estudam para que serve esse brilho.',
+      'Os escorpiões existem há mais de 400 milhões de anos: são muito mais antigos que os dinossauros.',
+      'Um escorpião pode ficar meses sem comer.',
+      'Alguns animais, como sapos, corujas e galinhas, comem escorpiões.'
+    ]
   }
 ];
 
@@ -534,5 +596,6 @@ const COLECOES = [
   { id: 'cantores', nome: 'Bichos que cantam', emoji: '🎵', selo: 'Ouvido de Explorador', bichos: ['cigarra', 'sapo', 'beijaflor', 'arara'] },
   { id: 'agua', nome: 'Vida na água', emoji: '🌊', selo: 'Explorador Aquático', bichos: ['tartaruga', 'pirarucu', 'sapo'] },
   { id: 'gigantes', nome: 'Gigantes do Brasil', emoji: '🦖', selo: 'Caçador de Gigantes', bichos: ['onca', 'arara', 'tartaruga', 'pirarucu', 'preguica'] },
-  { id: 'pequenos', nome: 'Pequenos gigantes', emoji: '🔍', selo: 'Olho de Lupa', bichos: ['formiga', 'abelha', 'joaninha', 'cigarra', 'aranha'] }
+  { id: 'pequenos', nome: 'Pequenos gigantes', emoji: '🔍', selo: 'Olho de Lupa', bichos: ['formiga', 'abelha', 'joaninha', 'cigarra', 'aranha'] },
+  { id: 'casa', nome: 'Vizinhos da casa', emoji: '🏠', selo: 'Detetive da Casa', bichos: ['lagartixa', 'escorpiao', 'aranha', 'formiga'] }
 ];

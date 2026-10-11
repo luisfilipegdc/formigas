@@ -97,6 +97,8 @@
 | `js/bicho3d.js` + `bicho3d.html` | Motor reutilizável. Cada modelo em `js/modelos/<id>.js` informa `cena`, `formas`, `acoes`, `construir`, `update`, `partes`, `dentro` e `processo`. O motor mostra a barra de modos só se o modelo tiver `dentro` ou `processo`, e esconde "Como funciona?" sem `processo`. **Detalhe:** um modelo com `processo` e sem `dentro` mostraria um botão "Por dentro" vazio. Hoje não acontece (só a cigarra usa) |
 | `js/modelos/cigarra.js` | Adulta, ninfa e casca; canto e voo; **Por dentro** e **Como nasce o canto** (protótipo; conteúdo marcado como "em revisão científica"; representação didática) |
 | `js/modelos/aranha.js` | Fêmea e macho na teia; andar, descer no fio, teia tremendo |
+| `js/modelos/lagartixa.js` | Lagartixa-de-parede; andar, subir na parede, soltar a cauda (e nascer outra), lamber o olho (outubro de 2026) |
+| `js/modelos/escorpiao.js` | Escorpião-amarelo, fêmea e com filhotes; andar, defesa, luz UV (outubro de 2026) |
 | `js/formiga.js`, `abelha.html` | Experiências 3D antigas, completas e funcionando, fora do motor reutilizável |
 
 - DECIDIDO: **não mexer no motor 3D agora.**
