@@ -1,0 +1,4 @@
+#!/bin/bash
+# psql no banco bionobolso como bio_admin (senha lida de /opt/bionobolso/.env, só root)
+set -a; . /opt/bionobolso/.env; set +a
+exec docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" bionobolso-db psql -v ON_ERROR_STOP=1 -U bio_admin -d "${BIO_DB:-bionobolso}" "$@"

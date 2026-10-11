@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Identidade "guia de campo" (plano, seção Identidade visual). */
+:root {
+  --floresta: #164a3a;
+  --musgo: #2f7d5b;
+  --areia: #f5efe3;
+  --ambar: #e3a21a;
+  --grafite: #1f2523;
+
+  --fundo: var(--areia);
+  --superficie: #fffdf8;
+  --texto: var(--grafite);
+  --texto-suave: #5b625f;
+  --borda: #e2d9c7;
+  --marca: var(--floresta);
+  --marca-texto: #ffffff;
+  --destaque: var(--ambar);
+  --erro: #b42318;
+  --ok: var(--musgo);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #121715;
+    --superficie: #1b2220;
+    --texto: #ece6d8;
+    --texto-suave: #a7ada9;
+    --borda: #2c3532;
+    --marca: #5fb58b;
+    --marca-texto: #0d1311;
+    --erro: #f97066;
+    --ok: #5fb58b;
+  }
+}
+
+@theme inline {
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-texto: var(--texto);
+  --color-suave: var(--texto-suave);
+  --color-borda: var(--borda);
+  --color-marca: var(--marca);
+  --color-marca-texto: var(--marca-texto);
+  --color-destaque: var(--destaque);
+  --color-erro: var(--erro);
+  --color-ok: var(--ok);
+  --color-floresta: var(--floresta);
+  --font-sans: var(--fonte-texto);
+  --font-titulo: var(--fonte-titulo);
+}
+
+html {
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+body {
+  font-family: var(--fonte-texto), system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--fonte-titulo), Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* Nome científico sempre em itálico. */
+.cientifico {
+  font-style: italic;
+}
+
+:focus-visible {
+  outline: 3px solid var(--destaque);
+  outline-offset: 2px;
+}

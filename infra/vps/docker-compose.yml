@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17
+    container_name: bionobolso-db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C.UTF-8 --auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    command: ["postgres", "-c", "password_encryption=scram-sha-256", "-c", "timezone=America/Sao_Paulo", "-c", "log_timezone=America/Sao_Paulo", "-c", "shared_buffers=512MB", "-c", "log_connections=on"]
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bio_admin -d bionobolso"]
+      interval: 10s
+      timeout: 5s
+      retries: 10

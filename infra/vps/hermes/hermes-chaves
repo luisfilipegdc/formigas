@@ -1,0 +1,12 @@
+#!/bin/bash
+# Grava as chaves do Hermes CEO em /home/hermes/.hermes/.env sem mostrar na tela.
+# Uso: hermes-chaves   (deixe em branco para manter o valor atual)
+set -euo pipefail
+E=/home/hermes/.hermes/.env
+grava(){ local k=$1 v=$2; [ -z "$v" ] && return; v=$(printf '%s' "$v" | tr -d '\r\n'); sed -i "/^${k}=/d" "$E"; printf '%s=%s\n' "$k" "$v" >> "$E"; echo "  $k gravada"; }
+read -rsp "Chave da API da Anthropic (sk-ant-...): " A; echo; grava ANTHROPIC_API_KEY "$A"
+read -rsp "Token do bot do Telegram (do @BotFather): " T; echo; grava TELEGRAM_BOT_TOKEN "$T"
+read -rp  "Seu ID de usuário do Telegram (só números): " U; grava TELEGRAM_ALLOWED_USERS "$U"; grava TELEGRAM_HOME_CHANNEL "$U"
+chown hermes:hermes "$E"; chmod 600 "$E"
+systemctl restart hermes-ceo && sleep 5 && systemctl --no-pager --lines=0 status hermes-ceo | head -3
+echo "Pronto. Logs: journalctl -u hermes-ceo -f"

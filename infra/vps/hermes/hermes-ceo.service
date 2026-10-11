@@ -1,0 +1,25 @@
+[Unit]
+Description=Hermes Agent - CEO do Bio no Bolso (gateway Telegram)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+User=hermes
+Group=hermes
+WorkingDirectory=/home/hermes/bio
+Environment=HOME=/home/hermes
+Environment=PATH=/home/hermes/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=TERMINAL_CWD=/home/hermes/bio
+Environment=HERMES_WRITE_SAFE_ROOT=/home/hermes/bio:/home/hermes/.hermes
+ExecStart=/home/hermes/.local/bin/hermes gateway run
+Restart=always
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+InaccessiblePaths=/opt/bionobolso /root /etc/cron.d
+MemoryMax=3G
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target
