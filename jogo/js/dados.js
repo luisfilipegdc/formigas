@@ -73,6 +73,14 @@ const CARTAS = [
     funcao: 'Floresce no fim da seca, sem folhas, e alimenta abelhas e beija-flores.', cuidado: 'Plante longe de muro: a raiz cresce.',
     desafio: { p: 'O ipê perdeu todas as folhas e ficou só com flores. Ele está morrendo?', o: ['Sim, árvore sem folha morreu', 'Não: ele floresce assim no fim da seca', 'Só se não chover'], c: 1, x: 'O ipê guarda energia e floresce antes das folhas. É sinal de que a chuva vem.' },
     conexao: { p: 'Complete: flor do ipê → ___ → semente', o: ['abelha', 'minhoca', 'fungo'], c: 0, cadeia: 'ipê → abelha → semente' } },
+  { id: 'galinha', nome: 'Galinha', emoji: '🐔', tipo: 'Vigia', regiao: 'vila', hora: 'dia',
+    funcao: 'Come insetos, sementes e restos. O ovo leva 21 dias de calor constante para virar pintinho.', cuidado: 'Ovo precisa de calor e de ser virado. Pintinho precisa de água, comida e calor.',
+    desafio: { p: 'Dona Flor deu um ovo de galinha para você cuidar. O que o ovo precisa para o pintinho nascer?', o: ['Calor constante por cerca de 21 dias', 'Água gelada', 'Sol forte o dia inteiro'], c: 0, x: 'A galinha choca o ovo com o calor do corpo e o vira várias vezes por dia.' },
+    conexao: { p: 'Complete: ovo → ___ → galinha', o: ['pintinho', 'girino', 'lagarta'], c: 0, cadeia: 'ovo → pintinho → galinha' } },
+  { id: 'borboleta', nome: 'Borboleta-azul', emoji: '🦋', tipo: 'Polinizador', regiao: 'horta', hora: 'dia',
+    funcao: 'A lagarta come folhas; a borboleta bebe néctar e suco de frutas. Passa por metamorfose completa.', cuidado: 'A lagarta precisa da planta certa. Não tire a crisálida do lugar.',
+    desafio: { p: 'Achou um ovinho numa folha da horta. O que vai nascer dele?', o: ['Uma borboleta pequena', 'Uma lagarta, que depois vira crisálida e borboleta', 'Um besouro'], c: 1, x: 'Ovo → lagarta → crisálida → borboleta: metamorfose completa.' },
+    conexao: { p: 'Complete: lagarta → ___ → borboleta', o: ['crisálida', 'ovo', 'casulo de aranha'], c: 0, cadeia: 'ovo → lagarta → crisálida → borboleta' } },
   { id: 'beijaflor', nome: 'Beija-flor', emoji: '🐦', tipo: 'Polinizador', regiao: 'margem', hora: 'dia',
     funcao: 'Bebe néctar e poliniza flores vermelhas e tubulares.', cuidado: 'Bebedouro só com água e açúcar, trocado todo dia.',
     desafio: { p: 'As flores vermelhas da margem não dão semente. Quem falta?', o: ['O beija-flor, que poliniza flores tubulares', 'A minhoca', 'O sapo'], c: 0, x: 'Flores compridas e vermelhas são feitas para o bico do beija-flor.' },
@@ -148,3 +156,49 @@ const MISSOES = [
 ];
 
 const CARTA = (id) => CARTAS.find((c) => c.id === id);
+
+// Ninho: ovos que o jogador cuida até virarem bichos que o acompanham. Nunca se captura o bicho adulto.
+// estagios: nome, emoji, cuidados (quantos até avançar), espera (segundos reais entre cuidados), pergunta de cuidado
+const OVOS = [
+  { id: 'galinha', nome: 'Ovo de galinha', emoji: '🥚', carta: 'galinha', de: 'flor', x: -62, z: 46,
+    origem: 'Dona Flor entrega um ovo do galinheiro: "Cuida dele. Em casa, ovo não se tira de ninho de bicho livre."',
+    estagios: [
+      { nome: 'Ovo', emoji: '🥚', cuidados: 3, espera: 90, p: 'O ovo esfriou um pouco. O que fazer?', o: ['Aquecer e virar o ovo', 'Colocar na água', 'Deixar no sol forte'], c: 0 },
+      { nome: 'Pintinho', emoji: '🐥', cuidados: 3, espera: 120, p: 'O pintinho pia sem parar. O que ele precisa?', o: ['Água limpa, farelo e calor', 'Um banho frio', 'Ficar sozinho no escuro'], c: 0 },
+      { nome: 'Frango', emoji: '🐓', cuidados: 2, espera: 120, p: 'O frango cresceu. Onde ele fica melhor?', o: ['Num quintal com sombra, terra e outras galinhas', 'Dentro de uma caixa fechada', 'Solto na rua'], c: 0 },
+      { nome: 'Galinha', emoji: '🐔', cuidados: 0, espera: 0 }
+    ] },
+  { id: 'sapo', nome: 'Ovos de sapo', emoji: '🫧', carta: 'sapo', x: 52, z: -62,
+    origem: 'Numa poça que está secando, um cordão de ovos de sapo. Você leva um pedacinho para a água limpa do laboratório.',
+    estagios: [
+      { nome: 'Ovos', emoji: '🫧', cuidados: 2, espera: 90, p: 'Os ovos estão na água. O que eles precisam?', o: ['Água limpa e sombra', 'Sal na água', 'Tirar da água para secar'], c: 0 },
+      { nome: 'Girino', emoji: '🐟', cuidados: 3, espera: 120, p: 'O girino nasceu com cauda e brânquias. O que ele come?', o: ['Algas e restos de planta na água', 'Pão', 'Carne'], c: 0 },
+      { nome: 'Sapinho com pernas', emoji: '🐸', cuidados: 2, espera: 120, p: 'As pernas cresceram e a cauda está sumindo. O que mudar?', o: ['Dar uma parte seca para ele sair da água', 'Encher mais água', 'Tirar toda a água'], c: 0 },
+      { nome: 'Sapo', emoji: '🐸', cuidados: 0, espera: 0 }
+    ] },
+  { id: 'borboleta', nome: 'Ovo de borboleta', emoji: '🟡', carta: 'borboleta', x: -96, z: 84,
+    origem: 'Numa folha da horta, um ovinho amarelo. Você leva a folha inteira: a lagarta vai precisar dela.',
+    estagios: [
+      { nome: 'Ovo', emoji: '🟡', cuidados: 2, espera: 60, p: 'O ovo está na folha. O que fazer?', o: ['Manter a folha fresca e à sombra', 'Lavar o ovo com sabão', 'Pôr no sol'], c: 0 },
+      { nome: 'Lagarta', emoji: '🐛', cuidados: 3, espera: 90, p: 'A lagarta não para de comer. O que dar?', o: ['Folhas frescas da mesma planta', 'Açúcar', 'Nada: ela come sozinha'], c: 0 },
+      { nome: 'Crisálida', emoji: '🟢', cuidados: 2, espera: 120, p: 'Ela virou crisálida e ficou parada. O que fazer?', o: ['Não mexer e esperar', 'Abrir para ver', 'Molhar todo dia'], c: 0 },
+      { nome: 'Borboleta', emoji: '🦋', cuidados: 0, espera: 0 }
+    ] }
+];
+
+// cidades para o mapa real (capitais): nome, lat, lon
+const CIDADES = [
+  ['Brasília', -15.79, -47.88], ['São Paulo', -23.55, -46.63], ['Rio de Janeiro', -22.91, -43.17], ['Belo Horizonte', -19.92, -43.94], ['Salvador', -12.97, -38.51],
+  ['Fortaleza', -3.72, -38.54], ['Recife', -8.05, -34.88], ['Curitiba', -25.43, -49.27], ['Porto Alegre', -30.03, -51.23], ['Manaus', -3.12, -60.02],
+  ['Belém', -1.46, -48.49], ['Goiânia', -16.68, -49.25], ['Campo Grande', -20.46, -54.62], ['Cuiabá', -15.6, -56.1], ['Florianópolis', -27.6, -48.55],
+  ['Vitória', -20.32, -40.34], ['Natal', -5.79, -35.21], ['João Pessoa', -7.12, -34.86], ['Maceió', -9.67, -35.73], ['Aracaju', -10.91, -37.07],
+  ['Teresina', -5.09, -42.8], ['São Luís', -2.53, -44.3], ['Palmas', -10.24, -48.36], ['Porto Velho', -8.76, -63.9], ['Rio Branco', -9.97, -67.81],
+  ['Boa Vista', 2.82, -60.67], ['Macapá', 0.04, -51.07]
+];
+// regiões do Terra Codex no mapa real: a primeira fica na cidade do jogador; as outras são "em breve"
+const REGIOES_MUNDO = [
+  { nome: 'Vale Vivo', emoji: '🌿', cidade: null },
+  { nome: 'Laboratório Invisível', emoji: '🧫', cidade: 'São Paulo' }, { nome: 'Cidade dos Números', emoji: '🔢', cidade: 'Rio de Janeiro' },
+  { nome: 'Reino das Palavras', emoji: '📜', cidade: 'Salvador' }, { nome: 'Corpo-Cidade', emoji: '🫀', cidade: 'Belo Horizonte' },
+  { nome: 'Linha Quebrada', emoji: '🗺️', cidade: 'Manaus' }, { nome: 'Oficina da Realidade', emoji: '🛠️', cidade: 'Porto Alegre' }, { nome: 'Mar Aberto', emoji: '🌊', cidade: 'Fortaleza' }
+];

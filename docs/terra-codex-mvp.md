@@ -19,6 +19,9 @@ O ciclo **explorar → registrar → entender → conectar → construir → res
 | Obras | Horta, filtro do rio, ponte, abrigo de observação, trilha ecológica e Laboratório. Cada uma pede cartas e um desafio (medir a ponte, separar resíduos…) e pinta a região de verde |
 | NPCs e missões | Dona Flor, Seu Rio, Tico e a Guardiã Ipê. 10 missões, em qualquer ordem depois da primeira |
 | Chefe | Devorador de Habitat, em 5 fases: cada uma cai com uma conexão ecológica certa, depois os Ecos atacam. Vencer libera o Selo do Vale com a Guardiã |
+| Ninho | O jogador nunca captura o bicho. Ele recolhe um ovo (galinha, com Dona Flor; sapo, na beira do rio; borboleta, na horta) e cuida dele em fases, com perguntas de cuidado e espera em tempo real (1 a 2 min por cuidado no MVP). Quando cresce, o bicho acompanha o jogador pelo vale e a carta sobe para "Entendido" |
+| Mapa real | Painel com o mapa do mundo (azulejos do OpenStreetMap). O jogador escolhe a cidade (capitais); o Vale Vivo aparece nela e as outras 7 regiões em outras capitais, marcadas "em breve". Só a cidade é guardada. Para muitos jogadores, trocar os azulejos por um provedor próprio (política de uso do OSM) |
+| Celular na vertical | HUD em duas linhas, botões menores, joystick e ação de contexto; golpes em uma coluna na batalha |
 | Controles | Teclado (WASD ou setas, Shift corre, E ou espaço age), mouse para girar a câmera, joystick de toque e arrasto no celular e no iPad |
 
 ## O que ficou de fora (de propósito)

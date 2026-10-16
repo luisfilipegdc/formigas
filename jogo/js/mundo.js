@@ -94,6 +94,9 @@ const Mundo = (function () {
     PEGADAS.forEach((pg) => { const m = new THREE.Mesh(new THREE.CircleGeometry(1.2, 10), new THREE.MeshBasicMaterial({ color: '#5a4630' })); m.rotation.x = -Math.PI / 2; m.position.set(pg.x, altura(pg.x, pg.z) + 0.15, pg.z); scene.add(m); M.pegadas.push({ dado: pg, mesh: m, pos: m.position }); });
     OBRAS.forEach((ob) => { const g = new THREE.Group(); g.position.set(ob.x, altura(ob.x, ob.z), ob.z); const base = new THREE.Mesh(new THREE.RingGeometry(3, 3.6, 24), new THREE.MeshBasicMaterial({ color: '#f5c451', side: THREE.DoubleSide })); base.rotation.x = -Math.PI / 2; base.position.y = 0.2; g.add(base); scene.add(g); M.obras[ob.id] = { dado: ob, grupo: g, base, pos: g.position }; if (estado.obras[ob.id]) montarObra(ob.id); });
 
+    // ovos para o Ninho
+    M.ovos = OVOS.map((ov) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.7, 12, 10), new THREE.MeshLambertMaterial({ color: ov.id === 'sapo' ? '#9ec5e8' : ov.id === 'borboleta' ? '#f2d24b' : '#f3e6c9' })); m.scale.y = 1.25; m.position.set(ov.x, altura(ov.x, ov.z) + 0.8, ov.z); scene.add(m); return { dado: ov, mesh: m, pos: m.position }; });
+    M.companheiros = [];
     // luzes
     M.sol = new THREE.DirectionalLight('#fff1d8', 1.2); M.sol.castShadow = true; M.sol.shadow.mapSize.set(1024, 1024);
     Object.assign(M.sol.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 1, far: 400 });
@@ -183,6 +186,15 @@ const Mundo = (function () {
     return M.noite;
   }
 
+  // bicho crescido no Ninho segue o jogador
+  function companheiro(ovoId) {
+    if (M.companheiros.some((c) => c.id === ovoId)) return;
+    const ov = OVOS.find((o) => o.id === ovoId), st = ov.estagios[ov.estagios.length - 1];
+    const g = new THREE.Group();
+    const corpo = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 10), new THREE.MeshLambertMaterial({ color: ovoId === 'galinha' ? '#f0e4d0' : ovoId === 'sapo' ? '#6a9a4a' : '#4a7ad8' })); corpo.position.y = 0.8; g.add(corpo);
+    g.position.copy(M.jogadorPos || new V3()); M.scene.add(g);
+    M.companheiros.push({ id: ovoId, mesh: g, pos: g.position, texto: st.emoji + ' ' + st.nome, fase: Math.random() * 6 });
+  }
   // bichos e Ruidosos passeiam devagar; Ruidosos perseguem de perto
   function update(dt, jogador) {
     M.t += dt; M.jogadorPos = jogador;
@@ -208,9 +220,16 @@ const Mundo = (function () {
       if (alvo) { const dir = new V3().subVectors(alvo, r.pos); dir.y = 0; if (dir.length() > 1) { dir.normalize(); r.pos.addScaledVector(dir, dt * (dj < 22 ? 5 : 2)); } }
       r.pos.y = altura(r.pos.x, r.pos.z);
     });
+    M.ovos.forEach((o) => { o.mesh.visible = !(M.estado.ninho || []).some((n) => n.id === o.dado.id); o.mesh.position.y = altura(o.pos.x, o.pos.z) + 0.8 + Math.sin(M.t * 2) * 0.15; });
+    M.companheiros.forEach((c, i) => {
+      const alvo = new V3(jogador.x - Math.sin(c.fase) * 3, 0, jogador.z - Math.cos(c.fase) * 3 - 2);
+      const dir = new V3().subVectors(alvo, c.pos); dir.y = 0; const d = dir.length();
+      if (d > 1.2) { dir.normalize(); c.pos.addScaledVector(dir, dt * Math.min(12, d * 3)); c.mesh.rotation.y = Math.atan2(dir.x, dir.z); }
+      c.pos.y = altura(c.pos.x, c.pos.z) + (c.id === 'borboleta' ? 2 + Math.sin(M.t * 4 + i) * 0.4 : Math.abs(Math.sin(M.t * 8 + i)) * 0.3 * (d > 1.2 ? 1 : 0));
+    });
     if (M.olho) { M.olho.scale.setScalar(1 + Math.sin(M.t * 2) * 0.08); M.olho.visible = !M.estado.chefe; }
     pintar(dt);
   }
 
-  return { construir, update, altura, regiaoEm, ruidoEm, montarObra, restaurar, M };
+  return { construir, update, altura, regiaoEm, ruidoEm, montarObra, restaurar, companheiro, M };
 })();

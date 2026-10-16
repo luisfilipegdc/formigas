@@ -64,6 +64,51 @@ const UI = (function () {
     painel('🧭 Missões', '<ul class="lista">' + MISSOES.map((m) => '<li class="' + (estado.missoes[m.id] ? 'feita' : '') + '"><span class="em">' + m.emoji + '</span><div><b>' + esc(m.nome) + '</b>' + esc(m.texto) + '</div></li>').join('') + '</ul>');
   }
 
+  /* ---------- Ninho: ovos que viram bichos ---------- */
+  function ninho(estado, aoCuidar) {
+    const agora = Date.now();
+    const lista = estado.ninho.map((n, i) => {
+      const ov = OVOS.find((o) => o.id === n.id), st = ov.estagios[n.estagio], fim = !st.cuidados;
+      const falta = Math.max(0, Math.ceil((n.desde + st.espera * 1000 - agora) / 1000));
+      return '<div class="ninho"><div class="em">' + st.emoji + '</div><div style="flex:1"><b>' + esc(st.nome) + ' <small style="display:inline">· ' + esc(ov.nome) + '</small></b>' +
+        (fim ? '<small>🌿 Cresceu! Agora acompanha você pelo vale.</small>' : '<div class="barra"><b style="width:' + (n.cuidados / st.cuidados * 100) + '%"></b></div><small>Cuidados: ' + n.cuidados + '/' + st.cuidados + (falta ? ' · próximo em ' + (falta > 60 ? Math.ceil(falta / 60) + ' min' : falta + ' s') : ' · pronto para cuidar') + '</small>' +
+        '<button type="button" class="btn" data-i="' + i + '"' + (falta ? ' disabled' : '') + '>🤲 Cuidar</button>') + '</div></div>';
+    }).join('');
+    painel('🥚 Ninho · ' + estado.ninho.length + '/3', (lista || '<p>Nenhum ovo ainda. Procure ovos pelo vale: perto de Dona Flor, na horta e na beira do rio.</p>') + '<p class="mini">Aqui você não captura bicho: cuida de um ovo até ele crescer, e ele escolhe andar com você. No mundo real, nunca tire ovos de ninhos.</p>');
+    $('painel-corpo').querySelectorAll('button[data-i]').forEach((b) => b.addEventListener('click', () => aoCuidar(+b.dataset.i)));
+  }
+
+  /* ---------- mapa real (OpenStreetMap) ---------- */
+  function mapa(estado, aoEscolher) {
+    const cidade = CIDADES.find((c) => c[0] === estado.cidade) || CIDADES[0];
+    let z = estado.cidade ? 11 : 4, cx, cy;
+    const lon2x = (lon, z) => (lon + 180) / 360 * Math.pow(2, z) * 256, lat2y = (lat, z) => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z) * 256;
+    const centrar = () => { const c = estado.cidade ? cidade : ['Brasil', -14, -53]; cx = lon2x(c[2], z); cy = lat2y(c[1], z); };
+    centrar();
+    painel('🗺️ Mapa do mundo', '<div class="mapa-sel"><label for="sel-cidade">Minha cidade:</label><select id="sel-cidade"><option value="">Escolher…</option>' + CIDADES.map((c) => '<option' + (c[0] === estado.cidade ? ' selected' : '') + '>' + c[0] + '</option>').join('') + '</select><span class="mini">O Vale Vivo fica na sua cidade. Só a cidade é guardada, nunca o endereço.</span></div><div class="mapa" id="mapa"><div class="mapa-ctl"><button type="button" id="mz-mais">+</button><button type="button" id="mz-menos">−</button></div><div class="mapa-cred">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div></div><p class="mini">Cada região do Terra Codex fica numa cidade de verdade. As outras sete chegam nos próximos capítulos.</p>');
+    const el = $('mapa');
+    function desenhar() {
+      el.querySelectorAll('img, .marca').forEach((n) => n.remove());
+      const W = el.clientWidth, H = el.clientHeight, n = Math.pow(2, z);
+      const x0 = Math.floor((cx - W / 2) / 256), x1 = Math.floor((cx + W / 2) / 256), y0 = Math.floor((cy - H / 2) / 256), y1 = Math.floor((cy + H / 2) / 256);
+      for (let tx = x0; tx <= x1; tx++) for (let ty = y0; ty <= y1; ty++) {
+        if (ty < 0 || ty >= n) continue;
+        const img = document.createElement('img'); img.alt = ''; img.src = 'https://tile.openstreetmap.org/' + z + '/' + (((tx % n) + n) % n) + '/' + ty + '.png';
+        img.style.left = (tx * 256 - cx + W / 2) + 'px'; img.style.top = (ty * 256 - cy + H / 2) + 'px'; el.appendChild(img);
+      }
+      const marca = (lat, lon, txt, classe) => { const m = document.createElement('div'); m.className = 'marca ' + (classe || ''); m.textContent = txt; m.style.left = (lon2x(lon, z) - cx + W / 2) + 'px'; m.style.top = (lat2y(lat, z) - cy + H / 2) + 'px'; el.appendChild(m); };
+      REGIOES_MUNDO.forEach((r, i) => { const c = i === 0 ? (estado.cidade ? cidade : null) : CIDADES.find((x) => x[0] === r.cidade); if (c) marca(c[1], c[2], r.emoji + ' ' + r.nome + (i ? ' · em breve' : ''), i ? 'breve' : 'eu'); });
+    }
+    desenhar();
+    $('mz-mais').addEventListener('click', () => { if (z < 16) { cx *= 2; cy *= 2; z++; desenhar(); } });
+    $('mz-menos').addEventListener('click', () => { if (z > 2) { cx /= 2; cy /= 2; z--; desenhar(); } });
+    $('sel-cidade').addEventListener('change', (e) => { estado.cidade = e.target.value || null; aoEscolher(); z = estado.cidade ? 11 : 4; centrar(); desenhar(); });
+    let arr = null;
+    const ini = (x, y) => { arr = { x, y }; }, mov = (x, y) => { if (!arr) return; cx -= x - arr.x; cy -= y - arr.y; arr = { x, y }; desenhar(); };
+    el.addEventListener('mousedown', (e) => ini(e.clientX, e.clientY)); addEventListener('mousemove', (e) => mov(e.clientX, e.clientY)); addEventListener('mouseup', () => { arr = null; });
+    el.addEventListener('touchstart', (e) => ini(e.touches[0].clientX, e.touches[0].clientY), { passive: true }); el.addEventListener('touchmove', (e) => { mov(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true }); el.addEventListener('touchend', () => { arr = null; });
+  }
+
   /* ---------- batalha por turnos ---------- */
   // inimigo = {nome, emoji, erro, hp, atk, id}; devolve true se venceu
   async function batalha(estado, inimigo, opts) {
@@ -124,5 +169,5 @@ const UI = (function () {
     }
   }
 
-  return { toast, dica, dialogo, desafio, painel, fecharPainel, codex, carta, ecos, missoes, batalha, etiquetas, aberto: () => aberto || !$('painel').hidden || !$('batalha').hidden };
+  return { toast, dica, dialogo, desafio, painel, fecharPainel, codex, carta, ecos, missoes, ninho, mapa, batalha, etiquetas, aberto: () => aberto || !$('painel').hidden || !$('batalha').hidden };
 })();

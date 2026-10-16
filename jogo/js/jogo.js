@@ -7,8 +7,9 @@
   const $ = (id) => document.getElementById(id);
   const V3 = THREE.Vector3;
   const CHAVE = 'terracodex1';
-  let estado = { cartas: {}, ecos: [], missoes: {}, obras: {}, restaurada: {}, falou: {}, pegadas: {}, fragmentos: 0, chefe: false, selo: false, pos: [0, 0, 8], lupa: false, inicial: null };
+  let estado = { cartas: {}, ecos: [], missoes: {}, obras: {}, restaurada: {}, falou: {}, pegadas: {}, fragmentos: 0, chefe: false, selo: false, pos: [0, 0, 8], lupa: false, inicial: null, ninho: [], cidade: null };
   try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s && s.inicial) estado = Object.assign(estado, s); } catch (e) {}
+  if (!estado.ninho) estado.ninho = [];
   function salvar() { try { estado.pos = [jog.mesh.position.x, 0, jog.mesh.position.z]; localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {} }
 
   /* ---------- cena ---------- */
@@ -24,6 +25,7 @@
   const jog = Jogador.criar(scene, camera, new V3(estado.pos[0], 0, estado.pos[2]));
   jog.mesh.position.y = Mundo.altura(estado.pos[0], estado.pos[2]);
   camera.position.set(estado.pos[0] + 10, 12, estado.pos[2] + 14);
+  estado.ninho.forEach((n) => { const ov = OVOS.find((o) => o.id === n.id); if (ov && !ov.estagios[n.estagio].cuidados) Mundo.companheiro(n.id); });
   window.__terra = { estado, mundo, jog, salvar };   // para testes
 
   // árvores e casas bloqueiam o passo; o rio sem ponte é passável, mas custa Clareza
@@ -56,6 +58,7 @@
     mundo.npcs.forEach((n) => cand('npc', n, n.pos, n.dado.emoji + ' ' + n.dado.nome, 'Falar 💬'));
     mundo.pegadas.forEach((pg) => { if (!estado.pegadas[pg.dado.id]) cand('pegada', pg, pg.pos, '🐾 Sinal', 'Examinar 🔍'); });
     Object.values(mundo.obras).forEach((ob) => { if (!ob.pronta) cand('obra', ob, ob.pos, ob.dado.emoji + ' ' + ob.dado.nome, 'Construir 🔨', 7, 4); });
+    mundo.ovos.forEach((o) => { if (o.mesh.visible) cand('ovo', o, o.pos, o.dado.emoji + ' ' + o.dado.nome, 'Recolher 🤲', 6, 2); });
     if (!estado.chefe) cand('chefe', null, new V3(150, 0, -130), '👁️‍🗨️ Devorador de Habitat', 'Enfrentar ⚔️', 12);
     perto = melhor;
     const a = $('acao'); a.hidden = !melhor || UI.aberto();
@@ -72,6 +75,7 @@
     if (tipo === 'pegada') { estado.pegadas[obj.dado.id] = true; await UI.dialogo(obj.dado.bicho, obj.dado.texto + ' (' + Object.keys(estado.pegadas).length + '/3 sinais)', ['Anotar']); salvar(); }
     if (tipo === 'obra') await construir(obj.dado);
     if (tipo === 'chefe') await chefe();
+    if (tipo === 'ovo') await recolher(obj.dado);
     checarMissoes();
   }
 
@@ -139,6 +143,28 @@
     await UI.dialogo(quem, '🔨 Construído! ' + (ob.restaura ? 'A região ' + REGIOES.find((r) => r.id === ob.restaura).nome + ' ganha cor de novo.' : 'O caminho ficou mais curto e seguro.') + ' Cartas usadas aqui sobem para "Aplicado".', ['🎉']);
   }
 
+  /* ---------- Ninho ---------- */
+  async function recolher(ov) {
+    if (estado.ninho.length >= 3) { await UI.dialogo(ov.emoji + ' ' + ov.nome, 'Seu Ninho já tem 3. Cuide deles até crescerem antes de recolher outro.', ['Ok']); return; }
+    const i = await UI.dialogo(ov.emoji + ' ' + ov.nome, ov.origem + ' Levar para o Ninho e cuidar até crescer?', ['Levar para o Ninho 🤲', 'Deixar aqui']);
+    if (i !== 0) return;
+    estado.ninho.push({ id: ov.id, estagio: 0, cuidados: 0, desde: Date.now() - ov.estagios[0].espera * 1000 }); salvar();
+    UI.toast('🥚 ' + ov.nome + ' no Ninho! Abra o Ninho para cuidar.', 3500);
+  }
+  async function cuidar(i) {
+    const n = estado.ninho[i]; if (!n) return; const ov = OVOS.find((o) => o.id === n.id), st = ov.estagios[n.estagio];
+    if (!st.cuidados || Date.now() < n.desde + st.espera * 1000) return;
+    UI.fecharPainel();
+    const r = await UI.dialogo(st.emoji + ' ' + st.nome, st.p, st.o);
+    if (r !== st.c) { await UI.dialogo(st.emoji + ' ' + st.nome, 'Hum, não é isso que ' + (n.estagio === 0 ? 'o ovo' : 'ele') + ' precisa. Observe e tente de novo daqui a pouco.', ['Ok']); n.desde = Date.now(); salvar(); return; }
+    n.cuidados++; n.desde = Date.now();
+    if (n.cuidados >= st.cuidados) {
+      n.estagio++; n.cuidados = 0; const novo = ov.estagios[n.estagio];
+      if (!novo.cuidados) { Mundo.companheiro(ov.id); estado.cartas[ov.carta] = Math.max(estado.cartas[ov.carta] || 0, 2); salvar(); await UI.dialogo(novo.emoji + ' ' + novo.nome, 'Cresceu! ' + novo.nome + ' agora anda com você pelo vale. A carta ' + CARTA(ov.carta).nome + ' subiu para "Entendido": você viu o ciclo inteiro.', ['🎉']); }
+      else { salvar(); await UI.dialogo(novo.emoji + ' ' + novo.nome, '✅ Mudou de fase: agora é ' + novo.nome + '! Volte a cuidar daqui a ' + Math.round(novo.espera / 60) + ' min.', ['Que bom!']); }
+    } else { salvar(); await UI.dialogo(st.emoji + ' ' + st.nome, '✅ Bem cuidado! Faltam ' + (st.cuidados - n.cuidados) + ' cuidados nesta fase. Volte daqui a ' + Math.round(st.espera / 60) + ' min.', ['Ok']); }
+  }
+
   /* ---------- Ruidosos e chefe ---------- */
   let cooldown = 0;
   async function encontro(r) {
@@ -188,6 +214,8 @@
   $('bt-codex').addEventListener('click', () => UI.codex(estado, (id) => UI.carta(estado, id, acoesCarta)));
   $('bt-ecos').addEventListener('click', () => UI.ecos(estado));
   $('bt-missoes').addEventListener('click', () => UI.missoes(estado));
+  $('bt-ninho').addEventListener('click', () => UI.ninho(estado, cuidar));
+  $('bt-mapa').addEventListener('click', () => UI.mapa(estado, salvar));
   if (estado.selo) $('selo').hidden = false;
 
   /* ---------- laço ---------- */
@@ -208,6 +236,8 @@
     mundo.npcs.forEach((n) => { if (Math.hypot(p.x - n.pos.x, p.z - n.pos.z) < 60) lista.push({ pos: n.pos, texto: n.dado.emoji + ' ' + n.dado.nome, classe: 'npc', alt: 4.2 }); });
     mundo.ruidosos.forEach((r) => { if (r.mesh.visible && Math.hypot(p.x - r.pos.x, p.z - r.pos.z) < 50) lista.push({ pos: r.pos, texto: r.dado.emoji + ' ' + r.dado.nome, classe: 'ruido', alt: 5 }); });
     Object.values(mundo.obras).forEach((ob) => { if (!ob.pronta && Math.hypot(p.x - ob.pos.x, p.z - ob.pos.z) < 70) lista.push({ pos: ob.pos, texto: ob.dado.emoji + ' ' + ob.dado.nome, classe: 'obra', alt: 3 }); });
+    mundo.ovos.forEach((o) => { if (o.mesh.visible && Math.hypot(p.x - o.pos.x, p.z - o.pos.z) < 40) lista.push({ pos: o.pos, texto: o.dado.emoji + ' ' + o.dado.nome, alt: 2 }); });
+    mundo.companheiros.forEach((c) => lista.push({ pos: c.pos, texto: c.texto, alt: 2.4 }));
     if (!estado.chefe && Math.hypot(p.x - 150, p.z + 130) < 120) lista.push({ pos: new V3(150, Mundo.altura(150, -130), -130), texto: '👁️‍🗨️ Toca do Devorador', classe: 'ruido', alt: 14 });
     UI.etiquetas(camera, lista);
     renderer.render(scene, camera);

@@ -104,3 +104,35 @@ button { font: inherit; cursor: pointer; }
 .escolha .em { font-size: 40px; } .escolha small { font-size: 11px; color: #6b6b5c; font-weight: 800; }
 @media (max-width: 520px) { .escolha { grid-template-columns: 1fr; } .inicio h1 { font-size: 32px; } .clareza i { width: 70px; } .hud-botoes button { min-width: 48px; } }
 body.jogando .inicio { display: none; }
+
+/* celular na vertical */
+@media (max-width: 520px) and (orientation: portrait) {
+  .hud { padding-top: calc(8px + env(safe-area-inset-top)); flex-wrap: wrap; }
+  .clareza { padding: 4px 10px; font-size: 14px; } .clareza i { width: 64px; height: 8px; }
+  .hud-meio { font-size: 18px; } .selo { font-size: 12px; }
+  .hud-botoes { width: 100%; justify-content: space-between; gap: 4px; }
+  .hud-botoes button { min-width: 0; flex: 1; font-size: 17px; min-height: 44px; padding: 4px 2px; border-radius: 12px; }
+  .hud-botoes small { font-size: 10px; }
+  .acao button { width: 80px; height: 80px; font-size: 15px; }
+  .joystick { width: 104px; height: 104px; left: 16px; }
+  .caixa { padding: 10px 12px 12px; } .caixa p { font-size: 16px; }
+  .painel { max-height: 86vh; }
+  .batalha .sprite { font-size: 56px; } .golpes { grid-template-columns: 1fr; }
+}
+/* ninho */
+.ninho { background: #fff; border-radius: 16px; padding: 12px; display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.ninho .em { font-size: 44px; line-height: 1; } .ninho b { display: block; } .ninho small { color: #6b6b5c; font-weight: 800; display: block; }
+.ninho .barra { height: 8px; background: #eee6d2; border-radius: 4px; overflow: hidden; margin: 6px 0; } .ninho .barra b { display: block; height: 100%; background: var(--folha); }
+.ninho .btn[disabled] { opacity: .45; }
+/* mapa real */
+.mapa { position: relative; width: 100%; height: 58vh; min-height: 300px; overflow: hidden; border-radius: 18px; background: #cfe3f3; touch-action: none; cursor: grab; }
+.mapa img { position: absolute; width: 256px; height: 256px; pointer-events: none; user-select: none; }
+.mapa .marca { position: absolute; transform: translate(-50%, -100%); background: var(--amarelo); color: var(--verde); font-weight: 900; font-size: 12px; padding: 4px 8px; border-radius: 999px; white-space: nowrap; box-shadow: var(--sombra); pointer-events: none; }
+.mapa .marca.breve { background: rgba(255,255,255,.85); opacity: .8; }
+.mapa .marca.eu { background: var(--folha); color: #fff; }
+.mapa-ctl { position: absolute; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.mapa-ctl button { width: 40px; height: 40px; border: 0; border-radius: 10px; background: #fff; font-weight: 900; font-size: 20px; box-shadow: var(--sombra); }
+.mapa-cred { position: absolute; left: 6px; bottom: 4px; font-size: 10px; background: rgba(255,255,255,.8); padding: 1px 6px; border-radius: 6px; }
+.mapa-cred a { color: inherit; }
+.mapa-sel { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; font-weight: 800; }
+.mapa-sel select { font: inherit; font-weight: 800; padding: 8px 10px; border-radius: 10px; border: 2px solid #e5dcc6; background: #fff; }
