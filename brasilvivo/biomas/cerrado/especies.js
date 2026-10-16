@@ -1,5 +1,7 @@
 /* =====================================================================
    Bioma Cerrado · espécies da fatia vertical (5)
+   escala: tamanho no mapa (1 = forma padrão). Bichos pequenos ficam pequenos
+   e ganham um brilho no chão para serem achados.
    fases: a primeira com anda: true é a que circula pela área; fases com
    ponto: [x, z] aparecem paradas no mapa; ninho: true pode ir para o Ninho.
    CONTEÚDO EM REVISÃO CIENTÍFICA: nomes científicos, espécies e textos
@@ -14,7 +16,7 @@ Especie({
       achado: 'Numa folha da horta, um ovinho amarelo do tamanho de um grão de areia. A lagarta vai precisar desta mesma planta.' },
     { id: 'lagarta', nome: 'Lagarta', emoji: '🐛' },
     { id: 'crisalida', nome: 'Crisálida', emoji: '🟢' },
-    { id: 'adulto', nome: 'Adulto', emoji: '🦋', anda: true, voa: true, cor: '#3a6fe0' }
+    { id: 'adulto', nome: 'Adulto', emoji: '🦋', anda: true, voa: true, cor: '#3a6fe0', escala: 0.7 }
   ],
   textos: {
     visto: 'Uma borboleta azul brilhante, voando baixo sobre o capim. De perto, as asas por baixo são marrons, com manchas que parecem olhos.',
@@ -33,7 +35,7 @@ Especie({
       achado: 'Numa poça que está secando, um cordão transparente cheio de pontinhos pretos: ovos de sapo.' },
     { id: 'girino', nome: 'Girino', emoji: '🐟' },
     { id: 'sapinho', nome: 'Sapinho', emoji: '🐸' },
-    { id: 'adulto', nome: 'Adulto', emoji: '🐸', anda: true, cor: '#7a6a3a' }
+    { id: 'adulto', nome: 'Adulto', emoji: '🐸', anda: true, cor: '#7a6a3a', escala: 0.9 }
   ],
   textos: {
     visto: 'Um sapo grande e calmo na beira da água, com a pele cheia de verrugas.',
@@ -48,7 +50,7 @@ Especie({
   grupo: 'Polinizador', raridade: 'comum', area: 'horta', hora: ['dia'], modelo: 'abelha',
   funcao: 'Abelha nativa sem ferrão que visita flores e leva pólen de uma para outra.',
   fases: [
-    { id: 'operaria', nome: 'Operária', emoji: '🐝', anda: true, voa: true, cor: '#e8b33a' },
+    { id: 'operaria', nome: 'Operária', emoji: '🐝', anda: true, voa: true, cor: '#e8b33a', escala: 0.32 },
     { id: 'ninho', nome: 'Ninho no tronco', emoji: '🪵', ponto: [-62, 96], marca: 'tronco',
       achado: 'Num tronco oco, um tubinho de cera na entrada. Algumas jataís ficam ali paradas, vigiando.' }
   ],
@@ -65,7 +67,7 @@ Especie({
   grupo: 'Construtora', raridade: 'comum', area: 'rota', hora: ['dia'], modelo: 'formiga',
   funcao: 'Corta folhas para cultivar o fungo que alimenta o formigueiro.',
   fases: [
-    { id: 'operaria', nome: 'Operária', emoji: '🐜', anda: true, cor: '#9a4a2a' },
+    { id: 'operaria', nome: 'Operária', emoji: '🐜', anda: true, cor: '#9a4a2a', escala: 0.32 },
     { id: 'formigueiro', nome: 'Formigueiro', emoji: '⛰️', ponto: [12, -108], marca: 'olheiro',
       achado: 'Montinhos de terra solta com buracos: são os olheiros, as portas do formigueiro. Lá embaixo há câmaras com o jardim de fungo.' }
   ],
@@ -82,7 +84,7 @@ Especie({
   grupo: 'Caçadora', raridade: 'comum', area: 'base', hora: ['noite'], modelo: 'lagartixa',
   funcao: 'Caça mosquitos e mariposas perto das luzes, à noite.',
   fases: [
-    { id: 'adulto', nome: 'Adulto', emoji: '🦎', anda: true, cor: '#c9b48a' },
+    { id: 'adulto', nome: 'Adulto', emoji: '🦎', anda: true, cor: '#c9b48a', escala: 0.6 },
     { id: 'ovos', nome: 'Ovos', emoji: '🥚', ponto: [-22, 15], marca: 'parede', cor: '#f3ead6',
       achado: 'Numa fresta da parede, dois ovinhos brancos e duros, colados um no outro.' }
   ],

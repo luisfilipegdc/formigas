@@ -145,6 +145,10 @@ const Mundo = (function () {
     const cab = new THREE.Mesh(new THREE.SphereGeometry(0.32, 10, 8), L(cor)); cab.position.set(0.8, 0.7, 0); g.add(cab);
     if (fase.voa) { const asa = new THREE.MeshLambertMaterial({ color: cor, transparent: true, opacity: 0.8, side: THREE.DoubleSide }); g.userData.asas = [-1, 1].map((s) => { const a = new THREE.Mesh(new THREE.CircleGeometry(0.8, 10), asa); a.position.set(0, 0.9, s * 0.5); a.rotation.x = Math.PI / 2; g.add(a); return a; }); }
     const brilho = new THREE.Mesh(new THREE.OctahedronGeometry(0.35, 0), new THREE.MeshBasicMaterial({ color: '#fff3a0' })); brilho.position.y = 2.2; brilho.visible = false; g.add(brilho);
+    // tamanho mais perto do real; o brilho e o anel no chão não encolhem, para o bicho continuar fácil de achar
+    const esc = fase.escala || 1; g.scale.setScalar(esc);
+    brilho.scale.setScalar(1 / esc); brilho.position.y = 1.4 / esc;
+    if (esc < 0.8) { const anel = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.95, 24), new THREE.MeshBasicMaterial({ color: '#fff6c8', transparent: true, opacity: 0.55, side: THREE.DoubleSide })); anel.rotation.x = -Math.PI / 2; anel.position.y = 0.06 / esc; anel.scale.setScalar(1 / esc); g.add(anel); g.userData.anel = anel; }
     const a = Math.random() * 6.28, d = 6 + Math.random() * (area.r - 12);
     g.position.set(area.x + Math.cos(a) * d, 0, area.z + Math.sin(a) * d); g.position.y = altura(g.position.x, g.position.z);
     M.scene.add(g);
@@ -162,7 +166,7 @@ const Mundo = (function () {
     } else if (f.marca === 'parede') {
       [-0.18, 0.18].forEach((dx) => { const ov = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), L(f.cor || '#f3ead6')); ov.position.set(dx, 1.2, 0); g.add(ov); });
     } else {
-      const ov = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 10), L(f.cor || '#f3e6c9')); ov.scale.y = 1.25; ov.position.y = 0.7; g.add(ov);
+      const ov = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), L(f.cor || '#f3e6c9')); ov.scale.y = 1.25; ov.position.y = 0.42; g.add(ov);
       const folha = new THREE.Mesh(new THREE.CircleGeometry(1.1, 8), L('#5e8a3a')); folha.rotation.x = -Math.PI / 2; folha.position.y = 0.12; g.add(folha);
     }
     g.position.set(x, altura(x, z), z); M.scene.add(g);
@@ -223,6 +227,9 @@ const Mundo = (function () {
     M.companheiros.push({ id: especieId, voa: !!f.voa, mesh: g, pos: g.position, texto: f.emoji + ' ' + e.nome, fase: Math.random() * 6 });
   }
 
+  // bicho pequeno voa baixo, na altura das flores; o anel fica sempre no chão, embaixo dele
+  const voo = (b, onda) => 0.5 + (b.fase.escala || 1) * 1.2 + onda;
+  function anelNoChao(b) { const an = b.mesh.userData.anel; if (an) an.position.y = (altura(b.pos.x, b.pos.z) - b.pos.y + 0.06) / (b.fase.escala || 1); }
   function update(dt, jogador) {
     M.t += dt; M.jogadorPos = jogador;
     const noite = diaNoite(M.t); M.chuva = Math.sin(M.t / 45) > 0.35;
@@ -235,14 +242,14 @@ const Mundo = (function () {
       b.brilho.rotation.y += dt * 3;
       // de tempos em tempos, o bicho para e mostra o que faz no ecossistema
       if (b.rel) {
-        if (b.agindo > 0) { b.agindo -= dt; b.brilho.visible = true; b.pos.y = altura(b.pos.x, b.pos.z) + (b.fase.voa ? 1.2 : 0); return; }
+        if (b.agindo > 0) { b.agindo -= dt; b.brilho.visible = true; b.pos.y = altura(b.pos.x, b.pos.z) + (b.fase.voa ? voo(b, 0) : 0); anelNoChao(b); return; }
         b.brilho.visible = false; b.proxAcao -= dt;
         if (b.proxAcao <= 0) { b.agindo = 9; b.proxAcao = 14 + Math.random() * 10; b.alvo = null; return; }
       }
       b.espera -= dt;
       if (b.espera <= 0) { b.espera = 2 + Math.random() * 4; const a = Math.random() * 6.28, d = 6 + Math.random() * (b.area.r - 12); b.alvo = new V3(b.area.x + Math.cos(a) * d, 0, b.area.z + Math.sin(a) * d); }
       if (b.alvo) { const dir = new V3().subVectors(b.alvo, b.pos); dir.y = 0; if (dir.length() < 1) b.alvo = null; else { dir.normalize(); b.pos.addScaledVector(dir, dt * 2.5); b.mesh.rotation.y = Math.atan2(dir.x, dir.z) - Math.PI / 2; } }
-      b.pos.y = altura(b.pos.x, b.pos.z) + (b.fase.voa ? 1.5 + Math.sin(M.t * 3 + b.espera) * 0.4 : 0);
+      b.pos.y = altura(b.pos.x, b.pos.z) + (b.fase.voa ? voo(b, Math.sin(M.t * 3 + b.espera) * 0.3) : 0); anelNoChao(b);
     });
     const ninho = Estado.dados.ninho;
     M.marcas.forEach((m) => { if (m.fase.ninho) m.mesh.visible = !ninho.some((n) => Registro.ciclo(n.ciclo).especie === m.especie.id); });
