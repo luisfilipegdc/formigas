@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/jogo",
+      "destination": "/jogo/",
+      "permanent": false
+    },
+    {
       "source": "/docs",
       "destination": "/",
       "permanent": false
