@@ -6,6 +6,11 @@
       "permanent": false
     },
     {
+      "source": "/brasilvivo",
+      "destination": "/brasilvivo/",
+      "permanent": false
+    },
+    {
       "source": "/docs",
       "destination": "/",
       "permanent": false
