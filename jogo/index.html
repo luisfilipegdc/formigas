@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#164A3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Terra Codex">
+<meta name="description" content="Terra Codex: um mundo aberto onde aprender dá poder para reconstruir o mundo. Capítulo 1: Vale Vivo (MVP).">
+<meta name="robots" content="noindex">
+<title>Terra Codex · Vale Vivo (MVP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/jogo.css">
+</head>
+<body>
+<canvas id="tela"></canvas>
+<div id="etiquetas" aria-hidden="true"></div>
+
+<!-- HUD -->
+<header class="hud" id="hud" hidden>
+  <div class="clareza" title="Clareza: diminui no Ruído, volta na vila">
+    <span>✨</span><i><b id="clareza-bar"></b></i>
+  </div>
+  <div class="hud-meio">
+    <span id="hora">☀️</span>
+    <span id="selo" class="selo" hidden>🏅 Selo do Vale</span>
+  </div>
+  <nav class="hud-botoes">
+    <button type="button" id="bt-codex">📖 <small>Codex</small></button>
+    <button type="button" id="bt-ecos">✨ <small>Ecos</small></button>
+    <button type="button" id="bt-missoes">🧭 <small>Missões</small></button>
+  </nav>
+</header>
+
+<!-- ação de contexto -->
+<div class="acao" id="acao" hidden>
+  <p id="acao-nome"></p>
+  <button type="button" id="acao-bt">Observar</button>
+</div>
+<div class="dica" id="dica" hidden></div>
+<div class="joystick" id="joystick" hidden><i></i></div>
+<div class="toast" id="toast"></div>
+
+<!-- diálogo -->
+<section class="caixa" id="dialogo" hidden>
+  <header><span id="dialogo-quem"></span></header>
+  <p id="dialogo-texto"></p>
+  <div class="opcoes" id="dialogo-opcoes"></div>
+</section>
+
+<!-- painéis -->
+<section class="painel" id="painel" hidden>
+  <header><h2 id="painel-titulo"></h2><button type="button" class="fechar" id="painel-x" aria-label="Fechar">✕</button></header>
+  <div class="painel-corpo" id="painel-corpo"></div>
+</section>
+
+<!-- batalha -->
+<section class="batalha" id="batalha" hidden>
+  <div class="lado inimigo">
+    <h3 id="bt-inimigo-nome"></h3>
+    <p class="erro" id="bt-inimigo-erro"></p>
+    <div class="hp"><b id="bt-inimigo-hp"></b></div>
+    <div class="sprite" id="bt-inimigo-sprite">🌫️</div>
+  </div>
+  <div class="lado time">
+    <div class="sprite" id="bt-eco-sprite">✨</div>
+    <h3 id="bt-eco-nome"></h3>
+    <div class="hp"><b id="bt-eco-hp"></b></div>
+  </div>
+  <p class="log" id="bt-log"></p>
+  <div class="golpes" id="bt-golpes"></div>
+</section>
+
+<!-- início -->
+<section class="inicio" id="inicio">
+  <div class="inicio-card">
+    <p class="sobre">Terra Codex · Capítulo 1</p>
+    <h1>Vale Vivo</h1>
+    <p id="inicio-texto">O Ruído cobriu o vale de cinza. As pessoas esqueceram como o mundo funciona. Você chega com um Codex quebrado e uma missão: <b>entender para reconstruir</b>.</p>
+    <div id="inicio-escolha"></div>
+    <p class="mini">MVP em teste · conteúdo em revisão científica · sem anúncios, sem chat, sem dados de criança.</p>
+  </div>
+</section>
+
+<script src="../vendor/three/three.min.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/mundo.js"></script>
+<script src="js/jogador.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/jogo.js"></script>
+</body>
+</html>
