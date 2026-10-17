@@ -40,6 +40,8 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 | Guia e recompensa | Jornada "O ciclo da borboleta" com o próximo passo sempre no HUD, seta-guia e farol até o alvo, celebração a cada marco, selo no Ninho e resumo "Enquanto você esteve fora". Ver `docs/terra-codex-design-comportamental.md` |
 | Design system | Tokens em `brasilvivo/css/tokens.css`, componentes em `jogo.css`, documentação viva em `brasilvivo/sistema.html` |
 
+| Som, ajustes e ajuda | Som sintetizado (Web Audio) com efeitos pentatônicos e música em camadas pela Clareza; menu de Ajustes (texto, volumes, legendas de som, menos movimento, próximo passo, ajuda de caminho); seta e farol só quando a criança pede ou fica uns 20 s sem se aproximar; ipê-rosa na horta e árvore do jardim que amarela com a Clareza; replay de cada transformação no Ninho. Kit de playtest em `docs/terra-codex-playtest.md`, rascunho de RIPD em `docs/terra-codex-ripd-rascunho.md` |
+
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
 ## Como os dados se organizam

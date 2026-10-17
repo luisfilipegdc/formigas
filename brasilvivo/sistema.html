@@ -105,14 +105,14 @@
 
 <section class="comp">
   <h3>Local · Objetivo · Botão redondo · Selo (HUD)</h3>
-  <p class="uso">Topo da tela. À esquerda, onde estou e a Clareza da área; logo abaixo, o próximo passo da jornada (um só). À direita, os três atalhos; o selo dourado conta o que está pronto para cuidar.</p>
+  <p class="uso">Topo da tela. À esquerda, onde estou e a Clareza da área; logo abaixo, o próximo passo da jornada (um só). À direita, os atalhos; o selo ✨ avisa que há novidade no Ninho (uma transformação para rever ou alguém pronto para cuidar), nunca culpa.</p>
   <div class="palco">
     <div class="hud-esq demo" style="pointer-events:auto">
       <div class="local vidro"><span class="local-ico">📍</span><div class="local-txt"><b id="x1" style="display:block;font-size:var(--t-sm);font-weight:900">Horta Comunitária</b><div class="clareza"><small>Clareza</small><i><b style="width:100%"></b></i><span>☀️</span></div></div></div>
       <button type="button" class="objetivo vidro demo"><span class="obj-ico">🔍</span><span><small>Passo 2 de 5</small><b>Procure o ovinho nos canteiros da horta</b></span></button>
     </div>
     <div class="local vidro demo"><span class="local-ico">📍</span><div class="local-txt"><b style="display:block;font-size:var(--t-sm);font-weight:900">Jardim Polinizador</b><div class="clareza"><small>Clareza</small><i><b class="ruido" style="width:8%"></b></i></div></div></div>
-    <nav class="hud-botoes demo"><button type="button"><span class="bola vidro">📖</span><small>BioDex</small></button><button type="button"><span class="bola vidro">🥚</span><small>Ninho</small><span class="selo">1</span></button><button type="button"><span class="bola vidro">🗺️</span><small>Mapa</small></button></nav>
+    <nav class="hud-botoes demo"><button type="button"><span class="bola vidro">📖</span><small>BioDex</small></button><button type="button"><span class="bola vidro">🥚</span><small>Ninho</small><span class="selo">✨</span></button><button type="button"><span class="bola vidro">🗺️</span><small>Mapa</small></button></nav>
   </div>
   <div class="faz"><div class="sim"><b>Faça</b>Escreva o objetivo como ação concreta com lugar: "Procure o ovinho nos canteiros da horta".</div><div class="nao"><b>Evite</b>Mais de um objetivo ao mesmo tempo, selo vermelho ou número que cresce para pressionar.</div></div>
 </section>
@@ -177,6 +177,21 @@
   </div>
   <div class="faz"><div class="sim"><b>Faça</b>Mostrar o sinal visível da mudança ("já trocou de pele") e um tempo aproximado.</div><div class="nao"><b>Evite</b>Punição por esquecer (bicho que morre ou regride) ou botão de "acelerar".</div></div>
 </section>
+
+<section class="comp">
+  <h3>Ajustes · Segmentado · Chave · Barra</h3>
+  <p class="uso">Ajustes ficam na tela inicial (antes da primeira fala) e no HUD. Tamanho do texto escala toda a tipografia (<code>--esc</code>). Volumes separados para música, efeitos e natureza, legendas de som, menos movimento e quanto de ajuda de caminho a criança quer.</p>
+  <div class="palco papel"><div class="aj demo" style="width:100%;max-width:440px">
+    <div class="seg"><button type="button" class="on">A</button><button type="button">A+</button><button type="button">A++</button></div><br>
+    <label class="aj-linha"><span>Música</span><input type="range" min="0" max="1" step="0.05" value="0.55"></label>
+    <label class="aj-linha"><span>Legendas de som<small>Mostra em texto o que se ouve em cada lugar</small></span><input type="checkbox" class="chave" checked></label>
+    <div class="seg"><button type="button" class="on">Quando eu precisar</button><button type="button">Sempre</button><button type="button">Explorador</button></div>
+  </div></div>
+  <div class="faz"><div class="sim"><b>Faça</b>Ajuste vale na hora (sem botão "salvar") e fica só no aparelho.</div><div class="nao"><b>Evite</b>Esconder os ajustes depois do início, ou depender só do som para dar uma informação.</div></div>
+</section>
+
+<h2 class="sec">Som</h2>
+<div class="regra"><h3>Como o jogo soa</h3><p>Todos os efeitos usam a mesma escala pentatônica (dó, ré, mi, sol, lá), então nada soa como "erro". A música entra em camadas conforme a Clareza da área (baixo a partir de 25%, melodia a partir de 50%, brilhos a partir de 75%) e o Ruído é um zumbido grave que some com a restauração. Toda informação dada por som também aparece na tela; com legendas ligadas, o ambiente de cada lugar é descrito em texto.</p></div>
 
 <h2 class="sec">Voz e texto</h2>
 <div class="regra"><h3>Como o jogo fala</h3><p>Frases curtas, verbo no começo, "você". O mundo mostra um sintoma e a criança descobre a causa. Ciência dita como acontecimento ("a lagarta trocou de pele"), nunca como aula ("a ecdise é..."). Nomes científicos só em "Detalhes". Palavras do jogo: Ativar, Restaurar, Conectar, Despertar, Cuidar, Transformar. Fora da tela: aplicar, fase de jogo, capítulo, aula.</p></div>

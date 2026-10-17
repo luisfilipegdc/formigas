@@ -208,3 +208,44 @@ body.jogando .inicio { display: none; }
   .inicio-logo h1 { font-size: 42px; }
   .objetivo { max-width: 56vw; }
 }
+
+/* Botão de ação: área de toque maior que o desenho e resposta imediata */
+.acao button { position: relative; }
+.acao button::after { content: ''; position: absolute; inset: -16px; border-radius: 50%; }
+.acao button.apertado { transform: scale(.9); filter: brightness(1.08); transition: transform var(--m-rapido); }
+.hud-botoes button::after { content: ''; position: absolute; inset: -6px; }
+body.sem-passo .objetivo { display: none !important; }
+
+/* Ajustes */
+body:not(.jogando) .painel { z-index: calc(var(--z-inicio) + 1); }
+.aj h4 { margin: var(--e-4) 0 var(--e-2); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--texto-suave); }
+.aj-rot { margin: var(--e-3) 0 var(--e-2); font-weight: var(--peso-forte); }
+.seg { display: flex; gap: 6px; background: var(--sup-controle); padding: 4px; border-radius: var(--r-md); }
+.seg button { flex: 1; min-height: var(--alvo-min); border: 0; border-radius: var(--r-sm); background: transparent; font-weight: var(--peso-titulo); color: var(--texto-forte); font-size: var(--t-sm); }
+.seg button.on { background: var(--cor-acao); box-shadow: 0 2px 0 var(--cor-acao-relevo); }
+.aj-linha { display: flex; align-items: center; justify-content: space-between; gap: var(--e-3); min-height: 52px; padding: var(--e-2) var(--e-3); background: var(--sup-cartao); border-radius: var(--r-md); margin-bottom: var(--e-2); box-shadow: var(--relevo-cartao); font-weight: var(--peso-forte); font-size: var(--t-md); }
+.aj-linha small { display: block; font-weight: var(--peso-texto); color: var(--texto-suave); font-size: var(--t-xs); }
+.aj-linha input[type=range] { width: 46%; accent-color: var(--cor-vida); height: 28px; }
+.chave { appearance: none; -webkit-appearance: none; width: 54px; height: 32px; border-radius: var(--r-pill); background: var(--c-creme-300); position: relative; flex: none; transition: background var(--m-rapido); cursor: pointer; }
+.chave::after { content: ''; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: var(--c-branco); box-shadow: var(--sombra-1); transition: transform var(--m-rapido) var(--curva); }
+.chave:checked { background: var(--cor-vida); }
+.chave:checked::after { transform: translateX(22px); }
+.inicio .inicio-aj { width: 100%; margin: 0 0 var(--e-3); background: rgba(255, 255, 255, .14); color: var(--c-branco); box-shadow: none; font-size: var(--t-sm); }
+
+/* Ninho: novidade e replay */
+.ninho.novo { box-shadow: 0 0 0 3px var(--cor-acao), var(--relevo-cartao); }
+.ninho .rever { margin-top: var(--e-2); }
+.transforma .troca { display: flex; align-items: center; justify-content: center; gap: var(--e-3); margin: -50px 0 var(--e-2); font-size: 56px; }
+.transforma .de { animation: sair 1.4s var(--curva) forwards; }
+.transforma .seta { font-size: 26px; color: var(--cor-acao-claro); }
+.transforma .para { animation: chegar .9s 1.1s var(--curva-mola) both; }
+@keyframes sair { 60% { transform: scale(1.1); } 100% { transform: scale(.75); opacity: .45; filter: grayscale(.6); } }
+@keyframes chegar { from { transform: scale(0) rotate(-20deg); opacity: 0; } }
+
+@media (max-width: 520px) {
+  .hud-botoes { gap: 4px; }
+  .bola { width: 40px; height: 40px; font-size: 18px; }
+  #area-nome { max-width: 30vw; }
+  .acao button { width: 80px; height: 80px; }
+}
+.celebra-card.transforma { animation-duration: 3.3s; }

@@ -38,9 +38,15 @@
   E.dicas = E.dicas || {};
 
   /* ---------- início ---------- */
+  // o áudio só pode ligar depois de um toque (navegador e iOS)
+  const ligarSom = () => { Som.iniciar(); removeEventListener('pointerdown', ligarSom); };
+  addEventListener('pointerdown', ligarSom);
+  Ajustes.aplicar();
   function inicio() {
+    $('inicio-ajustes').addEventListener('click', () => UI.ajustes());
     if (E.comecou) { comecar(); return; }
     $('inicio-bt').addEventListener('click', async () => {
+      Som.iniciar(); Som.tocar('passo');
       E.comecou = true; salvar(); comecar();
       if (E.migrado) UI.toast('Seu progresso do Vale Vivo veio junto 🌿', 3500);
       const ipe = Registro.R.npcs.ipe;
@@ -52,7 +58,7 @@
     const voltando = document.body.classList.contains('jogando') === false && E.falou.ipe;
     document.body.classList.add('jogando'); $('inicio').hidden = true; $('hud').hidden = false;
     // quem volta vê o que mudou enquanto esteve fora (só o que aconteceu de verdade)
-    if (voltando) { const mud = conferirNinho(true); if (mud.length) setTimeout(() => UI.dialogo('🌱 Enquanto você esteve fora', mud.join(' '), ['Ver no Ninho', 'Continuar']).then((i) => { if (i === 0) UI.ninho(cuidar); }), 500); }
+    if (voltando) { const mud = conferirNinho(true); if (mud.length) setTimeout(() => UI.dialogo('🌱 Enquanto você esteve fora', mud.join(' '), ['Ver no Ninho', 'Continuar']).then((i) => { if (i === 0) UI.ninho(cuidar, rever); }), 500); }
   }
 
   /* ---------- o que está perto ---------- */
@@ -85,6 +91,7 @@
   async function agir() {
     if (!perto || UI.aberto()) return;
     const { tipo, obj } = perto;
+    Som.tocar(tipo === 'npc' ? 'falar' : tipo === 'marca' ? 'examinar' : tipo === 'bicho' ? 'observar' : 'toque');
     if (tipo === 'bicho') await verBicho(obj);
     if (tipo === 'marca') await examinar(obj);
     if (tipo === 'npc') await falar(obj.dado);
@@ -140,8 +147,15 @@
   function cuidar(i) {
     const n = E.ninho[i]; if (!n || n.desde) return;
     const c = Registro.ciclo(n.ciclo);
-    n.desde = Date.now(); Biodex.cuidou(c.especie); salvar();
-    UI.ninho(cuidar);
+    n.desde = Date.now(); Biodex.cuidou(c.especie); salvar(); Som.tocar('cuidar');
+    UI.ninho(cuidar, rever);
+  }
+  // replay: a criança vê a transformação que aconteceu enquanto estava longe (ou de novo, quando quiser)
+  function rever(i) {
+    const n = E.ninho[i]; if (!n || !n.novo) return;
+    const c = Registro.ciclo(n.ciclo), e = Registro.especie(c.especie), { de, para } = n.novo;
+    UI.fecharPainel(); delete n.novo; salvar(); seloNinho();
+    UI.transformacao(e, de, para, () => UI.ninho(cuidar, rever));
   }
   // confere as transformações (também conta o tempo com o jogo fechado)
   function conferirNinho(silencioso) {
@@ -152,15 +166,16 @@
       if (!passo || agora < n.desde + passo.minutos * 60000) return;
       n.fase = passo.para; n.desde = null;
       const e = Registro.especie(c.especie), f = e.fases.find((x) => x.id === passo.para);
+      n.novo = { de: passo.de, para: passo.para };   // guarda o momento para o replay
       Biodex.transformou(e.id, passo.para);
       const fim = !c.passos.some((p) => p.de === n.fase);
       if (fim) Mundo.companheiro(e.id);
       const de = e.fases.find((x) => x.id === passo.de).nome.toLowerCase();
       const frase = f.emoji + ' ' + (fim ? e.nome + ' completou o ciclo e agora acompanha você!' : 'Mudou! ' + e.nome + ' passou de ' + de + ' para ' + f.nome.toLowerCase() + '.');
       mudancas.push(frase);
-      if (!silencioso) UI.toast(frase, 4000);
+      if (!silencioso) { UI.toast(frase, 4000); Som.tocar('transformar'); }
       salvar();
-      if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninho(cuidar);
+      if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninho(cuidar, rever);
     });
     return mudancas;
   }
@@ -169,18 +184,27 @@
   function abrirBiodex() { UI.biodex(BIOMA, abrirFicha); }
   function abrirFicha(id) { UI.ficha(id, abrirBiodex); }
   $('bt-codex').addEventListener('click', abrirBiodex);
-  $('bt-ninho').addEventListener('click', () => UI.ninho(cuidar));
+  $('bt-ninho').addEventListener('click', () => UI.ninho(cuidar, rever));
   $('bt-mapa').addEventListener('click', () => UI.mapa());
+  $('bt-ajustes').addEventListener('click', () => UI.ajustes(atualizarObjetivo));
+  // resposta imediata ao toque (antes de qualquer diálogo abrir)
+  $('acao-bt').addEventListener('pointerdown', () => $('acao-bt').classList.add('apertado'));
+  addEventListener('pointerup', () => $('acao-bt').classList.remove('apertado'));
 
   // área atual e Clareza dela
-  let areaAtual;
+  let areaAtual, clarezaAqui = 1;
   function atualizarArea() {
     const p = jog.mesh.position, a = Mundo.areaEm(p.x, p.z), id = a ? a.id : null;
     const k = a ? Ruido.clareza(a.id) : 1;
     $('area-nome').textContent = a ? a.nome : 'Cerrado aberto';
     $('clareza-bar').style.width = Math.round(k * 100) + '%';
     $('clareza-bar').classList.toggle('ruido', k < 0.5);
-    if (id !== areaAtual) { areaAtual = id; if (a && k < 0.5 && !UI.aberto()) UI.toast('🌫️ ' + a.nome + ' está tomada pelo Ruído', 2600); }
+    if (id !== areaAtual) {
+      areaAtual = id;
+      if (a && k < 0.5 && !UI.aberto()) UI.toast('🌫️ ' + a.nome + ' está tomada pelo Ruído', 2600);
+      else if (Ajustes.valores.legendas && Som.ligado && !UI.aberto()) UI.toast(Som.descrever({ clareza: k, noite: mundo.noite }), 2600);
+    }
+    clarezaAqui = k;
     if (!dicaFixa) UI.dica(a && k < 0.5 ? '🌫️ ' + (a.dicaRuido || 'O Ruído apagou as ligações daqui.') : null);
   }
 
@@ -195,7 +219,8 @@
   function atualizarObjetivo() {
     const j = jornada(); if (!j) return;
     const el = $('objetivo'); el.hidden = false;
-    if (passoAtual !== null && j.i !== passoAtual && passoAtual >= 0) UI.toast('✅ Passo concluído: ' + JORNADA.passos[passoAtual].texto, 3200);
+    if (passoAtual !== null && j.i !== passoAtual && passoAtual >= 0) { UI.toast('✅ Passo concluído: ' + JORNADA.passos[passoAtual].texto, 3200); Som.tocar('passo'); }
+    if (j.i !== passoAtual) { semProgresso = 0; melhorDist = Infinity; pedido = false; }
     passoAtual = j.i;
     if (!j.passo) { el.classList.add('feito'); $('obj-ico').textContent = '🌿'; $('obj-n').textContent = JORNADA.nome; $('obj-txt').textContent = 'Jornada completa!'; return; }
     $('obj-ico').textContent = j.passo.ico; $('obj-n').textContent = 'Passo ' + (j.i + 1) + ' de ' + j.total; $('obj-txt').textContent = j.passo.texto;
@@ -209,15 +234,21 @@
     if (a.lugar === 'jardim' && mundo.placaJardim) return mundo.placaJardim.pos;
     return null;
   }
-  $('objetivo').addEventListener('click', () => { const j = jornada(); if (j) UI.jornada(JORNADA, j.i, E, () => UI.ninho(cuidar)); });
+  $('objetivo').addEventListener('click', () => { const j = jornada(); if (j) UI.jornada(JORNADA, j.i, E, () => UI.ninho(cuidar, rever), () => { pedido = true; }); });
+  // escada de ajuda: marco no cenário → a criança pede ou fica ~20 s sem se aproximar → seta e farol
+  let semProgresso = 0, melhorDist = Infinity, pedido = false, ultT = 0;
   // farol: coluna de luz dourada sobre o alvo, visível de longe
   const farol = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.9, 40, 16, 1, true), new THREE.MeshBasicMaterial({ color: '#ffd84a', transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
   farol.visible = false; scene.add(farol);
   const _v = new THREE.Vector3();
   function guiar(t) {
-    const alvo = alvoDoPasso(), g = $('guia'), p = jog.mesh.position;
+    const alvo = alvoDoPasso(), g = $('guia'), p = jog.mesh.position, dt = Math.min(0.2, t - ultT); ultT = t;
     if (!alvo || UI.aberto()) { farol.visible = false; g.hidden = true; return; }
     const d = Math.hypot(alvo.x - p.x, alvo.z - p.z);
+    if (d < melhorDist - 4) { melhorDist = d; semProgresso = 0; } else semProgresso += dt;
+    const modo = Ajustes.valores.ajuda;
+    const mostrar = modo === 'sempre' || (modo === 'precisar' && (pedido || semProgresso > 20));
+    if (!mostrar) { farol.visible = false; g.hidden = true; return; }
     farol.visible = d > 6; farol.position.set(alvo.x, alvo.y + 20, alvo.z); farol.material.opacity = 0.22 + Math.sin(t * 3) * 0.08;
     _v.set(alvo.x, alvo.y + 2, alvo.z).project(camera);
     const atras = _v.z > 1, dentro = !atras && Math.abs(_v.x) < 0.85 && Math.abs(_v.y) < 0.75;
@@ -231,8 +262,9 @@
   }
   // selo do Ninho: quantos estão prontos para cuidar (convite, nunca cobrança)
   function seloNinho() {
-    const prontos = E.ninho.filter((n) => !n.desde && Registro.ciclo(n.ciclo).passos.some((p) => p.de === n.fase)).length;
-    $('selo-ninho').hidden = !prontos; $('selo-ninho').textContent = prontos;
+    const prontos = E.ninho.filter((n) => n.novo || (!n.desde && Registro.ciclo(n.ciclo).passos.some((p) => p.de === n.fase))).length;
+    $('selo-ninho').hidden = !prontos; $('selo-ninho').textContent = '✨';
+    $('bt-ninho').setAttribute('aria-label', prontos ? 'Ninho: tem novidade' : 'Ninho');
   }
   // primeira vez que o botão de ação aparece: dica curta, uma vez só
   function dicaPrimeiraAcao() {
@@ -264,6 +296,7 @@
     acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); atualizarObjetivo(); dicaPrimeiraAcao(); }
     accN += dt; if (accN > 1) { accN = 0; conferirNinho(); seloNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninhoAtualizar(); }
     guiar(now / 1000);
+    Som.atualizar(dt, { clareza: clarezaAqui, noite: mundo.noite, chuva: mundo.chuva });
     // etiquetas
     const p = jog.mesh.position, lista = [];
     mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: 0.9 + (b.fase.escala || 1) * 1.6 }); } });

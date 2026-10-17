@@ -88,6 +88,9 @@ const Mundo = (function () {
     M.lampada.position.set(-18.4, altura(-20, 14.7) + 2.95, 14.95); scene.add(M.lampada);
     M.luz = new THREE.PointLight('#ffd98a', 0, 14); M.luz.position.copy(M.lampada.position).add(new V3(0, 0, 0.6)); scene.add(M.luz);
     M.ipe = ipe(); M.ipe.position.set(-16, altura(-16, 34), 34); scene.add(M.ipe); M.arvPos.push([-16, 34, 1]);
+    // marcos que se veem de longe: ipê-rosa na horta e a árvore do jardim (cinza no Ruído, amarela com a Clareza)
+    const rosa = ipe('#f08ac0'); rosa.position.set(-104, altura(-104, 56), 56); rosa.scale.setScalar(1.25); scene.add(rosa); M.arvPos.push([-104, 56, 1.2]);
+    M.ipeJardim = ipe('#8f8d86'); M.ipeJardim.position.set(40, altura(40, 80), 80); M.ipeJardim.scale.setScalar(1.15); scene.add(M.ipeJardim); M.arvPos.push([40, 80, 1.1]);
 
     /* árvores do Cerrado: troncos tortos e copas em tufos (3 instâncias por árvore) */
     const arv = [];
@@ -183,10 +186,10 @@ const Mundo = (function () {
     return M;
   }
 
-  function ipe() {
-    const g = new THREE.Group();
+  function ipe(cor) {
+    const g = new THREE.Group(), copa = T(cor || '#f5c43a', { flatShading: true });
     const t = new THREE.Mesh(Formas.troncoTorto(), T('#5a3e26')); t.scale.set(1.6, 1.9, 1.6); t.castShadow = true; g.add(t);
-    [[0.8, 8.4, 0, 2.1], [-1.4, 7.8, 1, 1.6], [2.2, 7.6, -0.8, 1.5], [0.2, 9.6, -1.1, 1.5], [-0.8, 8.9, -1.7, 1.3], [1.8, 8.9, 1.2, 1.2], [-2.2, 8.6, -0.6, 1.1]].forEach(([x, y, z, s]) => { const c = new THREE.Mesh(Formas.copaGeo, T('#f5c43a', { flatShading: true })); c.position.set(x, y, z); c.scale.set(s, s * 0.75, s); c.castShadow = true; g.add(c); });
+    [[0.8, 8.4, 0, 2.1], [-1.4, 7.8, 1, 1.6], [2.2, 7.6, -0.8, 1.5], [0.2, 9.6, -1.1, 1.5], [-0.8, 8.9, -1.7, 1.3], [1.8, 8.9, 1.2, 1.2], [-2.2, 8.6, -0.6, 1.1]].forEach(([x, y, z, s]) => { const c = new THREE.Mesh(Formas.copaGeo, cor === '#8f8d86' ? new THREE.MeshPhongMaterial({ color: cor, flatShading: true, shininess: 6 }) : copa); c.position.set(x, y, z); c.scale.set(s, s * 0.75, s); c.castShadow = true; g.add(c); });
     return g;
   }
 
@@ -258,7 +261,8 @@ const Mundo = (function () {
     M.tufos.forEach(([x, z, s, v], i) => { const k = corEm(x, z, cCapim.clone().lerp(cTerra, v * 0.35), cCapimC, cCapimV, v); M.capim.setColorAt(i, k); });
     M.capim.instanceColor.needsUpdate = true;
     const kv = M.cor.vereda; if (kv !== undefined) M.rio.material.color.copy(new THREE.Color('#7d827a')).lerp(new THREE.Color('#3f97c8'), kv);
-    const kj = M.cor.jardim; if (kj !== undefined) M.flores.forEach((f, i) => { const aberta = kj >= 0.5 - i * 0.004; f.flor.visible = aberta; f.botao.visible = !aberta; });
+    const kj = M.cor.jardim; if (kj !== undefined && M.ipeJardim) M.ipeJardim.children.forEach((c, i) => { if (i) c.material.color.copy(new THREE.Color('#8f8d86')).lerp(new THREE.Color('#f5c43a'), Math.min(1, kj * 1.6)); });
+    if (kj !== undefined) M.flores.forEach((f, i) => { const aberta = kj >= 0.5 - i * 0.004; f.flor.visible = aberta; f.botao.visible = !aberta; });
   }
 
   /* dia e noite: 200 s por dia; noite ≈ 30% */

@@ -24,14 +24,14 @@ const UI = (function () {
       const o = $('dialogo-opcoes'); o.innerHTML = '';
       (opcoes || ['Continuar']).forEach((op, i) => {
         const b = document.createElement('button'); b.type = 'button'; b.textContent = typeof op === 'string' ? op : op.t; if (op.classe) b.className = op.classe;
-        b.addEventListener('click', () => { d.hidden = true; aberto = false; Jogador.J.bloqueado = false; res(i); });
+        b.addEventListener('click', () => { Som.tocar('toque'); d.hidden = true; aberto = false; Jogador.J.bloqueado = false; res(i); });
         o.appendChild(b);
       });
     });
   }
 
-  function painel(titulo, html) { $('painel').hidden = false; $('painel-titulo').textContent = titulo; $('painel-corpo').innerHTML = html; $('painel-corpo').scrollTop = 0; Jogador.J.bloqueado = true; }
-  function fecharPainel() { $('painel').hidden = true; Jogador.J.bloqueado = false; }
+  function painel(titulo, html) { if ($('painel').hidden) Som.tocar('abrir'); $('painel').hidden = false; $('painel-titulo').textContent = titulo; $('painel-corpo').innerHTML = html; $('painel-corpo').scrollTop = 0; Jogador.J.bloqueado = true; }
+  function fecharPainel() { if (!$('painel').hidden) Som.tocar('fechar'); $('painel').hidden = true; Jogador.J.bloqueado = false; }
   $('painel-x').addEventListener('click', fecharPainel);
 
   const pontos = (id) => { const ms = Biodex.marcos(id); return '<span class="pontos" aria-label="' + ms.length + ' de 6 marcos">' + Registro.MARCOS.map((m) => '<i class="' + (ms.includes(m.id) ? 'ok' : '') + '"></i>').join('') + '</span>'; };
@@ -99,7 +99,7 @@ const UI = (function () {
       const [pct, txt] = progresso(n, passo, agora); b.style.width = pct + '%'; t.textContent = txt;
     });
   }
-  function ninho(aoCuidar) {
+  function ninho(aoCuidar, aoRever) {
     const agora = Date.now(), N = Estado.dados.ninho;
     const lista = N.map((n, i) => {
       const c = Registro.ciclo(n.ciclo), e = Registro.especie(c.especie), f = e.fases.find((x) => x.id === n.fase), passo = c.passos.find((p) => p.de === n.fase);
@@ -111,10 +111,45 @@ const UI = (function () {
         const [pct, txt] = progresso(n, passo, agora);
         corpo = '<div class="barra"><b data-nb="' + i + '" style="width:' + pct + '%"></b></div><small>' + esc(passo.sinal) + '</small><small data-nt="' + i + '">' + txt + '</small>';
       }
-      return '<div class="ninho"><div class="em">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + '</div></div>';
+      const rever = n.novo ? '<button type="button" class="btn sec rever" data-r="' + i + '">✨ Ver como foi</button>' : '';
+      return '<div class="ninho' + (n.novo ? ' novo' : '') + '"><div class="em">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + rever + '</div></div>';
     }).join('');
     painel('🥚 Ninho · ' + N.length + '/3', (lista || '<p>Nenhum ser vivo para cuidar ainda. Ovos e outras fases pequenas aparecem pelo mapa: procure nas folhas da horta e na beira da vereda.</p>') + '<p class="mini">Aqui você não captura bicho: cuida de uma fase da vida até ela se transformar. Não há resposta errada; se faltar algo, ele só espera. No mundo real, nunca tire ovos da natureza.</p>');
     $('painel-corpo').querySelectorAll('button[data-i]').forEach((b) => b.addEventListener('click', () => aoCuidar(+b.dataset.i)));
+    $('painel-corpo').querySelectorAll('button[data-r]').forEach((b) => b.addEventListener('click', () => aoRever && aoRever(+b.dataset.r)));
+  }
+
+  /* ---------- replay da transformação (a criança nunca perde o momento) ---------- */
+  function transformacao(e, de, para, fim) {
+    const fd = e.fases.find((x) => x.id === de), fp = e.fases.find((x) => x.id === para);
+    enfileirar((el) => {
+      el.innerHTML = '<div class="celebra-card transforma"><div class="troca"><span class="de">' + fd.emoji + '</span><span class="seta">➜</span><span class="para">' + fp.emoji + '</span></div><small>Assim foi a transformação</small><b>' + esc(e.nome) + ': ' + esc(fd.nome.toLowerCase()) + ' → ' + esc(fp.nome.toLowerCase()) + '</b></div>';
+      el.hidden = false; Som.tocar('transformar');
+      if (fim) setTimeout(fim, 3200);
+      return 3300;
+    });
+  }
+
+  /* ---------- Ajustes: texto, som, legendas, movimento e ajuda ---------- */
+  function ajustes(aoMudar) {
+    const a = Ajustes.valores;
+    const seg = (k, ops) => '<div class="seg" role="radiogroup">' + ops.map(([v, t]) => '<button type="button" role="radio" aria-checked="' + (a[k] === v) + '" data-k="' + k + '" data-v="' + v + '" class="' + (a[k] === v ? 'on' : '') + '">' + t + '</button>').join('') + '</div>';
+    const barra = (k, t) => '<label class="aj-linha"><span>' + t + '</span><input type="range" min="0" max="1" step="0.05" value="' + a[k] + '" data-k="' + k + '"></label>';
+    const chave = (k, t, sub, on) => '<label class="aj-linha"><span>' + t + (sub ? '<small>' + sub + '</small>' : '') + '</span><input type="checkbox" class="chave" data-k="' + k + '"' + (on ? ' checked' : '') + '></label>';
+    const h = '<div class="aj">' +
+      '<h4>Texto</h4>' + seg('texto', [[1, 'A'], [1.15, 'A+'], [1.3, 'A++']]) +
+      '<h4>Som</h4>' + chave('mudo', 'Sem som', '', a.mudo) + barra('geral', 'Volume geral') + barra('musica', 'Música') + barra('efeitos', 'Efeitos') + barra('ambiente', 'Natureza') +
+      chave('legendas', 'Legendas de som', 'Mostra em texto o que se ouve em cada lugar', a.legendas) +
+      '<h4>Movimento e ajuda</h4>' + chave('calmo', 'Menos movimento', 'Sem pulsos, molas e animações fortes', Ajustes.calmo()) +
+      chave('passo', 'Mostrar o próximo passo', 'O cartão da jornada no topo da tela', a.passo) +
+      '<p class="aj-rot">Seta e farol de caminho</p>' + seg('ajuda', [['precisar', 'Quando eu precisar'], ['sempre', 'Sempre'], ['nunca', 'Explorador']]) +
+      '<p class="mini">Os ajustes ficam só neste aparelho.</p></div>';
+    painel('⚙️ Ajustes', h);
+    const corpo = $('painel-corpo');
+    corpo.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.k === 'texto' ? +b.dataset.v : b.dataset.v; Ajustes.mudar(b.dataset.k, v); Som.tocar('toque'); ajustes(aoMudar); if (aoMudar) aoMudar(); }));
+    corpo.querySelectorAll('input[type=range]').forEach((r) => r.addEventListener('input', () => Ajustes.mudar(r.dataset.k, +r.value)));
+    corpo.querySelectorAll('input[type=range]').forEach((r) => r.addEventListener('change', () => Som.tocar('toque')));
+    corpo.querySelectorAll('input.chave').forEach((c) => c.addEventListener('change', () => { Ajustes.mudar(c.dataset.k, c.checked); Som.tocar('toque'); if (aoMudar) aoMudar(); }));
   }
 
   /* ---------- mapa do Brasil Vivo (ficcional, sem localização real) ---------- */
@@ -139,23 +174,28 @@ const UI = (function () {
   const fila = []; let celebrando = false;
   const FRASE = { visto: 'Você viu pela primeira vez', encontrado: 'Você encontrou outra fase da vida', cuidado: 'Você cuidou de uma vida', transformado: 'Você viu a transformação', conectado: 'Você descobriu o que ele faz', ativado: 'Você religou o mundo' };
   function celebrar(especieId, marco) { fila.push([especieId, marco]); if (!celebrando) proximaCelebracao(); }
+  // qualquer cartão (marco ou replay) entra na mesma fila, para um não apagar o outro
+  function enfileirar(fn) { fila.push(fn); if (!celebrando) proximaCelebracao(); }
   function proximaCelebracao() {
     const it = fila.shift(), el = $('celebra'); if (!it) { celebrando = false; el.hidden = true; return; }
     celebrando = true;
+    if (typeof it === 'function') { const ms = it(el); setTimeout(proximaCelebracao, ms); return; }
     const [id, marco] = it, e = Registro.especie(id), m = Registro.MARCOS.find((x) => x.id === marco), ms = Biodex.marcos(id);
     const dots = Registro.MARCOS.map((x) => '<i class="' + (ms.includes(x.id) ? 'ok' : '') + (x.id === marco ? ' novo' : '') + '"></i>').join('');
     el.innerHTML = '<div class="celebra-card">' + imgBicho(e).replace('class="retrato"', '').replace(/^([^<].*)$/, '<span class="em">$1</span>') + '<small>' + esc(FRASE[marco] || 'Novo marco') + '</small><b>' + esc(e.nome) + ' · ' + esc(m.nome) + '</b><span class="pontos">' + dots + '</span></div>';
-    el.hidden = false;
+    el.hidden = false; Som.tocar('marco');
     setTimeout(proximaCelebracao, 2600);
   }
 
   /* ---------- Jornada: a lista de passos (abre ao tocar no Objetivo) ---------- */
-  function jornada(J, atual, E, abrirNinho) {
+  function jornada(J, atual, E, abrirNinho, mostrarCaminho) {
     const h = '<ol class="jornada">' + J.passos.map((p, i) => '<li class="' + (i < atual || atual < 0 ? 'feito' : i === atual ? 'atual' : '') + '"><span class="n">' + (i < atual || atual < 0 ? '✓' : i + 1) + '</span><div>' + p.ico + ' ' + esc(p.texto) + (i === atual && p.dica ? '<small>' + esc(p.dica) + '</small>' : '') + '</div></li>').join('') + '</ol>' +
       (atual >= 0 && J.passos[atual].acao === 'ninho' ? '<button type="button" class="btn" id="bt-ir-ninho">🥚 Abrir o Ninho</button>' : '') +
-      '<p class="mini">Sem pressa e sem prazo: cada passo espera por você. A seta dourada e o farol de luz mostram para onde ir.</p>';
+      (atual >= 0 && J.passos[atual].alvo ? '<button type="button" class="btn" id="bt-caminho">🧭 Mostrar o caminho</button>' : '') +
+      '<p class="mini">Sem pressa e sem prazo: cada passo espera por você. Se ficar em dúvida, a seta dourada e o farol de luz aparecem para mostrar o caminho.</p>';
     painel('🧭 ' + J.nome, h);
     const b = $('bt-ir-ninho'); if (b) b.addEventListener('click', abrirNinho);
+    const c = $('bt-caminho'); if (c) c.addEventListener('click', () => { fecharPainel(); mostrarCaminho(); });
   }
 
   /* ---------- etiquetas sobre o 3D ---------- */
@@ -172,5 +212,5 @@ const UI = (function () {
     }
   }
 
-  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, celebrar, jornada, etiquetas, aberto: () => aberto || !$('painel').hidden };
+  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, celebrar, jornada, transformacao, ajustes, etiquetas, aberto: () => aberto || !$('painel').hidden };
 })();

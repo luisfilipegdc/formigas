@@ -53,15 +53,16 @@
   --texto-sobre-acao: var(--c-mata-800);
 
   /* ---------- tipografia (Nunito: redonda, legível para 8+) ---------- */
+  --esc: 1;          /* Ajustes → Tamanho do texto (1 · 1,15 · 1,3) */
   --fonte: 'Nunito', system-ui, -apple-system, sans-serif;
-  --t-2xs: 10.5px;  /* rótulo sob botão redondo */
-  --t-xs: 12px;     /* nota, legenda */
-  --t-sm: 13.5px;   /* etiqueta, chip */
-  --t-md: 16px;     /* leitura (diálogo, ficha) — nunca menor para texto corrido */
-  --t-lg: 18px;     /* frase de destaque */
-  --t-xl: 21px;     /* título de painel */
-  --t-2xl: 26px;    /* nome na ficha */
-  --t-display: 48px;
+  --t-2xs: calc(10.5px * var(--esc));  /* rótulo sob botão redondo */
+  --t-xs: calc(12px * var(--esc));     /* nota, legenda */
+  --t-sm: calc(13.5px * var(--esc));   /* etiqueta, chip */
+  --t-md: calc(16px * var(--esc));     /* leitura (diálogo, ficha) — nunca menor para texto corrido */
+  --t-lg: calc(18px * var(--esc));     /* frase de destaque */
+  --t-xl: calc(21px * var(--esc));     /* título de painel */
+  --t-2xl: calc(26px * var(--esc));    /* nome na ficha */
+  --t-display: calc(48px * var(--esc));
   --peso-texto: 600;
   --peso-forte: 800;
   --peso-titulo: 900;
@@ -93,6 +94,8 @@
 }
 
 /* quem pede menos movimento não vê pulsos nem molas */
+/* body.calmo: Ajustes → Menos movimento (segue o sistema por padrão) */
+body.calmo *, body.calmo *::before, body.calmo *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 @media (prefers-reduced-motion: reduce) {
   :root { --m-rapido: 0s; --m-medio: 0s; --m-lento: 0s; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
