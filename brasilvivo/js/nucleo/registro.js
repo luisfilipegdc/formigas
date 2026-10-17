@@ -5,7 +5,7 @@
    Registro.validar() lista referências quebradas (aparece no console).
    ===================================================================== */
 const Registro = (function () {
-  const R = { especies: {}, ciclos: {}, relacoes: {}, areas: {}, biomas: {}, npcs: {} };
+  const R = { especies: {}, ciclos: {}, relacoes: {}, areas: {}, biomas: {}, npcs: {}, jornadas: {} };
 
   // vocabulário fechado do núcleo
   const TIPOS_RELACAO = ['poliniza', 'come', 'abriga', 'decompoe', 'dispersa', 'cultiva'];
@@ -31,6 +31,7 @@ const Registro = (function () {
     Area: (o) => guardar('areas', Object.assign({ relacoes: [], efeitos: [] }, o)),
     Bioma: (o) => guardar('biomas', o),
     Npc: (o) => guardar('npcs', o),
+    Jornada: (o) => guardar('jornadas', o),
     especie: (id) => R.especies[id],
     ciclo: (id) => R.ciclos[id],
     relacao: (id) => R.relacoes[id],
@@ -68,4 +69,4 @@ const Registro = (function () {
   };
   return api;
 })();
-const { Especie, Ciclo, Relacao, Area, Bioma, Npc } = Registro;
+const { Especie, Ciclo, Relacao, Area, Bioma, Npc, Jornada } = Registro;

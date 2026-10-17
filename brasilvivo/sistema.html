@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Terra Codex · Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/jogo.css">
+<style>
+  /* só desta página: tira os componentes do lugar fixo para mostrá-los lado a lado */
+  html, body { overflow: auto; height: auto; }
+  body { background: var(--sup-papel); color: var(--texto); padding: 0 0 var(--e-10); }
+  .topo { background: linear-gradient(135deg, var(--c-mata-900), var(--c-mata-700)); color: var(--c-branco); padding: var(--e-10) var(--e-6) var(--e-8); }
+  .topo small { color: var(--cor-acao-claro); font-weight: var(--peso-titulo); letter-spacing: .3em; }
+  .topo h1 { margin: var(--e-1) 0 var(--e-2); font-size: var(--t-display); line-height: 1; }
+  .topo p { max-width: 720px; font-size: var(--t-md); line-height: var(--linha-texto); margin: 0; opacity: .92; }
+  main { max-width: 1040px; margin: 0 auto; padding: 0 var(--e-5); }
+  h2.sec { font-size: var(--t-2xl); color: var(--texto-forte); margin: var(--e-10) 0 var(--e-2); }
+  p.lead { color: var(--texto-suave); margin: 0 0 var(--e-5); max-width: 760px; line-height: var(--linha-texto); }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--e-3); }
+  .cor { border-radius: var(--r-md); overflow: hidden; background: var(--sup-cartao); box-shadow: var(--relevo-cartao); }
+  .cor div { height: 70px; }
+  .cor p { margin: 0; padding: var(--e-2) var(--e-3); font-size: var(--t-xs); line-height: 1.35; }
+  .cor b { display: block; font-size: var(--t-sm); }
+  .regra { background: var(--sup-cartao); border-radius: var(--r-lg); padding: var(--e-4) var(--e-5); box-shadow: var(--relevo-cartao); margin-bottom: var(--e-3); }
+  .regra h3 { margin: 0 0 var(--e-1); color: var(--texto-forte); font-size: var(--t-lg); }
+  .regra p { margin: 0; line-height: var(--linha-texto); }
+  .tipo div { display: flex; align-items: baseline; gap: var(--e-4); padding: var(--e-2) 0; border-bottom: 1px solid var(--borda-cartao); }
+  .tipo code { width: 110px; flex: none; color: var(--texto-suave); font-size: var(--t-xs); }
+  .linha { display: flex; flex-wrap: wrap; gap: var(--e-4); align-items: flex-end; }
+  .esp i { display: block; background: var(--cor-vida); height: 16px; border-radius: 4px; }
+  .esp, .raio, .sombra { text-align: center; font-size: var(--t-xs); color: var(--texto-suave); }
+  .raio i, .sombra i { display: block; width: 72px; height: 72px; background: var(--sup-cartao); border: 2px solid var(--borda-cartao); margin-bottom: 6px; }
+  .palco { position: relative; background: linear-gradient(160deg, #6fae57, #3d7a2c 55%, #2a5a20); border-radius: var(--r-xl); padding: var(--e-6); display: flex; flex-wrap: wrap; gap: var(--e-6); align-items: flex-start; min-height: 120px; }
+  .palco.papel { background: #efe6cf; }
+  .demo { position: static !important; transform: none !important; animation: none !important; opacity: 1 !important; inset: auto !important; }
+  .comp { margin-bottom: var(--e-8); }
+  .comp h3 { font-size: var(--t-xl); color: var(--texto-forte); margin: 0 0 var(--e-1); }
+  .comp .uso { color: var(--texto-suave); margin: 0 0 var(--e-3); line-height: var(--linha-texto); max-width: 760px; }
+  .faz { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-3); margin-top: var(--e-3); }
+  .faz div { background: var(--sup-cartao); border-radius: var(--r-md); padding: var(--e-3) var(--e-4); font-size: 14px; line-height: 1.4; box-shadow: var(--relevo-cartao); }
+  .faz b { display: block; margin-bottom: 2px; }
+  .faz .sim b { color: var(--cor-vida); } .faz .nao b { color: var(--cor-perigo); }
+  @media (max-width: 640px) { .faz { grid-template-columns: 1fr; } .topo h1 { font-size: 36px; } }
+</style>
+</head>
+<body>
+<header class="topo">
+  <small>TERRA CODEX · BRASIL VIVO</small>
+  <h1>Design System</h1>
+  <p>Fonte única de tokens e componentes do jogo. Tudo aqui é o CSS de verdade do jogo (<code>css/tokens.css</code> e <code>css/jogo.css</code>): se mudar aqui, muda no jogo. Feito para crianças de 8 a 13 anos no celular e no iPad.</p>
+</header>
+<main>
+
+<h2 class="sec">Princípios</h2>
+<p class="lead">Cinco regras que decidem os casos que esta página não cobre.</p>
+<div class="regra"><h3>1. Dourado é tocar</h3><p>Só o que é ação usa <code>--cor-acao</code>: botão de ação, botão primário, escolha principal do diálogo, objetivo e selo. Se é dourado, a criança sabe que pode tocar. Nada decorativo é dourado.</p></div>
+<div class="regra"><h3>2. Vidro sobre o mundo, papel para ler</h3><p>O que fica por cima do 3D é vidro verde translúcido, para o mundo continuar à vista. O que é para ler com calma (diálogo, painéis) é papel creme, com texto de 16 px ou mais.</p></div>
+<div class="regra"><h3>3. Verde é vida, cinza-lilás é Ruído</h3><p>Progresso, marco alcançado e Clareza usam a cor da vida. O que o Ruído apagou usa <code>--cor-ruido</code>. Vermelho só para perigo real (escorpião), nunca para "você está perdendo".</p></div>
+<div class="regra"><h3>4. Um passo por vez</h3><p>Sempre existe um próximo passo visível (Objetivo) e uma ação principal por tela. Painéis mostram uma escolha forte e no máximo uma secundária.</p></div>
+<div class="regra"><h3>5. Recompensa pelo que a criança fez</h3><p>Celebração só acontece quando a criança viveu algo (viu, cuidou, descobriu). Nada de sorteio, prêmio diário, sequência de dias ou contagem regressiva.</p></div>
+
+<h2 class="sec">Cor</h2>
+<p class="lead">Paleta do Cerrado. Componentes usam os tokens semânticos (<code>--cor-*</code>, <code>--sup-*</code>, <code>--texto-*</code>), nunca o hexadecimal.</p>
+<div class="grade">
+  <div class="cor"><div style="background:var(--cor-acao)"></div><p><b>--cor-acao</b>#f6c445 · tocar</p></div>
+  <div class="cor"><div style="background:var(--cor-vida)"></div><p><b>--cor-vida</b>#3fae5a · progresso, Clareza</p></div>
+  <div class="cor"><div style="background:var(--cor-ruido)"></div><p><b>--cor-ruido</b>#9b98a6 · o que está apagado</p></div>
+  <div class="cor"><div style="background:var(--cor-perigo)"></div><p><b>--cor-perigo</b>#d9614c · só perigo real</p></div>
+  <div class="cor"><div style="background:var(--c-mata-900)"></div><p><b>--c-mata-900</b>#0e2c22 · base do vidro</p></div>
+  <div class="cor"><div style="background:var(--texto-forte)"></div><p><b>--texto-forte</b>#123a2e · títulos</p></div>
+  <div class="cor"><div style="background:var(--sup-papel);border-bottom:1px solid var(--borda-cartao)"></div><p><b>--sup-papel</b>#fff9ec · ler</p></div>
+  <div class="cor"><div style="background:var(--sup-descoberto)"></div><p><b>--sup-descoberto</b>#e6f5df · já vivido</p></div>
+  <div class="cor"><div style="background:var(--sup-oculto)"></div><p><b>--sup-oculto</b>#f6efdf · ainda não</p></div>
+</div>
+
+<h2 class="sec">Tipografia</h2>
+<p class="lead">Nunito: letras redondas e abertas, boas para quem está aprendendo a ler rápido. Texto corrido nunca abaixo de <code>--t-md</code> (16 px).</p>
+<div class="tipo">
+  <div><code>--t-display 48</code><span style="font-size:var(--t-display);font-weight:900;color:var(--texto-forte)">Brasil Vivo</span></div>
+  <div><code>--t-2xl 26</code><span style="font-size:var(--t-2xl);font-weight:900">Borboleta-azul</span></div>
+  <div><code>--t-xl 21</code><span style="font-size:var(--t-xl);font-weight:900">BioDex do Cerrado</span></div>
+  <div><code>--t-lg 18</code><span style="font-size:var(--t-lg);font-weight:800">Bebe néctar e leva pólen de flor em flor.</span></div>
+  <div><code>--t-md 16</code><span style="font-size:var(--t-md);font-weight:600">Texto de leitura do diálogo e da ficha.</span></div>
+  <div><code>--t-sm 13,5</code><span style="font-size:var(--t-sm);font-weight:800">Etiqueta, chip, nome de área</span></div>
+  <div><code>--t-xs 12</code><span style="font-size:var(--t-xs)">Nota de rodapé e legenda</span></div>
+</div>
+
+<h2 class="sec">Espaço, raio e sombra</h2>
+<p class="lead">Espaço em base 4. Raios grandes e cantos redondos em tudo (nada pontudo). Duas sombras: <code>--sombra-1</code> para o que flutua sobre o 3D e <code>--sombra-2</code> para folhas que sobem.</p>
+<div class="linha">
+  <div class="esp"><i style="width:4px"></i>e-1 · 4</div><div class="esp"><i style="width:8px"></i>e-2 · 8</div><div class="esp"><i style="width:12px"></i>e-3 · 12</div><div class="esp"><i style="width:16px"></i>e-4 · 16</div><div class="esp"><i style="width:24px"></i>e-6 · 24</div><div class="esp"><i style="width:32px"></i>e-8 · 32</div>
+</div><br>
+<div class="linha">
+  <div class="raio"><i style="border-radius:var(--r-sm)"></i>r-sm 12</div><div class="raio"><i style="border-radius:var(--r-md)"></i>r-md 16</div><div class="raio"><i style="border-radius:var(--r-lg)"></i>r-lg 20</div><div class="raio"><i style="border-radius:var(--r-xl)"></i>r-xl 28</div><div class="raio"><i style="border-radius:var(--r-pill)"></i>r-pill</div>
+  <div class="sombra"><i style="border:0;border-radius:var(--r-md);box-shadow:var(--sombra-1)"></i>sombra-1</div><div class="sombra"><i style="border:0;border-radius:var(--r-md);box-shadow:var(--sombra-2)"></i>sombra-2</div><div class="sombra"><i style="border:0;border-radius:var(--r-md);box-shadow:var(--relevo-cartao)"></i>relevo-cartao</div>
+</div>
+<p class="lead" style="margin-top:var(--e-4)">Movimento: <code>--m-rapido .15s</code> (toque), <code>--m-medio .28s</code> (folhas entrando), <code>--m-lento .5s</code> (barras). Quem pede menos movimento no aparelho não vê pulsos nem molas. Área tocável mínima: <code>--alvo-min 44px</code>.</p>
+
+<h2 class="sec">Componentes</h2>
+<p class="lead">Cada componente com o que é, quando usar e o que evitar. Os exemplos abaixo são o próprio CSS do jogo.</p>
+
+<section class="comp">
+  <h3>Local · Objetivo · Botão redondo · Selo (HUD)</h3>
+  <p class="uso">Topo da tela. À esquerda, onde estou e a Clareza da área; logo abaixo, o próximo passo da jornada (um só). À direita, os três atalhos; o selo dourado conta o que está pronto para cuidar.</p>
+  <div class="palco">
+    <div class="hud-esq demo" style="pointer-events:auto">
+      <div class="local vidro"><span class="local-ico">📍</span><div class="local-txt"><b id="x1" style="display:block;font-size:var(--t-sm);font-weight:900">Horta Comunitária</b><div class="clareza"><small>Clareza</small><i><b style="width:100%"></b></i><span>☀️</span></div></div></div>
+      <button type="button" class="objetivo vidro demo"><span class="obj-ico">🔍</span><span><small>Passo 2 de 5</small><b>Procure o ovinho nos canteiros da horta</b></span></button>
+    </div>
+    <div class="local vidro demo"><span class="local-ico">📍</span><div class="local-txt"><b style="display:block;font-size:var(--t-sm);font-weight:900">Jardim Polinizador</b><div class="clareza"><small>Clareza</small><i><b class="ruido" style="width:8%"></b></i></div></div></div>
+    <nav class="hud-botoes demo"><button type="button"><span class="bola vidro">📖</span><small>BioDex</small></button><button type="button"><span class="bola vidro">🥚</span><small>Ninho</small><span class="selo">1</span></button><button type="button"><span class="bola vidro">🗺️</span><small>Mapa</small></button></nav>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Escreva o objetivo como ação concreta com lugar: "Procure o ovinho nos canteiros da horta".</div><div class="nao"><b>Evite</b>Mais de um objetivo ao mesmo tempo, selo vermelho ou número que cresce para pressionar.</div></div>
+</section>
+
+<section class="comp">
+  <h3>Botão de ação + Seta-guia + Etiqueta</h3>
+  <p class="uso">O botão de ação é a única ação de contexto: verbo curto e ícone ("Observar 🔍", "Falar 💬"). A seta-guia aparece na borda da tela quando o alvo do objetivo está fora de vista, com a distância. Etiquetas nomeiam o que está no 3D: escura (bicho), dourada (morador), amarela brilhando (bicho mostrando o que faz), cinza (Ruído).</p>
+  <div class="palco">
+    <div class="acao demo" style="position:static"><p class="vidro">🦋 Borboleta-azul</p><button type="button" style="animation:none"><span id="ai" style="font-size:28px">🔍</span><small style="font-size:12px;font-weight:900">Observar</small></button></div>
+    <div class="guia demo" style="position:static;transform:none"><i style="transform:rotate(-0.6rad)">➜</i><small>47 m</small></div>
+    <div style="display:flex;flex-direction:column;gap:10px;position:relative">
+      <span class="etq demo" style="position:static;transform:none">❔ ???</span>
+      <span class="etq npc demo" style="position:static;transform:none">👩‍🌾 Dona Flor</span>
+      <span class="etq acao demo" style="position:static;transform:none">🐝 Abelha jataí ✨</span>
+      <span class="etq ruido demo" style="position:static;transform:none">🌸 Jardim Polinizador · 0%</span>
+    </div>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Um verbo no infinitivo, no máximo duas palavras. O nome do alvo vai no chip acima.</div><div class="nao"><b>Evite</b>Dois botões dourados na mesma área da tela; a criança precisa saber qual é "o" botão.</div></div>
+</section>
+
+<section class="comp">
+  <h3>Toast · Dica · Celebração</h3>
+  <p class="uso">Toast confirma algo e some (2,5 a 4 s). Dica diz o que fazer aqui, em uma frase. Celebração marca um marco novo da BioDex: retrato, o que a criança fez e o ponto que acendeu. Uma celebração por vez, em fila.</p>
+  <div class="palco">
+    <div class="toast on demo">✅ Passo concluído: Converse com Dona Flor</div>
+    <div class="dica vidro demo">🌫️ As flores daqui não abrem: falta quem leve pólen de flor em flor.</div>
+    <div class="celebra-card demo" style="margin-top:50px"><span class="em">🐝</span><small>Você descobriu o que ele faz</small><b>Abelha jataí · Conectado</b><span class="pontos"><i class="ok"></i><i></i><i></i><i></i><i class="ok"></i><i></i></span></div>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Diga o que aconteceu de verdade: "Você viu a transformação".</div><div class="nao"><b>Evite</b>Exagero ("INCRÍVEL!!!"), confete por qualquer toque ou recompensa surpresa sorteada.</div></div>
+</section>
+
+<section class="comp">
+  <h3>Diálogo</h3>
+  <p class="uso">Retrato de quem fala, nome no chip verde, texto de leitura e escolhas. A primeira escolha é a principal (dourada). Recusar ("Deixar aqui", "Depois") é sempre possível e tem o mesmo tamanho.</p>
+  <div class="palco papel" style="padding-top:56px">
+    <section class="caixa demo" style="width:100%;max-width:560px"><header><span class="avatar">👩‍🌾</span><span id="dq" style="background:var(--c-mata-700);color:#fff;font-weight:900;font-size:var(--t-sm);padding:4px 12px;border-radius:999px;margin-top:18px">Dona Flor</span></header><p>Dizem que a borboleta-azul começa a vida bem pequena, numa folha. Já viu algum ovinho por aqui nos canteiros?</p><div class="opcoes"><button type="button">Vou procurar</button><button type="button">Depois</button></div></section>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Fala curta, no máximo 3 frases. O morador aponta um sintoma ("as flores nem abrem"), não a resposta.</div><div class="nao"><b>Evite</b>Pergunta com resposta certa (quiz) ou recusa que envergonha ("Não, prefiro não ajudar a horta").</div></div>
+</section>
+
+<section class="comp">
+  <h3>Carta · Ficha · Pontos de marco</h3>
+  <p class="uso">A carta mostra a espécie na grade da BioDex: retrato quando vista, silhueta quando não. Os 6 pontos são os marcos (Visto, Encontrado, Cuidado, Transformado, Conectado, Ativado). A ficha começa pelo encantamento (nome, o que faz, fases) e deixa a ciência em "Detalhes".</p>
+  <div class="palco papel">
+    <div class="cartas demo" style="width:100%;max-width:460px">
+      <button type="button" class="carta vista"><div class="em">🦋</div><b>Borboleta-azul</b><span class="pontos"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i></i><i></i></span><small>Transformado</small></button>
+      <button type="button" class="carta silhueta"><div class="em">🐸</div><b>???</b><small>Caçador</small></button>
+      <button type="button" class="carta vista ativada"><div class="em">🐝</div><b>Abelha jataí</b><span class="pontos"><i class="ok"></i><i class="ok"></i><i></i><i></i><i class="ok"></i><i class="ok"></i></span><small>Ativado</small></button>
+    </div>
+    <div class="fases demo" style="width:100%;max-width:420px"><div class="fase ok"><span class="em">🟡</span><b>Ovo</b></div><div class="fase ok"><span class="em">🐛</span><b>Lagarta</b></div><div class="fase"><span class="em">?</span><b>???</b><small>Aparece ao cuidar no Ninho</small></div></div>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Na silhueta, dê pista de onde procurar ("Procure de dia na Horta Comunitária").</div><div class="nao"><b>Evite</b>Mostrar a resposta antes de a criança viver o marco, ou porcentagem de "completar coleção".</div></div>
+</section>
+
+<section class="comp">
+  <h3>Item do Ninho · Jornada · Botão</h3>
+  <p class="uso">O item do Ninho mostra uma vida em transformação: fase, o que precisa ou quanto falta. A jornada lista os passos (feito, atual, próximo) e abre ao tocar no Objetivo. Botão primário dourado com relevo; secundário creme.</p>
+  <div class="palco papel">
+    <div class="ninho demo" style="width:100%;max-width:440px"><div class="em">🐛</div><div style="flex:1"><b>Lagarta <small style="display:inline">· Borboleta-azul</small></b><div class="barra"><b style="width:40%"></b></div><small>A lagarta come sem parar e já trocou de pele.</small><small>Mais ou menos 2 min</small></div></div>
+    <ol class="jornada demo" style="width:100%;max-width:440px"><li class="feito"><span class="n">✓</span><div>💬 Converse com Dona Flor na horta</div></li><li class="atual"><span class="n">2</span><div>🔍 Procure o ovinho nos canteiros<small>A seta dourada mostra para onde ir.</small></div></li><li><span class="n">3</span><div>🤲 Leve o ovo ao Ninho e cuide dele</div></li></ol>
+    <div><button type="button" class="btn">🥚 Abrir o Ninho</button> <button type="button" class="btn sec">← BioDex</button></div>
+  </div>
+  <div class="faz"><div class="sim"><b>Faça</b>Mostrar o sinal visível da mudança ("já trocou de pele") e um tempo aproximado.</div><div class="nao"><b>Evite</b>Punição por esquecer (bicho que morre ou regride) ou botão de "acelerar".</div></div>
+</section>
+
+<h2 class="sec">Voz e texto</h2>
+<div class="regra"><h3>Como o jogo fala</h3><p>Frases curtas, verbo no começo, "você". O mundo mostra um sintoma e a criança descobre a causa. Ciência dita como acontecimento ("a lagarta trocou de pele"), nunca como aula ("a ecdise é..."). Nomes científicos só em "Detalhes". Palavras do jogo: Ativar, Restaurar, Conectar, Despertar, Cuidar, Transformar. Fora da tela: aplicar, fase de jogo, capítulo, aula.</p></div>
+
+</main>
+</body>
+</html>

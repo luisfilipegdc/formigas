@@ -33,12 +33,9 @@
     return true;
   }
 
-  // cada marco novo da BioDex vira um aviso curto
-  const ICONE = { visto: '👀', encontrado: '🔎', cuidado: '🤲', transformado: '✨', conectado: '🔗', ativado: '🌿' };
-  Estado.on('marco', ({ especie, marco }) => {
-    const e = Registro.especie(especie), m = Registro.MARCOS.find((x) => x.id === marco);
-    UI.toast(ICONE[marco] + ' ' + e.nome + ': ' + m.nome + '!', 3000);
-  });
+  // cada marco novo da BioDex é celebrado (recompensa ligada ao que a criança fez, nunca ao acaso)
+  Estado.on('marco', ({ especie, marco }) => UI.celebrar(especie, marco));
+  E.dicas = E.dicas || {};
 
   /* ---------- início ---------- */
   function inicio() {
@@ -51,7 +48,12 @@
       E.falou.ipe = true; salvar();
     });
   }
-  function comecar() { document.body.classList.add('jogando'); $('inicio').hidden = true; $('hud').hidden = false; }
+  function comecar() {
+    const voltando = document.body.classList.contains('jogando') === false && E.falou.ipe;
+    document.body.classList.add('jogando'); $('inicio').hidden = true; $('hud').hidden = false;
+    // quem volta vê o que mudou enquanto esteve fora (só o que aconteceu de verdade)
+    if (voltando) { const mud = conferirNinho(true); if (mud.length) setTimeout(() => UI.dialogo('🌱 Enquanto você esteve fora', mud.join(' '), ['Ver no Ninho', 'Continuar']).then((i) => { if (i === 0) UI.ninho(cuidar); }), 500); }
+  }
 
   /* ---------- o que está perto ---------- */
   let perto = null;
@@ -130,7 +132,8 @@
   }
   async function olharJardim(a) {
     const k = Math.round(Ruido.clareza(a.id) * 100);
-    await UI.dialogo('🌸 ' + a.nome, a.texto + ' Clareza do jardim: ' + k + '%.', ['Vou descobrir quem falta']);
+    const temBorboleta = mundo.companheiros.some((c) => c.id === 'borboleta-azul');
+    await UI.dialogo('🌸 ' + a.nome, a.texto + ' Clareza do jardim: ' + k + '%.' + (temBorboleta ? ' Sua borboleta está agitada perto das flores. Na próxima atualização do jogo você vai poder soltá-la aqui.' : ''), [temBorboleta ? 'Combinado!' : 'Vou descobrir quem falta']);
   }
 
   /* ---------- Ninho: cuidar inicia a mudança; o tempo real faz o resto ---------- */
@@ -141,8 +144,8 @@
     UI.ninho(cuidar);
   }
   // confere as transformações (também conta o tempo com o jogo fechado)
-  function conferirNinho() {
-    const agora = Date.now();
+  function conferirNinho(silencioso) {
+    const agora = Date.now(), mudancas = [];
     E.ninho.forEach((n) => {
       if (!n.desde) return;
       const c = Registro.ciclo(n.ciclo), passo = c.passos.find((p) => p.de === n.fase);
@@ -152,10 +155,14 @@
       Biodex.transformou(e.id, passo.para);
       const fim = !c.passos.some((p) => p.de === n.fase);
       if (fim) Mundo.companheiro(e.id);
-      UI.toast(f.emoji + ' ' + (fim ? e.nome + ' completou o ciclo e agora acompanha você!' : 'Mudou! Agora é ' + f.nome + '.'), 4000);
+      const de = e.fases.find((x) => x.id === passo.de).nome.toLowerCase();
+      const frase = f.emoji + ' ' + (fim ? e.nome + ' completou o ciclo e agora acompanha você!' : 'Mudou! ' + e.nome + ' passou de ' + de + ' para ' + f.nome.toLowerCase() + '.');
+      mudancas.push(frase);
+      if (!silencioso) UI.toast(frase, 4000);
       salvar();
       if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninho(cuidar);
     });
+    return mudancas;
   }
 
   /* ---------- HUD ---------- */
@@ -174,11 +181,69 @@
     $('clareza-bar').style.width = Math.round(k * 100) + '%';
     $('clareza-bar').classList.toggle('ruido', k < 0.5);
     if (id !== areaAtual) { areaAtual = id; if (a && k < 0.5 && !UI.aberto()) UI.toast('🌫️ ' + a.nome + ' está tomada pelo Ruído', 2600); }
-    UI.dica(a && k < 0.5 ? '🌫️ O Ruído apagou as ligações daqui. Os seres vivos sumiram.' : null);
+    if (!dicaFixa) UI.dica(a && k < 0.5 ? '🌫️ ' + (a.dicaRuido || 'O Ruído apagou as ligações daqui.') : null);
+  }
+
+  /* ---------- jornada: um passo por vez, sempre à vista ---------- */
+  const JORNADA = Registro.lista('jornadas', BIOMA)[0];
+  let passoAtual = null, dicaFixa = false;
+  function jornada() {
+    if (!JORNADA) return null;
+    const i = JORNADA.passos.findIndex((p) => !p.feito(E));
+    return { i, passo: i >= 0 ? JORNADA.passos[i] : null, total: JORNADA.passos.length };
+  }
+  function atualizarObjetivo() {
+    const j = jornada(); if (!j) return;
+    const el = $('objetivo'); el.hidden = false;
+    if (passoAtual !== null && j.i !== passoAtual && passoAtual >= 0) UI.toast('✅ Passo concluído: ' + JORNADA.passos[passoAtual].texto, 3200);
+    passoAtual = j.i;
+    if (!j.passo) { el.classList.add('feito'); $('obj-ico').textContent = '🌿'; $('obj-n').textContent = JORNADA.nome; $('obj-txt').textContent = 'Jornada completa!'; return; }
+    $('obj-ico').textContent = j.passo.ico; $('obj-n').textContent = 'Passo ' + (j.i + 1) + ' de ' + j.total; $('obj-txt').textContent = j.passo.texto;
+  }
+  // posição do alvo do passo atual no mundo (para o farol e a seta)
+  function alvoDoPasso() {
+    const j = jornada(); if (!j || !j.passo || !j.passo.alvo) return null;
+    const a = j.passo.alvo;
+    if (a.npc) { const n = mundo.npcs.find((x) => x.dado.id === a.npc); return n && n.pos; }
+    if (a.marca) { const m = mundo.marcas.find((x) => x.especie.id + ':' + x.fase.id === a.marca); return m && m.mesh.visible ? m.pos : null; }
+    if (a.lugar === 'jardim' && mundo.placaJardim) return mundo.placaJardim.pos;
+    return null;
+  }
+  $('objetivo').addEventListener('click', () => { const j = jornada(); if (j) UI.jornada(JORNADA, j.i, E, () => UI.ninho(cuidar)); });
+  // farol: coluna de luz dourada sobre o alvo, visível de longe
+  const farol = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.9, 40, 16, 1, true), new THREE.MeshBasicMaterial({ color: '#ffd84a', transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  farol.visible = false; scene.add(farol);
+  const _v = new THREE.Vector3();
+  function guiar(t) {
+    const alvo = alvoDoPasso(), g = $('guia'), p = jog.mesh.position;
+    if (!alvo || UI.aberto()) { farol.visible = false; g.hidden = true; return; }
+    const d = Math.hypot(alvo.x - p.x, alvo.z - p.z);
+    farol.visible = d > 6; farol.position.set(alvo.x, alvo.y + 20, alvo.z); farol.material.opacity = 0.22 + Math.sin(t * 3) * 0.08;
+    _v.set(alvo.x, alvo.y + 2, alvo.z).project(camera);
+    const atras = _v.z > 1, dentro = !atras && Math.abs(_v.x) < 0.85 && Math.abs(_v.y) < 0.75;
+    if (dentro || d < 8) { g.hidden = true; return; }
+    // fora da tela: seta na borda apontando para o alvo
+    let x = _v.x, y = _v.y; if (atras) { x = -x; y = -y; }
+    const ang = Math.atan2(-y, x), m = Math.max(Math.abs(x) / 0.82, Math.abs(y) / 0.62, 0.001);
+    x /= m; y /= m;
+    g.hidden = false; g.style.left = ((x + 1) / 2 * innerWidth) + 'px'; g.style.top = ((1 - y) / 2 * innerHeight) + 'px';
+    $('guia-seta').style.transform = 'rotate(' + ang + 'rad)'; $('guia-dist').textContent = Math.round(d) + ' m';
+  }
+  // selo do Ninho: quantos estão prontos para cuidar (convite, nunca cobrança)
+  function seloNinho() {
+    const prontos = E.ninho.filter((n) => !n.desde && Registro.ciclo(n.ciclo).passos.some((p) => p.de === n.fase)).length;
+    $('selo-ninho').hidden = !prontos; $('selo-ninho').textContent = prontos;
+  }
+  // primeira vez que o botão de ação aparece: dica curta, uma vez só
+  function dicaPrimeiraAcao() {
+    if (E.dicas.acao || $('acao').hidden) return;
+    E.dicas.acao = true; salvar(); dicaFixa = true;
+    UI.dica('👉 Toque no botão dourado para ' + $('acao-txt').textContent.toLowerCase() + '.');
+    setTimeout(() => { dicaFixa = false; UI.dica(null); }, 4500);
   }
 
   window.__terra = {
-    estado: E, mundo, jog, salvar, erros, Biodex, Registro, Ruido,
+    estado: E, mundo, jog, salvar, erros, Biodex, Registro, Ruido, jornada,
     // testes: adianta o relógio do Ninho em N minutos
     acelerar(min) { E.ninho.forEach((n) => { if (n.desde) n.desde -= min * 60000; }); conferirNinho(); }
   };
@@ -196,8 +261,9 @@
     Jogador.update(dt, Mundo.altura, livre);
     Mundo.update(dt, jog.mesh.position);
     $('hora').textContent = mundo.hora + (mundo.chuva ? '🌧️' : '');
-    acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); }
-    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninhoAtualizar(); }
+    acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); atualizarObjetivo(); dicaPrimeiraAcao(); }
+    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); seloNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninhoAtualizar(); }
+    guiar(now / 1000);
     // etiquetas
     const p = jog.mesh.position, lista = [];
     mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: 0.9 + (b.fase.escala || 1) * 1.6 }); } });

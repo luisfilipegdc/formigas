@@ -12,6 +12,7 @@
 <title>Terra Codex · Brasil Vivo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/jogo.css">
 </head>
 <body>
@@ -20,13 +21,16 @@
 
 <!-- HUD -->
 <header class="hud" id="hud" hidden>
+  <div class="hud-esq">
   <div class="local vidro" title="Clareza da área: sobe quando as ligações entre os seres vivos voltam">
     <span class="local-ico">📍</span>
     <div class="local-txt"><b id="area-nome">Base Brasília</b><div class="clareza"><small>Clareza</small><i><b id="clareza-bar"></b></i><span id="hora">☀️</span></div></div>
   </div>
+  <button type="button" class="objetivo vidro" id="objetivo" hidden><span class="obj-ico" id="obj-ico">💬</span><span><small id="obj-n">Passo 1 de 5</small><b id="obj-txt"></b></span></button>
+  </div>
   <nav class="hud-botoes">
     <button type="button" id="bt-codex"><span class="bola vidro">📖</span><small>BioDex</small></button>
-    <button type="button" id="bt-ninho"><span class="bola vidro">🥚</span><small>Ninho</small></button>
+    <button type="button" id="bt-ninho"><span class="bola vidro">🥚</span><small>Ninho</small><span class="selo" id="selo-ninho" hidden></span></button>
     <button type="button" id="bt-mapa"><span class="bola vidro">🗺️</span><small>Mapa</small></button>
   </nav>
 </header>
@@ -39,6 +43,8 @@
 <div class="dica vidro" id="dica" hidden></div>
 <div class="joystick" id="joystick" hidden><i></i></div>
 <div class="toast" id="toast"></div>
+<div class="guia" id="guia" hidden><i id="guia-seta">➜</i><small id="guia-dist"></small></div>
+<div class="celebra" id="celebra" hidden></div>
 
 <!-- diálogo -->
 <section class="caixa" id="dialogo" hidden>
@@ -71,6 +77,7 @@
 <script src="biomas/cerrado/especies.js"></script>
 <script src="biomas/cerrado/ciclos.js"></script>
 <script src="biomas/cerrado/relacoes.js"></script>
+<script src="biomas/cerrado/jornada.js"></script>
 <script src="js/nucleo/estado.js"></script>
 <script src="js/nucleo/biodex.js"></script>
 <script src="js/formas.js"></script>

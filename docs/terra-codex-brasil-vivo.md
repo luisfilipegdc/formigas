@@ -37,6 +37,9 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 
 | Visual | 3D estilizado com material "toon": céu em degradê com pôr do sol e estrelas, capim e flores, árvores tortas e cupinzeiros do Cerrado, buritis, Base Brasília modernista (praça, pavilhão curvo, casas sobre pilotis). Bichos e personagens desenhados em `brasilvivo/js/formas.js`; a BioDex mostra retratos renderizados desses modelos. Interface em vidro verde-escuro com botões redondos |
 
+| Guia e recompensa | Jornada "O ciclo da borboleta" com o próximo passo sempre no HUD, seta-guia e farol até o alvo, celebração a cada marco, selo no Ninho e resumo "Enquanto você esteve fora". Ver `docs/terra-codex-design-comportamental.md` |
+| Design system | Tokens em `brasilvivo/css/tokens.css`, componentes em `jogo.css`, documentação viva em `brasilvivo/sistema.html` |
+
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
 ## Como os dados se organizam

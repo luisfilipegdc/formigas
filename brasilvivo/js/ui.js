@@ -134,6 +134,30 @@ const UI = (function () {
     painel('🗺️ Brasil Vivo', svg + '<p>Você está em <b>Brasília</b>, a Cidade-Núcleo, no coração do <b>Cerrado</b>. Cada bioma é um território com seus próprios seres vivos, ciclos e áreas para restaurar.</p><p class="mini">O Brasil Vivo é um mundo de jogo inspirado nos biomas reais. Ele não usa a sua localização e não pede para você ir a lugar nenhum.</p>');
   }
 
+
+  /* ---------- Celebração: um marco por vez, em fila (2,6 s cada) ---------- */
+  const fila = []; let celebrando = false;
+  const FRASE = { visto: 'Você viu pela primeira vez', encontrado: 'Você encontrou outra fase da vida', cuidado: 'Você cuidou de uma vida', transformado: 'Você viu a transformação', conectado: 'Você descobriu o que ele faz', ativado: 'Você religou o mundo' };
+  function celebrar(especieId, marco) { fila.push([especieId, marco]); if (!celebrando) proximaCelebracao(); }
+  function proximaCelebracao() {
+    const it = fila.shift(), el = $('celebra'); if (!it) { celebrando = false; el.hidden = true; return; }
+    celebrando = true;
+    const [id, marco] = it, e = Registro.especie(id), m = Registro.MARCOS.find((x) => x.id === marco), ms = Biodex.marcos(id);
+    const dots = Registro.MARCOS.map((x) => '<i class="' + (ms.includes(x.id) ? 'ok' : '') + (x.id === marco ? ' novo' : '') + '"></i>').join('');
+    el.innerHTML = '<div class="celebra-card">' + imgBicho(e).replace('class="retrato"', '').replace(/^([^<].*)$/, '<span class="em">$1</span>') + '<small>' + esc(FRASE[marco] || 'Novo marco') + '</small><b>' + esc(e.nome) + ' · ' + esc(m.nome) + '</b><span class="pontos">' + dots + '</span></div>';
+    el.hidden = false;
+    setTimeout(proximaCelebracao, 2600);
+  }
+
+  /* ---------- Jornada: a lista de passos (abre ao tocar no Objetivo) ---------- */
+  function jornada(J, atual, E, abrirNinho) {
+    const h = '<ol class="jornada">' + J.passos.map((p, i) => '<li class="' + (i < atual || atual < 0 ? 'feito' : i === atual ? 'atual' : '') + '"><span class="n">' + (i < atual || atual < 0 ? '✓' : i + 1) + '</span><div>' + p.ico + ' ' + esc(p.texto) + (i === atual && p.dica ? '<small>' + esc(p.dica) + '</small>' : '') + '</div></li>').join('') + '</ol>' +
+      (atual >= 0 && J.passos[atual].acao === 'ninho' ? '<button type="button" class="btn" id="bt-ir-ninho">🥚 Abrir o Ninho</button>' : '') +
+      '<p class="mini">Sem pressa e sem prazo: cada passo espera por você. A seta dourada e o farol de luz mostram para onde ir.</p>';
+    painel('🧭 ' + J.nome, h);
+    const b = $('bt-ir-ninho'); if (b) b.addEventListener('click', abrirNinho);
+  }
+
   /* ---------- etiquetas sobre o 3D ---------- */
   const labels = $('etiquetas'), _v = new THREE.Vector3(), _up = new THREE.Vector3();
   function etiquetas(camera, lista) {
@@ -148,5 +172,5 @@ const UI = (function () {
     }
   }
 
-  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, etiquetas, aberto: () => aberto || !$('painel').hidden };
+  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, celebrar, jornada, etiquetas, aberto: () => aberto || !$('painel').hidden };
 })();

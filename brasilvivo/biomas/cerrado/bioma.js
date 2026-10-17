@@ -28,10 +28,12 @@ Area({ id: 'rota', bioma: 'cerrado', nome: 'Rota do Cerrado', no: 'na Rota do Ce
   texto: 'Campo de árvores tortas, capim alto e cupinzeiros.' });
 Area({ id: 'vereda', bioma: 'cerrado', nome: 'Vereda do Buriti', no: 'na Vereda do Buriti', x: 45, z: -45, r: 36, ruido: 1,
   relacoes: ['sapo-come-mosquito'],
+  dicaRuido: 'O Ruído calou a vereda: os sapos sumiram. Seu Rio sabe onde ficaram os ovos.',
   texto: 'Os buritis estão de pé, mas a vereda ficou quieta. Os sapos sumiram e sobrou mosquito.' });
 Area({ id: 'jardim', bioma: 'cerrado', nome: 'Jardim Polinizador', no: 'no Jardim Polinizador', x: 40, z: 80, r: 26, ruido: 1,
   relacoes: ['borboleta-poliniza-flor', 'jatai-poliniza-flor'],
   efeitos: [{ em: 0.5, faz: 'flores-abrem' }, { em: 1, faz: 'abre-rota', rota: 'rota-vereda' }],
+  dicaRuido: 'As flores daqui não abrem: falta quem leve pólen de flor em flor.',
   texto: 'As flores do jardim estão fechadas e cinzentas. Nenhum polinizador aparece por aqui.' });
 
 Npc({ id: 'ipe', bioma: 'cerrado', nome: 'Guardiã Ipê', emoji: '🌳', x: 9, z: 38, cor: '#3f7a3a', visual: { pele: '#8a5a3a', cabelo: '#1e3a1a', chapeu: '#f5c43a', saia: true, calca: '#5a3a24' },

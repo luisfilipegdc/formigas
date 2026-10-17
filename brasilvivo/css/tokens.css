@@ -1,0 +1,99 @@
+/* =====================================================================
+   Terra Codex · Brasil Vivo · design tokens
+   Fonte única de cor, tipo, espaço, raio, sombra, movimento e camadas.
+   Regra: componentes usam só os tokens semânticos (--cor-*, --sup-*,
+   --texto-*); os tokens de base (--c-*) existem para montar os semânticos.
+   Documentação viva: brasilvivo/sistema.html
+   ===================================================================== */
+:root {
+  /* ---------- cor · base (paleta do Cerrado) ---------- */
+  --c-mata-900: #0e2c22;   /* noite na mata: fundos escuros */
+  --c-mata-800: #123a2e;   /* títulos sobre papel */
+  --c-mata-700: #1d5a44;   /* rótulos, nome de quem fala */
+  --c-folha-500: #3fae5a;  /* vida, progresso, marco alcançado */
+  --c-folha-300: #8fd97a;
+  --c-folha-100: #e6f5df;  /* fundo de coisa já descoberta */
+  --c-ouro-700: #d9a227;
+  --c-ouro-500: #f6c445;   /* AÇÃO: a única cor que chama para tocar */
+  --c-ouro-300: #ffdf7a;
+  --c-creme-50: #fff9ec;   /* papel: painéis e diálogos */
+  --c-creme-100: #f6efdf;  /* fundo de coisa ainda não descoberta */
+  --c-creme-200: #efe5cc;
+  --c-creme-300: #eadfc5;  /* bordas e relevo de cartão */
+  --c-tinta-900: #20291c;
+  --c-tinta-500: #6b6b5c;
+  --c-branco: #ffffff;
+  --c-ruido-300: #cbc7d4;
+  --c-ruido-500: #9b98a6;  /* Ruído: o que ainda está apagado */
+  --c-ruido-800: #464050;
+  --c-perigo-500: #d9614c; /* só para perigo real (ex.: escorpião) */
+
+  /* ---------- cor · semântica (use estas nos componentes) ---------- */
+  --cor-acao: var(--c-ouro-500);
+  --cor-acao-claro: var(--c-ouro-300);
+  --cor-acao-relevo: var(--c-ouro-700);
+  --cor-vida: var(--c-folha-500);
+  --cor-vida-claro: var(--c-folha-300);
+  --cor-ruido: var(--c-ruido-500);
+  --cor-ruido-claro: var(--c-ruido-300);
+  --cor-perigo: var(--c-perigo-500);
+  --sup-vidro: rgba(14, 44, 34, .64);        /* HUD e etiquetas sobre o 3D */
+  --sup-vidro-forte: rgba(14, 44, 34, .86);  /* toast, celebração */
+  --sup-vidro-borda: rgba(255, 255, 255, .16);
+  --sup-papel: var(--c-creme-50);
+  --sup-cartao: var(--c-branco);
+  --sup-descoberto: var(--c-folha-100);
+  --sup-oculto: var(--c-creme-100);
+  --sup-controle: var(--c-creme-200);
+  --borda-cartao: var(--c-creme-300);
+  --texto-forte: var(--c-mata-800);
+  --texto: var(--c-tinta-900);
+  --texto-suave: var(--c-tinta-500);
+  --texto-sobre-vidro: var(--c-branco);
+  --texto-sobre-acao: var(--c-mata-800);
+
+  /* ---------- tipografia (Nunito: redonda, legível para 8+) ---------- */
+  --fonte: 'Nunito', system-ui, -apple-system, sans-serif;
+  --t-2xs: 10.5px;  /* rótulo sob botão redondo */
+  --t-xs: 12px;     /* nota, legenda */
+  --t-sm: 13.5px;   /* etiqueta, chip */
+  --t-md: 16px;     /* leitura (diálogo, ficha) — nunca menor para texto corrido */
+  --t-lg: 18px;     /* frase de destaque */
+  --t-xl: 21px;     /* título de painel */
+  --t-2xl: 26px;    /* nome na ficha */
+  --t-display: 48px;
+  --peso-texto: 600;
+  --peso-forte: 800;
+  --peso-titulo: 900;
+  --linha-texto: 1.42;
+  --linha-titulo: 1.1;
+
+  /* ---------- espaço (base 4) ---------- */
+  --e-1: 4px; --e-2: 8px; --e-3: 12px; --e-4: 16px; --e-5: 20px; --e-6: 24px; --e-8: 32px; --e-10: 40px;
+
+  /* ---------- raio ---------- */
+  --r-sm: 12px; --r-md: 16px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+
+  /* ---------- sombra e relevo ---------- */
+  --sombra-1: 0 4px 12px rgba(0, 0, 0, .25);   /* coisas sobre o 3D */
+  --sombra-2: 0 10px 30px rgba(0, 0, 0, .28);  /* folhas que sobem (painel, diálogo) */
+  --relevo-cartao: 0 4px 0 var(--borda-cartao);
+  --relevo-acao: 0 3px 0 var(--cor-acao-relevo);
+  --relevo-controle: 0 3px 0 #d8caa6;
+  --desfoque: blur(12px) saturate(140%);
+
+  /* ---------- movimento ---------- */
+  --m-rapido: .15s; --m-medio: .28s; --m-lento: .5s;
+  --curva: cubic-bezier(.2, .8, .2, 1);
+  --curva-mola: cubic-bezier(.34, 1.56, .64, 1);
+
+  /* ---------- toque e camadas ---------- */
+  --alvo-min: 44px;  /* menor área tocável (dedo de criança) */
+  --z-etiqueta: 1; --z-guia: 3; --z-hud: 5; --z-painel: 8; --z-toast: 9; --z-inicio: 10; --z-dialogo: 11; --z-celebra: 12;
+}
+
+/* quem pede menos movimento não vê pulsos nem molas */
+@media (prefers-reduced-motion: reduce) {
+  :root { --m-rapido: 0s; --m-medio: 0s; --m-lento: 0s; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
