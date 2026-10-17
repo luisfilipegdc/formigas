@@ -50,7 +50,7 @@ const Jogador = (function () {
     if (l > 0.05 && !J.bloqueado) {
       mx /= Math.max(1, l); mz /= Math.max(1, l);
       // direção relativa à câmera
-      const f = new V3(-Math.sin(J.camYaw), 0, -Math.cos(J.camYaw)), r = new V3(f.z, 0, -f.x);
+      const f = new V3(-Math.sin(J.camYaw), 0, -Math.cos(J.camYaw)), r = new V3(-f.z, 0, f.x);   // direita da câmera (f × para cima)
       const dir = new V3().addScaledVector(f, -mz).addScaledVector(r, mx);
       const corr = k.shift ? 1.6 : 1;
       const novo = p.clone().addScaledVector(dir, dt * J.vel * corr);
