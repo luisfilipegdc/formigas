@@ -6,15 +6,24 @@
    ===================================================================== */
 Bioma({
   id: 'cerrado', nome: 'Cerrado', emoji: '🌾', base: 'base', clima: ['seco', 'chuva'], livre: true,
-  // recursos que o Viveiro usa (colhidos no mundo a partir da Sprint 2)
+  // recursos que o Viveiro usa · ferramenta: está sempre à mão (não gasta) · onde: pista de onde colher
   recursos: {
-    'folha-hospedeira': { nome: 'Folha da planta-hospedeira', emoji: '🍃' },
-    'sombra': { nome: 'Sombra', emoji: '⛱️' },
-    'quieto': { nome: 'Deixar quieto', emoji: '🤫' },
-    'agua-limpa': { nome: 'Água limpa', emoji: '💧' },
-    'algas': { nome: 'Algas', emoji: '🌿' },
-    'pedra-seca': { nome: 'Pedra seca para sair da água', emoji: '🪨' }
-  }
+    'folha-hospedeira': { nome: 'Folha da planta-hospedeira', curto: 'Folha', emoji: '🍃', onde: 'Colha na planta-hospedeira, ao lado do ovinho na horta.' },
+    'sombra': { nome: 'Sombra', curto: 'Sombra', emoji: '⛱️', ferramenta: true },
+    'quieto': { nome: 'Deixar quieto', curto: 'Silêncio', emoji: '🤫', ferramenta: true },
+    'agua-limpa': { nome: 'Água limpa', curto: 'Água', emoji: '💧', onde: 'Pegue no espelho d\'água da praça da Base.' },
+    'algas': { nome: 'Algas', curto: 'Algas', emoji: '🌿', onde: 'Pegue na beira do rio, perto do Seu Rio.' },
+    'pedra-seca': { nome: 'Pedra seca para sair da água', curto: 'Pedra', emoji: '🪨', onde: 'Pegue nas pedras da beira do rio.' }
+  },
+  // fontes: onde cada recurso é colhido no mapa · da: quanto vem por vez · volta: segundos para rebrotar
+  fontes: [
+    { id: 'hospedeira-horta', recurso: 'folha-hospedeira', nome: 'Planta-hospedeira', verbo: 'Colher folha', forma: 'planta', x: -99, z: 88, da: 2, volta: 40 },
+    { id: 'hospedeira-rota', recurso: 'folha-hospedeira', nome: 'Planta-hospedeira', verbo: 'Colher folha', forma: 'planta', x: -25, z: -112, da: 2, volta: 40 },
+    { id: 'espelho-agua', recurso: 'agua-limpa', nome: 'Espelho d\'água', verbo: 'Pegar água', forma: 'agua', x: -9, z: 12, da: 2, volta: 20 },
+    { id: 'algas-rio', recurso: 'algas', nome: 'Algas da beira', verbo: 'Pegar algas', forma: 'algas', x: 63, z: -26, da: 2, volta: 40 },
+    { id: 'pedras-rio', recurso: 'pedra-seca', nome: 'Pedras da beira', verbo: 'Pegar pedra', forma: 'pedras', x: 60, z: -40, da: 1, volta: 40 }
+  ],
+  bolsaMax: 5
 });
 
 // visual dos moradores: cores de pele, cabelo, roupa e chapéu (formas.js)
@@ -32,7 +41,8 @@ Area({ id: 'vereda', bioma: 'cerrado', nome: 'Vereda do Buriti', no: 'na Vereda 
   texto: 'Os buritis estão de pé, mas a vereda ficou quieta. Os sapos sumiram e sobrou mosquito.' });
 Area({ id: 'jardim', bioma: 'cerrado', nome: 'Jardim Polinizador', no: 'no Jardim Polinizador', x: 40, z: 80, r: 26, ruido: 1,
   relacoes: ['borboleta-poliniza-flor', 'jatai-poliniza-flor'],
-  efeitos: [{ em: 0.5, faz: 'flores-abrem' }, { em: 1, faz: 'abre-rota', rota: 'rota-vereda' }],
+  efeitos: [{ em: 0.5, faz: 'flores-abrem', texto: '🌸 As flores do jardim abriram!' }, { em: 1, faz: 'abre-rota', rota: 'vereda', texto: '🌼 Uma trilha de flores se abriu do jardim até a Vereda do Buriti.',
+    fala: { npc: 'ipe', texto: 'O jardim voltou a ter cor e som. Viu a trilha de flores? Ela leva à Vereda do Buriti, onde os sapos sumiram. Seu Rio sabe onde ficaram os ovos.' } }],
   dicaRuido: 'As flores daqui não abrem: falta quem leve pólen de flor em flor.',
   texto: 'As flores do jardim estão fechadas e cinzentas. Nenhum polinizador aparece por aqui.' });
 
@@ -49,7 +59,7 @@ Npc({ id: 'flor', bioma: 'cerrado', nome: 'Dona Flor', emoji: '👩‍🌾', x: 
 Npc({ id: 'rio', bioma: 'cerrado', nome: 'Seu Rio', emoji: '🎣', x: 50, z: -30, cor: '#3b7dd8', visual: { pele: '#c98d64', cabelo: '#6a6a6a', chapeu: '#8a6a44', calca: '#4a4a3a' },
   falas: {
     inicio: 'A vereda era cheia de sapo cantando de noite. Agora está quieta e cheia de mosquito.',
-    pista: 'Vi um cordão de ovos de sapo numa poça que está secando, ali na beira. Se levar para a água limpa do Ninho, quem sabe...'
+    pista: 'Vi um cordão de ovos de sapo numa poça que está secando, ali na beira. Se levar para o Viveiro, com água limpa e algas, quem sabe...'
   } });
 Npc({ id: 'tico', bioma: 'cerrado', nome: 'Tico', emoji: '🧒', x: 12, z: -18, cor: '#f5a53b', visual: { pele: '#6e4630', cabelo: '#1a1410', calca: '#2f6fb0', escala: 0.72 },
   falas: {

@@ -163,7 +163,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px soli
 .detalhes summary { font-weight: var(--peso-titulo); cursor: pointer; color: var(--texto-suave); min-height: 28px; }
 .detalhes p { font-size: 14px; margin: 6px 0; }
 
-/* Item do Ninho — uma vida em transformação */
+/* Item do Viveiro — uma vida em transformação (também é o alvo de arrastar) */
 .ninho { background: var(--sup-cartao); border-radius: var(--r-lg); padding: 14px; display: flex; gap: 14px; align-items: center; margin-bottom: 10px; box-shadow: var(--relevo-cartao); }
 .ninho .em { font-size: 40px; line-height: 1; width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle, #fdf6e2, #f1e3bd); display: grid; place-items: center; flex: none; }
 .ninho b { display: block; } .ninho small { color: var(--texto-suave); font-weight: var(--peso-forte); display: block; line-height: 1.35; }
@@ -232,7 +232,7 @@ body:not(.jogando) .painel { z-index: calc(var(--z-inicio) + 1); }
 .chave:checked::after { transform: translateX(22px); }
 .inicio .inicio-aj { width: 100%; margin: 0 0 var(--e-3); background: rgba(255, 255, 255, .14); color: var(--c-branco); box-shadow: none; font-size: var(--t-sm); }
 
-/* Ninho: novidade e replay */
+/* Viveiro: novidade e replay */
 .ninho.novo { box-shadow: 0 0 0 3px var(--cor-acao), var(--relevo-cartao); }
 .ninho .rever { margin-top: var(--e-2); }
 .transforma .troca { display: flex; align-items: center; justify-content: center; gap: var(--e-3); margin: -50px 0 var(--e-2); font-size: 56px; }
@@ -249,3 +249,30 @@ body:not(.jogando) .painel { z-index: calc(var(--z-inicio) + 1); }
   .acao button { width: 80px; height: 80px; }
 }
 .celebra-card.transforma { animation-duration: 3.3s; }
+
+/* Viveiro: nicho, do que precisa, bolsa de arrastar */
+.ninho[data-alvo] { border: 2px dashed var(--borda-cartao); cursor: copy; transition: transform var(--m-rapido) var(--curva), border-color var(--m-rapido); }
+.ninho.esperando { border-color: var(--cor-acao); }
+.ninho.sobre { border-color: var(--cor-vida); border-style: solid; transform: scale(1.02); background: var(--sup-descoberto); }
+.ninho.ok { box-shadow: 0 0 0 3px var(--cor-vida), var(--relevo-cartao); }
+.ninho.erro { animation: balancar .45s var(--curva); }
+.ninho .em.nicho-terrario { background: radial-gradient(circle, #eaf6dc, #c9e2a8); }
+.ninho .em.nicho-aquario { background: radial-gradient(circle, #e3f3fb, #a9d4ea); }
+.precisa { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; padding: 4px 10px; border-radius: var(--r-pill); background: var(--sup-oculto); border: 2px dashed var(--borda-cartao); font-size: var(--t-sm); font-weight: var(--peso-forte); color: var(--texto); }
+.chip.ok { background: var(--sup-descoberto); border: 2px solid var(--cor-vida); color: var(--texto-forte); }
+.viv-msg { margin: 8px 0 0; font-size: var(--t-sm); font-weight: var(--peso-forte); color: var(--texto-forte); line-height: 1.35; }
+.ninho.erro .viv-msg { color: #8a4a1a; }
+.bandeja { background: var(--sup-oculto); border-radius: var(--r-lg); padding: 10px 12px 12px; margin: 4px 0 10px; }
+.bandeja .aj-rot { margin: 0 0 8px; }
+.itens { display: flex; flex-wrap: wrap; gap: 8px; }
+.item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; min-height: 72px; border: 0; border-radius: var(--r-md); background: var(--sup-cartao); box-shadow: var(--relevo-cartao); touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; font-family: inherit; }
+.item .em { font-size: 30px; line-height: 1.1; }
+.item small { font-size: var(--t-xs); font-weight: var(--peso-forte); color: var(--texto-suave); }
+.item i { position: absolute; top: 4px; right: 6px; font-style: normal; font-size: 12px; font-weight: var(--peso-titulo); color: var(--texto-forte); background: var(--cor-acao-claro); border-radius: var(--r-pill); min-width: 20px; padding: 0 5px; }
+.item.util { box-shadow: 0 0 0 2px var(--cor-acao), var(--relevo-cartao); }
+.item.sel { background: var(--cor-acao-claro); transform: translateY(-3px); }
+.item.arrastando { opacity: .4; }
+.onde { margin: 8px 0 0; font-size: var(--t-sm); color: var(--texto); }
+.fantasma { position: fixed; z-index: 30; pointer-events: none; font-size: 44px; transform: translate(-50%, -60%) scale(1.15); filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .3)); }
+@keyframes balancar { 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }

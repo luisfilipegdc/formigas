@@ -105,14 +105,14 @@
 
 <section class="comp">
   <h3>Local · Objetivo · Botão redondo · Selo (HUD)</h3>
-  <p class="uso">Topo da tela. À esquerda, onde estou e a Clareza da área; logo abaixo, o próximo passo da jornada (um só). À direita, os atalhos; o selo ✨ avisa que há novidade no Ninho (uma transformação para rever ou alguém pronto para cuidar), nunca culpa.</p>
+  <p class="uso">Topo da tela. À esquerda, onde estou e a Clareza da área; logo abaixo, o próximo passo da jornada (um só). À direita, os atalhos; o selo ✨ avisa que há novidade no Viveiro (uma transformação para rever ou alguém que já pode ser cuidado com o que está na bolsa), nunca culpa.</p>
   <div class="palco">
     <div class="hud-esq demo" style="pointer-events:auto">
       <div class="local vidro"><span class="local-ico">📍</span><div class="local-txt"><b id="x1" style="display:block;font-size:var(--t-sm);font-weight:900">Horta Comunitária</b><div class="clareza"><small>Clareza</small><i><b style="width:100%"></b></i><span>☀️</span></div></div></div>
-      <button type="button" class="objetivo vidro demo"><span class="obj-ico">🔍</span><span><small>Passo 2 de 5</small><b>Procure o ovinho nos canteiros da horta</b></span></button>
+      <button type="button" class="objetivo vidro demo"><span class="obj-ico">🔍</span><span><small>Passo 2 de 7</small><b>Procure o ovinho nos canteiros da horta</b></span></button>
     </div>
     <div class="local vidro demo"><span class="local-ico">📍</span><div class="local-txt"><b style="display:block;font-size:var(--t-sm);font-weight:900">Jardim Polinizador</b><div class="clareza"><small>Clareza</small><i><b class="ruido" style="width:8%"></b></i></div></div></div>
-    <nav class="hud-botoes demo"><button type="button"><span class="bola vidro">📖</span><small>BioDex</small></button><button type="button"><span class="bola vidro">🥚</span><small>Ninho</small><span class="selo">✨</span></button><button type="button"><span class="bola vidro">🗺️</span><small>Mapa</small></button></nav>
+    <nav class="hud-botoes demo"><button type="button"><span class="bola vidro">📖</span><small>BioDex</small></button><button type="button"><span class="bola vidro">🌱</span><small>Viveiro</small><span class="selo">✨</span></button><button type="button"><span class="bola vidro">🗺️</span><small>Mapa</small></button></nav>
   </div>
   <div class="faz"><div class="sim"><b>Faça</b>Escreva o objetivo como ação concreta com lugar: "Procure o ovinho nos canteiros da horta".</div><div class="nao"><b>Evite</b>Mais de um objetivo ao mesmo tempo, selo vermelho ou número que cresce para pressionar.</div></div>
 </section>
@@ -162,20 +162,22 @@
       <button type="button" class="carta silhueta"><div class="em">🐸</div><b>???</b><small>Caçador</small></button>
       <button type="button" class="carta vista ativada"><div class="em">🐝</div><b>Abelha jataí</b><span class="pontos"><i class="ok"></i><i class="ok"></i><i></i><i></i><i class="ok"></i><i class="ok"></i></span><small>Ativado</small></button>
     </div>
-    <div class="fases demo" style="width:100%;max-width:420px"><div class="fase ok"><span class="em">🟡</span><b>Ovo</b></div><div class="fase ok"><span class="em">🐛</span><b>Lagarta</b></div><div class="fase"><span class="em">?</span><b>???</b><small>Aparece ao cuidar no Ninho</small></div></div>
+    <div class="fases demo" style="width:100%;max-width:420px"><div class="fase ok"><span class="em">🟡</span><b>Ovo</b></div><div class="fase ok"><span class="em">🐛</span><b>Lagarta</b></div><div class="fase"><span class="em">?</span><b>???</b><small>Aparece ao cuidar no Viveiro</small></div></div>
   </div>
   <div class="faz"><div class="sim"><b>Faça</b>Na silhueta, dê pista de onde procurar ("Procure de dia na Horta Comunitária").</div><div class="nao"><b>Evite</b>Mostrar a resposta antes de a criança viver o marco, ou porcentagem de "completar coleção".</div></div>
 </section>
 
 <section class="comp">
-  <h3>Item do Ninho · Jornada · Botão</h3>
-  <p class="uso">O item do Ninho mostra uma vida em transformação: fase, o que precisa ou quanto falta. A jornada lista os passos (feito, atual, próximo) e abre ao tocar no Objetivo. Botão primário dourado com relevo; secundário creme.</p>
+  <h3>Item do Viveiro · Bolsa de arrastar · Jornada · Botão</h3>
+  <p class="uso">O item do Viveiro mostra uma vida em transformação: fase, o que precisa (chips tracejados que ficam verdes ao receber) ou quanto falta. Ele é o alvo de arrastar: a criança leva o item da bolsa até o nicho, ou só toca no item quando há um ser vivo esperando. O que não ajuda volta para a bolsa com uma frase dizendo o que ajuda; nada se perde. A jornada lista os passos (feito, atual, próximo) e abre ao tocar no Objetivo. Botão primário dourado com relevo; secundário creme.</p>
   <div class="palco papel">
+    <div class="ninho demo esperando" data-alvo="0" style="width:100%;max-width:440px"><div class="em nicho-terrario">🟡</div><div style="flex:1"><b>Ovo <small style="display:inline">· Borboleta-azul</small></b><div class="precisa"><span class="chip ok">✓ ⛱️ Sombra</span><span class="chip">🍃 Folha</span></div><p class="viv-msg">⛱️ Isso! Agora falta 🍃 folha.</p></div></div>
+    <div class="bandeja demo" style="width:100%;max-width:440px"><p class="aj-rot">Sua bolsa · arraste até o ser vivo ou toque</p><div class="itens"><button type="button" class="item util"><span class="em">🍃</span><small>Folha</small><i>2</i></button><button type="button" class="item"><span class="em">⛱️</span><small>Sombra</small></button><button type="button" class="item"><span class="em">🤫</span><small>Silêncio</small></button></div></div>
     <div class="ninho demo" style="width:100%;max-width:440px"><div class="em">🐛</div><div style="flex:1"><b>Lagarta <small style="display:inline">· Borboleta-azul</small></b><div class="barra"><b style="width:40%"></b></div><small>A lagarta come sem parar e já trocou de pele.</small><small>Mais ou menos 2 min</small></div></div>
-    <ol class="jornada demo" style="width:100%;max-width:440px"><li class="feito"><span class="n">✓</span><div>💬 Converse com Dona Flor na horta</div></li><li class="atual"><span class="n">2</span><div>🔍 Procure o ovinho nos canteiros<small>A seta dourada mostra para onde ir.</small></div></li><li><span class="n">3</span><div>🤲 Leve o ovo ao Ninho e cuide dele</div></li></ol>
-    <div><button type="button" class="btn">🥚 Abrir o Ninho</button> <button type="button" class="btn sec">← BioDex</button></div>
+    <ol class="jornada demo" style="width:100%;max-width:440px"><li class="feito"><span class="n">✓</span><div>💬 Converse com Dona Flor na horta</div></li><li class="atual"><span class="n">2</span><div>🔍 Procure o ovinho nos canteiros<small>A seta dourada mostra para onde ir.</small></div></li><li><span class="n">3</span><div>🍃 Colha folhas da planta-hospedeira, ao lado do ovinho</div></li></ol>
+    <div><button type="button" class="btn">🌱 Abrir o Viveiro</button> <button type="button" class="btn sec">← BioDex</button></div>
   </div>
-  <div class="faz"><div class="sim"><b>Faça</b>Mostrar o sinal visível da mudança ("já trocou de pele") e um tempo aproximado.</div><div class="nao"><b>Evite</b>Punição por esquecer (bicho que morre ou regride) ou botão de "acelerar".</div></div>
+  <div class="faz"><div class="sim"><b>Faça</b>Mostrar o sinal visível da mudança ("já trocou de pele") e um tempo aproximado.</div><div class="nao"><b>Evite</b>Punição por esquecer (bicho que morre ou regride), gastar o item no erro, quiz de "qual é o certo" ou botão de "acelerar".</div></div>
 </section>
 
 <section class="comp">

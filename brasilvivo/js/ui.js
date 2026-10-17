@@ -1,6 +1,6 @@
 /* =====================================================================
    Terra Codex · Brasil Vivo · interface: toast, diálogo, painéis
-   (BioDex regional e ficha, Ninho, mapa do Brasil Vivo) e etiquetas 3D.
+   (BioDex regional e ficha, Viveiro, mapa do Brasil Vivo) e etiquetas 3D.
    Nada aqui pergunta "qual é a resposta certa": a BioDex mostra o que o
    jogador já viveu e dá pistas de onde procurar o resto.
    ===================================================================== */
@@ -63,7 +63,7 @@ const UI = (function () {
     // fases de vida: vistas aparecem; as outras são silhuetas com pista de onde procurar
     h += '<h4>Fases de vida</h4><div class="fases">' + e.fases.map((f) => {
       const viu = Biodex.viuFase(id, f.id);
-      const pista = f.ponto ? 'Procure ' + nomeArea(f.ponto[0], f.ponto[1]) : f.anda ? 'Circula ' + (e.hora.includes('noite') ? 'à noite' : 'de dia') : e.ciclo ? 'Aparece ao cuidar no Ninho' : '';
+      const pista = f.ponto ? 'Procure ' + nomeArea(f.ponto[0], f.ponto[1]) : f.anda ? 'Circula ' + (e.hora.includes('noite') ? 'à noite' : 'de dia') : e.ciclo ? 'Aparece ao cuidar no Viveiro' : '';
       return '<div class="fase' + (viu ? ' ok' : '') + '"><span class="em">' + (viu ? (f.anda ? imgBicho(e, 'retrato mini') : f.emoji) : '?') + '</span><b>' + (viu ? esc(f.nome) : '???') + '</b>' + (viu ? '' : '<small>' + esc(pista) + '</small>') + '</div>';
     }).join('') + '</div>';
     // relações com o ecossistema
@@ -85,12 +85,12 @@ const UI = (function () {
     $('bt-voltar').addEventListener('click', voltar);
   }
 
-  /* ---------- Ninho: cuidar sem pergunta (vira Viveiro na Sprint 2) ---------- */
+  /* ---------- Viveiro: arrastar o que o ser vivo precisa até o nicho (ou tocar) ---------- */
   function progresso(n, passo, agora) {
     const total = passo.minutos * 60000, falta = Math.max(0, n.desde + total - agora), seg = Math.ceil(falta / 1000);
     return [Math.min(100, (1 - falta / total) * 100), seg > 60 ? 'Mais ou menos ' + Math.ceil(seg / 60) + ' min' : seg > 0 ? 'Quase: ' + seg + ' s' : 'Mudando agora…'];
   }
-  // a cada segundo só a barra e o tempo mudam (redesenhar tudo engolia o toque em "Cuidar")
+  // a cada segundo só a barra e o tempo mudam (redesenhar tudo engolia o toque e o arrasto)
   function ninhoAtualizar() {
     const agora = Date.now();
     Estado.dados.ninho.forEach((n, i) => {
@@ -99,24 +99,64 @@ const UI = (function () {
       const [pct, txt] = progresso(n, passo, agora); b.style.width = pct + '%'; t.textContent = txt;
     });
   }
-  function ninho(aoCuidar, aoRever) {
-    const agora = Date.now(), N = Estado.dados.ninho;
+  // msg: { i, tipo: 'ok'|'erro'|'info', texto } · resposta ao último item dado
+  function viveiro(bioma, aoDar, aoRever, msg) {
+    const agora = Date.now(), D = Estado.dados, N = D.ninho, rec = Registro.R.biomas[bioma].recursos, bolsa = D.bolsa || {};
+    const precisam = new Set(), semNada = new Set();
     const lista = N.map((n, i) => {
       const c = Registro.ciclo(n.ciclo), e = Registro.especie(c.especie), f = e.fases.find((x) => x.id === n.fase), passo = c.passos.find((p) => p.de === n.fase);
-      const rec = Registro.R.biomas[e.bioma].recursos;
-      let corpo;
-      if (!passo) corpo = '<small>🌿 Completou o ciclo e acompanha você. Logo vai poder ativá-la no mundo.</small>';
-      else if (!n.desde) corpo = '<small>Precisa de: ' + passo.precisa.map((r) => rec[r].emoji + ' ' + esc(rec[r].nome)).join(' · ') + '</small><button type="button" class="btn" data-i="' + i + '">🤲 Cuidar</button>';
-      else {
+      const dado = n.dado || [];
+      let corpo, alvo = false;
+      if (!passo) corpo = '<small>🌿 Completou o ciclo e acompanha você. Leve ' + esc(Registro.area(c.ativar.onde).no.replace(/^n/, 'a').replace(/^aa /, 'à ')) + ' e toque em ' + esc((Registro.relacoesDe(e.id).find((r) => r.ativar) || { ativar: { verbo: 'Soltar' } }).ativar.verbo) + '.</small>';
+      else if (!n.desde) {
+        alvo = true;
+        corpo = '<div class="precisa">' + passo.precisa.map((r) => { const ok = dado.includes(r); if (!ok) { precisam.add(r); if (!rec[r].ferramenta && !(bolsa[r] > 0)) semNada.add(r); } return '<span class="chip' + (ok ? ' ok' : '') + '">' + (ok ? '✓ ' : '') + rec[r].emoji + ' ' + esc(rec[r].curto) + '</span>'; }).join('') + '</div>';
+      } else {
         const [pct, txt] = progresso(n, passo, agora);
         corpo = '<div class="barra"><b data-nb="' + i + '" style="width:' + pct + '%"></b></div><small>' + esc(passo.sinal) + '</small><small data-nt="' + i + '">' + txt + '</small>';
       }
+      const m = msg && msg.i === i ? msg : null;
       const rever = n.novo ? '<button type="button" class="btn sec rever" data-r="' + i + '">✨ Ver como foi</button>' : '';
-      return '<div class="ninho' + (n.novo ? ' novo' : '') + '"><div class="em">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + rever + '</div></div>';
+      return '<div class="ninho' + (n.novo ? ' novo' : '') + (m ? ' ' + m.tipo : '') + '"' + (alvo ? ' data-alvo="' + i + '"' : '') + '><div class="em nicho-' + esc(c.nicho || 'terrario') + '">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + (m ? '<p class="viv-msg" role="status">' + esc(m.texto) + '</p>' : '') + rever + '</div></div>';
     }).join('');
-    painel('🥚 Ninho · ' + N.length + '/3', (lista || '<p>Nenhum ser vivo para cuidar ainda. Ovos e outras fases pequenas aparecem pelo mapa: procure nas folhas da horta e na beira da vereda.</p>') + '<p class="mini">Aqui você não captura bicho: cuida de uma fase da vida até ela se transformar. Não há resposta errada; se faltar algo, ele só espera. No mundo real, nunca tire ovos da natureza.</p>');
-    $('painel-corpo').querySelectorAll('button[data-i]').forEach((b) => b.addEventListener('click', () => aoCuidar(+b.dataset.i)));
-    $('painel-corpo').querySelectorAll('button[data-r]').forEach((b) => b.addEventListener('click', () => aoRever && aoRever(+b.dataset.r)));
+    // bolsa: ferramentas sempre à mão + o que foi colhido no mundo
+    const itens = Object.keys(rec).filter((r) => rec[r].ferramenta || bolsa[r] > 0);
+    const bandeja = N.some((n) => !n.desde && Registro.ciclo(n.ciclo).passos.some((p) => p.de === n.fase))
+      ? '<div class="bandeja"><p class="aj-rot">Sua bolsa · arraste até o ser vivo ou toque</p><div class="itens">' + itens.map((r) => '<button type="button" class="item' + (precisam.has(r) ? ' util' : '') + '" data-rec="' + r + '" aria-label="' + esc(rec[r].nome) + '"><span class="em">' + rec[r].emoji + '</span><small>' + esc(rec[r].curto) + '</small>' + (rec[r].ferramenta ? '' : '<i>' + bolsa[r] + '</i>') + '</button>').join('') + '</div>' +
+        [...semNada].map((r) => '<p class="onde">' + rec[r].emoji + ' <b>' + esc(rec[r].curto) + ':</b> ' + esc(rec[r].onde || '') + '</p>').join('') + '</div>'
+      : '';
+    painel('🌱 Viveiro · ' + N.length + '/3', (lista || '<p>Nenhum ser vivo para cuidar ainda. Ovos e outras fases pequenas aparecem pelo mapa: procure nas folhas da horta e na beira da vereda.</p>') + bandeja + '<p class="mini">Aqui você não captura bicho: cuida de uma fase da vida até ela se transformar. Não há resposta errada: o que não ajuda volta para a bolsa. No mundo real, nunca tire ovos da natureza.</p>');
+    const corpo = $('painel-corpo');
+    corpo.querySelectorAll('button[data-r]').forEach((b) => b.addEventListener('click', () => aoRever && aoRever(+b.dataset.r)));
+    const alvos = [...corpo.querySelectorAll('[data-alvo]')];
+    let sel = null;
+    const marcar = () => { corpo.querySelectorAll('.item').forEach((b) => b.classList.toggle('sel', b.dataset.rec === sel)); alvos.forEach((a) => a.classList.toggle('esperando', !!sel)); };
+    const alvoEm = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('[data-alvo]'); };
+    let sobre = null;
+    const destacar = (a) => { if (sobre && sobre !== a) sobre.classList.remove('sobre'); sobre = a; if (a) a.classList.add('sobre'); };
+    const entregar = (a, r) => { if (a) aoDar(+a.dataset.alvo, r); };
+    corpo.querySelectorAll('.item').forEach((b) => {
+      b.addEventListener('pointerdown', (ev) => {
+        if (ev.button > 0) return;
+        ev.preventDefault();
+        const r = b.dataset.rec, x0 = ev.clientX, y0 = ev.clientY; let fant = null;
+        const mov = (e) => {
+          if (!fant && Math.hypot(e.clientX - x0, e.clientY - y0) > 8) { fant = document.createElement('div'); fant.className = 'fantasma'; fant.textContent = rec[r].emoji; document.body.appendChild(fant); b.classList.add('arrastando'); }
+          if (fant) { fant.style.left = e.clientX + 'px'; fant.style.top = e.clientY + 'px'; destacar(alvoEm(e.clientX, e.clientY)); }
+        };
+        const fim = (e) => {
+          removeEventListener('pointermove', mov); removeEventListener('pointerup', fim); removeEventListener('pointercancel', fim);
+          if (fant) { fant.remove(); b.classList.remove('arrastando'); destacar(null); if (e.type === 'pointerup') entregar(alvoEm(e.clientX, e.clientY), r); return; }
+          // toque: com um só ser vivo esperando, já entrega; com mais, escolhe o item e depois o nicho
+          if (alvos.length === 1) { entregar(alvos[0], r); return; }
+          sel = sel === r ? null : r; marcar();
+        };
+        addEventListener('pointermove', mov); addEventListener('pointerup', fim); addEventListener('pointercancel', fim);
+      });
+      // teclado: Enter/Espaço escolhe o item
+      b.addEventListener('click', (ev) => { if (ev.detail !== 0) return; if (alvos.length === 1) entregar(alvos[0], b.dataset.rec); else { sel = b.dataset.rec; marcar(); } });
+    });
+    alvos.forEach((a) => { a.addEventListener('click', () => { if (sel) { const r = sel; sel = null; entregar(a, r); } }); });
   }
 
   /* ---------- replay da transformação (a criança nunca perde o momento) ---------- */
@@ -190,7 +230,7 @@ const UI = (function () {
   /* ---------- Jornada: a lista de passos (abre ao tocar no Objetivo) ---------- */
   function jornada(J, atual, E, abrirNinho, mostrarCaminho) {
     const h = '<ol class="jornada">' + J.passos.map((p, i) => '<li class="' + (i < atual || atual < 0 ? 'feito' : i === atual ? 'atual' : '') + '"><span class="n">' + (i < atual || atual < 0 ? '✓' : i + 1) + '</span><div>' + p.ico + ' ' + esc(p.texto) + (i === atual && p.dica ? '<small>' + esc(p.dica) + '</small>' : '') + '</div></li>').join('') + '</ol>' +
-      (atual >= 0 && J.passos[atual].acao === 'ninho' ? '<button type="button" class="btn" id="bt-ir-ninho">🥚 Abrir o Ninho</button>' : '') +
+      (atual >= 0 && J.passos[atual].acao === 'viveiro' ? '<button type="button" class="btn" id="bt-ir-ninho">🌱 Abrir o Viveiro</button>' : '') +
       (atual >= 0 && J.passos[atual].alvo ? '<button type="button" class="btn" id="bt-caminho">🧭 Mostrar o caminho</button>' : '') +
       '<p class="mini">Sem pressa e sem prazo: cada passo espera por você. Se ficar em dúvida, a seta dourada e o farol de luz aparecem para mostrar o caminho.</p>';
     painel('🧭 ' + J.nome, h);
@@ -212,5 +252,5 @@ const UI = (function () {
     }
   }
 
-  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, celebrar, jornada, transformacao, ajustes, etiquetas, aberto: () => aberto || !$('painel').hidden };
+  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, viveiro, ninhoAtualizar, mapa, celebrar, jornada, transformacao, ajustes, etiquetas, aberto: () => aberto || !$('painel').hidden };
 })();

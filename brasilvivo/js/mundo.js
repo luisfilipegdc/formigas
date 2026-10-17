@@ -2,12 +2,13 @@
    Terra Codex · Brasil Vivo · mundo 3D do bioma ativo
    Céu em degradê com sol, terreno com capim e flores, árvores tortas do
    Cerrado, buritis, cupinzeiros, Base Brasília modernista, horta, Jardim
-   Polinizador, bichos estilizados, marcas de fase, moradores e dia/noite.
+   Polinizador, bichos estilizados, marcas de fase, fontes de recurso,
+   caixa-isca, moradores, dia/noite e a onda de restauração.
    Tudo vem do Registro. Metros, Y para cima. Formas em formas.js.
    ===================================================================== */
 const Mundo = (function () {
   const V3 = THREE.Vector3, T = Formas.T, B = Formas.B;
-  const M = { bichos: [], marcas: [], npcs: [], companheiros: [], t: 20 };
+  const M = { bichos: [], marcas: [], npcs: [], companheiros: [], fontes: [], caixas: [], flores: [], trilha: [], onda: null, t: 20 };
   const TAM = 440, SEG = 110, RIO_X = 80, RIO_LARGURA = 14;
   let BIOMA = 'cerrado', AREAS = [];
 
@@ -146,7 +147,7 @@ const Mundo = (function () {
     }
 
     /* Jardim Polinizador: cerca de estacas e flores que abrem com a Clareza */
-    const J = Registro.area('jardim'); M.flores = [];
+    const J = Registro.area('jardim');
     if (J) {
       const nE = 46; scene.add(instancia(new THREE.CylinderGeometry(0.12, 0.14, 1.2, 6), T('#8a6a44'), nE, (k) => { const a = k / nE * 6.28, x = J.x + Math.cos(a) * (J.r - 5), z = J.z + Math.sin(a) * (J.r - 5); return [x, altura(x, z) + 0.6, z]; }));
       const cores = ['#f5c840', '#ef5a7a', '#f6a4d0', '#b48ae8', '#ffffff'];
@@ -159,14 +160,28 @@ const Mundo = (function () {
         const cor = cores[i % 5];
         for (let k = 0; k < 5; k++) { const pe = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), T(cor)); const ang = k / 5 * 6.28; pe.position.set(Math.cos(ang) * 0.22, 0, Math.sin(ang) * 0.22); pe.scale.set(1, 0.3, 0.6); pe.rotation.y = -ang; flor.add(pe); }
         flor.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), T('#f0a020')));
-        scene.add(g); M.flores.push({ botao, flor });
+        scene.add(g); M.flores.push({ g, botao, flor, d: r, aberta: false, pop: 1, limiar: 0.5 });
       }
       M.placaJardim = { pos: new V3(J.x - J.r + 3, altura(J.x - J.r + 3, J.z), J.z), area: J };
       const placa = new THREE.Group(); placa.position.copy(M.placaJardim.pos);
       placa.add(P(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.8, 6), T('#7a5a3a')), 0, 0.9, 0));
       placa.add(P(new THREE.Mesh(new THREE.BoxGeometry(0.15, 1, 2.2), T('#d9b98a')), 0, 1.8, 0));
       scene.add(placa);
+      // trilha de flores do jardim até a vereda: aparece quando o jardim chega a 100%
+      for (let i = 0; i < 44; i++) {
+        const t = i / 43, x = J.x + 5 * t + Math.sin(t * 9) * 3 + (i % 2 ? 1.3 : -1.3), z = J.z - J.r + 2 - t * 64;
+        const g = new THREE.Group(); g.position.set(x, altura(x, z), z);
+        const flor = new THREE.Mesh(new THREE.IcosahedronGeometry(0.3, 0), T(cores[i % 5])); flor.position.y = 0.5; flor.scale.set(1, 0.7, 1); g.add(flor);
+        g.add(P(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.5, 5), T('#6b8a44')), 0, 0.25, 0));
+        g.visible = false; scene.add(g);
+        M.trilha.push({ g, botao: null, flor: g, d: Math.hypot(x - J.x, z - J.z), aberta: false, pop: 1, limiar: 1 });
+      }
     }
+
+    /* fontes de recurso do Viveiro: planta-hospedeira, água, algas, pedras */
+    (Registro.R.biomas[BIOMA].fontes || []).forEach((f) => M.fontes.push(fonte(f)));
+    /* objetos que reativam relações no mapa (caixa-isca da jataí) */
+    Object.values(Registro.R.relacoes).forEach((r) => { if (r.ativar && r.ativar.ponto && AREAS.some((a) => a.id === r.ativar.onde)) M.caixas.push(caixa(r)); });
 
     /* seres vivos: a fase que anda circula pela área; as outras ficam marcadas no mapa */
     Registro.lista('especies', BIOMA).forEach((e) => {
@@ -194,7 +209,7 @@ const Mundo = (function () {
   }
 
   /* bicho: forma estilizada, brilho quando mostra o que faz, anel no chão se for pequeno */
-  function bicho(e, fase, area) {
+  function bicho(e, fase, area, inicio) {
     const g = new THREE.Group(), corpo = Formas.bicho(fase.forma, fase.cor); g.add(corpo);
     const brilho = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 0), new THREE.MeshBasicMaterial({ color: '#ffe36a' })); brilho.visible = false; g.add(brilho);
     const esc = fase.escala || 1; g.scale.setScalar(esc);
@@ -202,6 +217,7 @@ const Mundo = (function () {
     if (esc < 0.8) { const anel = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.75, 28), new THREE.MeshBasicMaterial({ color: '#fff6c8', transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false })); anel.rotation.x = -Math.PI / 2; anel.position.y = 0.06 / esc; anel.scale.setScalar(1 / esc); g.add(anel); g.userData.anel = anel; }
     const a = Math.random() * 6.28, d = 6 + Math.random() * (area.r - 12);
     g.position.set(area.x + Math.cos(a) * d, 0, area.z + Math.sin(a) * d); g.position.y = altura(g.position.x, g.position.z);
+    if (inicio) g.position.copy(inicio);
     M.scene.add(g);
     // relação que este bicho mostra quando "age" (prova ver-acao na área dele)
     const rel = Registro.relacoesDe(e.id).find((r) => r.prova && r.prova.tipo === 'ver-acao' && r.prova.area === area.id) || null;
@@ -215,6 +231,10 @@ const Mundo = (function () {
       const tubo = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.16, 0.45, 8), T('#e8c26a')); tubo.rotation.z = Math.PI / 2; tubo.position.set(0.95, 2.1, 0); g.add(tubo);
     } else if (f.marca === 'olheiro') {
       for (let i = 0; i < 6; i++) { const mo = new THREE.Mesh(new THREE.SphereGeometry(0.75, 10, 6, 0, 6.28, 0, 1.3), T('#c07a48', { flatShading: true })); mo.position.set(Math.cos(i * 1.1) * 1.8, -0.05, Math.sin(i * 1.1) * 1.8); mo.scale.y = 0.45; g.add(mo); g.add(P(new THREE.Mesh(new THREE.CircleGeometry(0.16, 8), T('#3a2416')), mo.position.x, 0.34, mo.position.z, -Math.PI / 2)); }
+    } else if (f.marca === 'lagarta') {
+      // lagarta em cima de uma folha, no meio da planta-hospedeira
+      const folha = new THREE.Mesh(new THREE.CircleGeometry(0.7, 9), T('#7cc04a', { side: THREE.DoubleSide })); folha.rotation.x = -Math.PI / 2.4; folha.position.set(0.9, 1.25, 0.4); folha.scale.set(1.4, 0.8, 1); g.add(folha);
+      for (let i = 0; i < 6; i++) { const seg = new THREE.Mesh(new THREE.SphereGeometry(0.13 - i * 0.008, 10, 8), T(i ? '#3f7a2a' : '#2a4a1a')); seg.position.set(0.45 + i * 0.17, 1.42 + Math.sin(i * 1.2) * 0.04, 0.4 + i * 0.03); g.add(seg); if (i % 2) { const pt = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 4), T('#f2d24b')); pt.position.set(seg.position.x, seg.position.y + 0.11, seg.position.z); g.add(pt); } }
     } else if (f.marca === 'parede') {
       [-0.15, 0.15].forEach((dx) => { const ov = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), T(f.cor || '#f3ead6')); ov.position.set(dx, 1.2, 0); ov.scale.y = 1.2; g.add(ov); });
     } else {
@@ -225,6 +245,60 @@ const Mundo = (function () {
     g.position.set(x, altura(x, z), z); M.scene.add(g);
     return { especie: e, fase: f, mesh: g, pos: g.position };
   }
+  // fonte: brilho dourado em cima quando tem o que colher; a planta encolhe e rebrota
+  function fonte(f) {
+    const g = new THREE.Group(), cheio = new THREE.Group(); g.add(cheio);
+    let y = 0;
+    if (f.forma === 'planta') {
+      g.add(P(new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 1.2, 6), T('#5a7a2e')), 0, 0.6, 0));
+      for (let i = 0; i < 9; i++) { const a = i * 2.4, h = 0.6 + (i % 3) * 0.35, fo = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 0), T(i % 2 ? '#7cc04a' : '#5fa83a', { flatShading: true })); fo.position.set(Math.cos(a) * 0.55, h, Math.sin(a) * 0.55); fo.scale.set(1.3, 0.45, 0.8); fo.rotation.y = -a; fo.castShadow = true; cheio.add(fo); }
+      y = 2; M.arvPos.push([f.x, f.z, 0.6]);
+    } else if (f.forma === 'algas') {
+      const rz = altura(RIO_X + Math.sin(f.z * 0.04) * 5, f.z) + 1.12;
+      for (let i = 0; i < 6; i++) { const al = new THREE.Mesh(new THREE.CircleGeometry(0.6, 7), T('#3f8a3a')); al.rotation.x = -Math.PI / 2; al.position.set(Math.cos(i * 1.7) * 1.3, Math.max(0.1, rz - altura(f.x, f.z)), Math.sin(i * 1.7) * 1.3); al.scale.set(1.3, 0.7, 1); cheio.add(al); }
+      y = 1.6;
+    } else if (f.forma === 'pedras') {
+      [[0, 0, 0.7], [1.1, 0.4, 0.5], [-0.8, 0.6, 0.45]].forEach(([x, z, s]) => { const pe = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), T('#a39a8a', { flatShading: true })); pe.position.set(x, s * 0.4, z); pe.scale.y = 0.55; pe.castShadow = true; cheio.add(pe); });
+      y = 1.6;
+    } else y = 1.4;   // água: o espelho d'água da praça já está no mapa
+    const brilho = new THREE.Mesh(new THREE.OctahedronGeometry(0.22, 0), new THREE.MeshBasicMaterial({ color: '#ffe36a' })); brilho.position.y = y; g.add(brilho);
+    g.position.set(f.x, altura(f.x, f.z), f.z); M.scene.add(g);
+    return { dado: f, mesh: g, pos: g.position, cheia: true, volta: 0, cheio, brilho, y };
+  }
+  function colher(fo) { fo.cheia = false; fo.volta = fo.dado.volta || 40; }
+  // caixa-isca: madeira num poste; com a relação ativada ganha a entrada de cera e as abelhas
+  function caixa(r) {
+    const [x, z] = r.ativar.ponto, g = new THREE.Group();
+    g.add(P(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 1.3, 6), T('#7a5a3a')), 0, 0.65, 0));
+    g.add(P(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.7, 0.8), T('#b88a52', { flatShading: true })), 0, 1.65, 0));
+    g.add(P(new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.12, 1), T('#8a6a44')), 0, 2.06, 0));
+    const tubo = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.13, 0.35, 8), T('#e8c26a')); tubo.rotation.x = Math.PI / 2; tubo.position.set(0, 1.6, 0.55); g.add(tubo);
+    const brilho = new THREE.Mesh(new THREE.OctahedronGeometry(0.22, 0), new THREE.MeshBasicMaterial({ color: '#ffe36a' })); brilho.position.y = 2.7; g.add(brilho);
+    g.position.set(x, altura(x, z), z); g.rotation.y = Math.atan2(Registro.area(r.ativar.onde).x - x, Registro.area(r.ativar.onde).z - z); M.scene.add(g);
+    M.arvPos.push([x, z, 0.7]);
+    return { rel: r, mesh: g, pos: g.position, tubo, brilho };
+  }
+
+  /* ativar no mundo: o bicho sai do jogador (ou da caixa) e passa a morar na área */
+  function dispensar(especieId) {
+    const i = M.companheiros.findIndex((c) => c.id === especieId); if (i < 0) return null;
+    const c = M.companheiros[i]; M.scene.remove(c.mesh); M.companheiros.splice(i, 1);
+    return c.pos.clone();
+  }
+  function povoar(r, inicio) {
+    const e = Registro.especie(r.ativar.especie), area = Registro.area(r.ativar.onde), f = e && e.fases.find((x) => x.anda);
+    if (!f || !area) return;
+    for (let k = 0; k < (r.ativar.tipo === 'reativar' ? 4 : 3); k++) { const b = bicho(e, f, area, inicio); b.espera = k * 0.4; M.bichos.push(b); }
+  }
+  // onda dourada que sai do centro da área: as flores abrem quando ela passa
+  function onda(areaId) {
+    const a = Registro.area(areaId); if (!a) return;
+    if (M.onda) M.scene.remove(M.onda.mesh);
+    const mesh = new THREE.Mesh(new THREE.RingGeometry(0.86, 1, 72), new THREE.MeshBasicMaterial({ color: '#ffd84a', transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+    mesh.rotation.x = -Math.PI / 2; mesh.position.set(a.x, altura(a.x, a.z) + 0.7, a.z); M.scene.add(mesh);
+    M.onda = { mesh, x: a.x, z: a.z, r: 0.5, max: a.r * 2.2, fim: 140 };
+  }
+
   function npc(n) {
     const v = n.visual || {}, g = Formas.pessoa(Object.assign({ camisa: n.cor }, v));
     if (v.escala) g.scale.setScalar(v.escala);
@@ -262,7 +336,6 @@ const Mundo = (function () {
     M.capim.instanceColor.needsUpdate = true;
     const kv = M.cor.vereda; if (kv !== undefined) M.rio.material.color.copy(new THREE.Color('#7d827a')).lerp(new THREE.Color('#3f97c8'), kv);
     const kj = M.cor.jardim; if (kj !== undefined && M.ipeJardim) M.ipeJardim.children.forEach((c, i) => { if (i) c.material.color.copy(new THREE.Color('#8f8d86')).lerp(new THREE.Color('#f5c43a'), Math.min(1, kj * 1.6)); });
-    if (kj !== undefined) M.flores.forEach((f, i) => { const aberta = kj >= 0.5 - i * 0.004; f.flor.visible = aberta; f.botao.visible = !aberta; });
   }
 
   /* dia e noite: 200 s por dia; noite ≈ 30% */
@@ -287,7 +360,7 @@ const Mundo = (function () {
     return M.noite;
   }
 
-  // bicho que cresceu no Ninho acompanha o jogador até ser ativado no mundo
+  // bicho que cresceu no Viveiro acompanha o jogador até ser ativado no mundo
   function companheiro(especieId) {
     if (M.companheiros.some((c) => c.id === especieId)) return;
     const e = Registro.especie(especieId), f = e.fases.find((x) => x.anda) || e.fases[e.fases.length - 1];
@@ -316,7 +389,13 @@ const Mundo = (function () {
         if (b.proxAcao <= 0) { b.agindo = 9; b.proxAcao = 14 + Math.random() * 10; b.alvo = null; return; }
       }
       b.espera -= dt;
-      if (b.espera <= 0) { b.espera = 2 + Math.random() * 4; const a = Math.random() * 6.28, d = 6 + Math.random() * (b.area.r - 12); b.alvo = new V3(b.area.x + Math.cos(a) * d, 0, b.area.z + Math.sin(a) * d); }
+      if (b.espera <= 0) {
+        b.espera = 2 + Math.random() * 4;
+        // polinizador no jardim vai de flor aberta em flor aberta
+        const abertas = b.fase.voa && b.area.id === 'jardim' ? M.flores.filter((f) => f.aberta) : [];
+        if (abertas.length) b.alvo = abertas[Math.floor(Math.random() * abertas.length)].g.position.clone();
+        else { const a = Math.random() * 6.28, d = 6 + Math.random() * (b.area.r - 12); b.alvo = new V3(b.area.x + Math.cos(a) * d, 0, b.area.z + Math.sin(a) * d); }
+      }
       if (b.alvo) { const dir = new V3().subVectors(b.alvo, b.pos); dir.y = 0; if (dir.length() < 1) b.alvo = null; else { dir.normalize(); b.pos.addScaledVector(dir, dt * 2.5); b.mesh.rotation.y = Math.atan2(-dir.z, dir.x); } }
       b.pos.y = altura(b.pos.x, b.pos.z) + (b.fase.voa ? voo(b, Math.sin(M.t * 3 + b.espera) * 0.3) : 0); anelNoChao(b);
     });
@@ -330,8 +409,30 @@ const Mundo = (function () {
       c.mesh.userData.animar(M.t + i, false);
       c.pos.y = altura(c.pos.x, c.pos.z) + (c.voa ? 1.8 + Math.sin(M.t * 4 + i) * 0.4 : Math.abs(Math.sin(M.t * 8 + i)) * 0.3 * (d > 1.2 ? 1 : 0));
     });
+    // fontes rebrotam; o brilho só aparece quando tem o que colher
+    M.fontes.forEach((f) => {
+      if (!f.cheia && (f.volta -= dt) <= 0) f.cheia = true;
+      const s = f.cheio.scale.x + ((f.cheia ? 1 : 0.45) - f.cheio.scale.x) * Math.min(1, dt * 2); f.cheio.scale.setScalar(s);
+      f.brilho.visible = f.cheia; f.brilho.rotation.y += dt * 3; f.brilho.position.y = f.y + Math.sin(M.t * 4) * 0.12;
+    });
+    M.caixas.forEach((c) => { const st = Estado.dados.relacoes[c.rel.id]; c.tubo.visible = st === 'ativada'; c.brilho.visible = st === 'vista'; c.brilho.rotation.y += dt * 3; });
+    // onda de restauração
+    if (M.onda) {
+      const o = M.onda; o.r += dt * (o.r < o.max ? 16 : 34);
+      const s = Math.min(o.r, o.max); o.mesh.scale.setScalar(s); o.mesh.material.opacity = Math.max(0, 0.9 * (1 - s / o.max));
+      if (o.r >= o.fim) { M.scene.remove(o.mesh); M.onda = null; }
+    }
+    // flores do jardim (50%) e trilha até a vereda (100%): abrem quando a onda passa, com um pulo
+    const kj = Registro.area('jardim') ? Ruido.clareza('jardim') : 0;
+    const abrir = (f) => {
+      const deve = kj >= f.limiar && (!M.onda || M.onda.r >= f.d);
+      if (deve !== f.aberta) { f.aberta = deve; f.pop = 0; }
+      if (f.botao) { f.botao.visible = !f.aberta; f.flor.visible = f.aberta; } else f.g.visible = f.aberta;
+      if (f.aberta && f.pop < 1) { f.pop = Math.min(1, f.pop + dt * 2.2); const p = f.pop, s = 1 + Math.sin(p * Math.PI) * 0.45 * (1 - p); f.flor.scale.setScalar(Math.max(0.01, p * s)); }
+    };
+    M.flores.forEach(abrir); M.trilha.forEach(abrir);
     pintar(dt);
   }
 
-  return { construir, update, altura, areaEm, companheiro, M, RIO_X, RIO_LARGURA };
+  return { construir, update, altura, areaEm, companheiro, dispensar, povoar, onda, colher, M, RIO_X, RIO_LARGURA };
 })();

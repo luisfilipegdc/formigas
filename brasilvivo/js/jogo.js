@@ -1,8 +1,9 @@
 /* =====================================================================
    Terra Codex · Brasil Vivo · laço principal
    Entrada em Brasília, ações de contexto (observar, ver o que faz, examinar,
-   levar ao Ninho, falar, olhar o jardim), Ninho sem pergunta, área e Clareza
-   no HUD. O progresso mora em Estado (save v2) e a BioDex sobe por evento.
+   colher, levar ao Viveiro, falar, soltar/reativar), Viveiro de arrastar sem
+   pergunta, clímax de restauração, área e Clareza no HUD. O progresso mora
+   em Estado (save v2: o Viveiro fica em E.ninho) e a BioDex sobe por evento.
    ===================================================================== */
 (function () {
   const $ = (id) => document.getElementById(id);
@@ -27,6 +28,11 @@
   jog.mesh.position.y = Mundo.altura(E.pos[0], E.pos[2]);
   camera.position.set(E.pos[0] + 10, 12, E.pos[2] + 14);
   E.ninho.forEach((n) => { const c = Registro.ciclo(n.ciclo); if (!c.passos.some((p) => p.de === n.fase)) Mundo.companheiro(c.especie); });
+  // relações já religadas: os bichos soltos continuam morando lá
+  Object.keys(E.relacoes).forEach((id) => { const r = Registro.relacao(id); if (r && r.ativar && E.relacoes[id] === 'ativada') Mundo.povoar(r, r.ativar.ponto ? new V3(r.ativar.ponto[0], Mundo.altura(r.ativar.ponto[0], r.ativar.ponto[1]) + 1.6, r.ativar.ponto[1]) : null); });
+  const RECURSOS = Registro.R.biomas[BIOMA].recursos, BOLSA_MAX = Registro.R.biomas[BIOMA].bolsaMax || 5;
+  const abrirViveiro = (msg) => UI.viveiro(BIOMA, dar, rever, msg);
+  const viveiroAberto = () => !$('painel').hidden && $('painel-titulo').textContent.startsWith('🌱');
 
   function livre(x, z) {
     for (const [ax, az, r] of mundo.arvPos) if (Math.hypot(x - ax, z - az) < r) return false;
@@ -58,7 +64,7 @@
     const voltando = document.body.classList.contains('jogando') === false && E.falou.ipe;
     document.body.classList.add('jogando'); $('inicio').hidden = true; $('hud').hidden = false;
     // quem volta vê o que mudou enquanto esteve fora (só o que aconteceu de verdade)
-    if (voltando) { const mud = conferirNinho(true); if (mud.length) setTimeout(() => UI.dialogo('🌱 Enquanto você esteve fora', mud.join(' '), ['Ver no Ninho', 'Continuar']).then((i) => { if (i === 0) UI.ninho(cuidar, rever); }), 500); }
+    if (voltando) { const mud = conferirNinho(true); if (mud.length) setTimeout(() => UI.dialogo('🌱 Enquanto você esteve fora', mud.join(' '), ['Ver no Viveiro', 'Continuar']).then((i) => { if (i === 0) abrirViveiro(); }), 500); }
   }
 
   /* ---------- o que está perto ---------- */
@@ -77,10 +83,15 @@
       if (!m.mesh.visible) return;
       const achou = E.achados[m.especie.id + ':' + m.fase.id];
       if (achou && !m.fase.ninho) return;
-      cand('marca', m, m.pos, achou ? m.fase.emoji + ' ' + m.fase.nome : '🔍 Algo pequeno', achou ? 'Levar ao Ninho 🤲' : 'Examinar 🔍', 5.5, 1);
+      cand('marca', m, m.pos, achou ? m.fase.emoji + ' ' + m.fase.nome : '🔍 Algo pequeno', achou ? 'Levar ao Viveiro 🤲' : 'Examinar 🔍', 5.5, 1);
     });
     mundo.npcs.forEach((n) => cand('npc', n, n.pos, n.dado.emoji + ' ' + n.dado.nome, 'Falar 💬'));
     if (mundo.placaJardim) cand('jardim', mundo.placaJardim, mundo.placaJardim.pos, '🌸 ' + mundo.placaJardim.area.nome, 'Olhar 👀', 7);
+    mundo.fontes.forEach((f) => { const r = RECURSOS[f.dado.recurso]; cand('fonte', f, f.pos, r.emoji + ' ' + f.dado.nome, f.cheia ? f.dado.verbo + ' ' + r.emoji : 'Ver 👀', 5); });
+    mundo.caixas.forEach((c) => { if (E.relacoes[c.rel.id] === 'ativada') return; const pode = E.relacoes[c.rel.id] === c.rel.ativar.requer; cand('caixa', c, c.pos, '📦 ' + c.rel.ativar.objeto, pode ? c.rel.ativar.verbo + ' ' + Registro.especie(c.rel.ativar.especie).emoji : 'Examinar 🔍', 6, pode ? 2 : 1); });
+    // companheiro no lugar certo: soltar ganha de tudo (é o grande momento)
+    const aqui = Mundo.areaEm(p.x, p.z);
+    mundo.companheiros.forEach((c) => { const r = soltarDe(c.id); if (r && aqui && aqui.id === r.ativar.onde) cand('soltar', r, c.pos, c.texto, r.ativar.verbo + ' ' + Registro.especie(c.id).emoji, 99, 50); });
     perto = melhor;
     const a = $('acao'); a.hidden = !melhor || UI.aberto();
     if (melhor) { const pt = melhor.acao.split(' '), ico = pt.pop(); $('acao-nome').textContent = melhor.nome; $('acao-ico').textContent = ico; $('acao-txt').textContent = pt.join(' '); }
@@ -91,7 +102,10 @@
   async function agir() {
     if (!perto || UI.aberto()) return;
     const { tipo, obj } = perto;
-    Som.tocar(tipo === 'npc' ? 'falar' : tipo === 'marca' ? 'examinar' : tipo === 'bicho' ? 'observar' : 'toque');
+    if (tipo !== 'soltar') Som.tocar(tipo === 'npc' ? 'falar' : tipo === 'marca' ? 'examinar' : tipo === 'bicho' ? 'observar' : 'toque');
+    if (tipo === 'soltar') await ativar(obj);
+    if (tipo === 'caixa') { if (E.relacoes[obj.rel.id] === obj.rel.ativar.requer) await ativar(obj.rel); else await UI.dialogo('📦 ' + obj.rel.ativar.objeto, obj.rel.ativar.vazio, ['Vou descobrir']); }
+    if (tipo === 'fonte') colher(obj);
     if (tipo === 'bicho') await verBicho(obj);
     if (tipo === 'marca') await examinar(obj);
     if (tipo === 'npc') await falar(obj.dado);
@@ -113,12 +127,12 @@
     }
     abrirFicha(e.id);
   }
-  // examinar uma marca → registra a fase (Encontrado quando é a segunda) · fases pequenas podem ir ao Ninho
+  // examinar uma marca → registra a fase (Encontrado quando é a segunda) · fases pequenas podem ir ao Viveiro
   async function examinar(m) {
     const e = m.especie, f = m.fase, chave = e.id + ':' + f.id;
     if (!E.achados[chave]) {
       E.achados[chave] = true; Biodex.viu(e.id, f.id);
-      const ops = f.ninho ? ['Levar ao Ninho 🤲', 'Deixar aqui'] : ['Anotar na BioDex'];
+      const ops = f.ninho ? ['Levar ao Viveiro 🤲', 'Deixar aqui'] : ['Anotar na BioDex'];
       const i = await UI.dialogo(f.emoji + ' ' + f.nome + ' · ' + e.nome, f.achado, ops);
       if (f.ninho && i === 0) await levarAoNinho(e, f);
       return;
@@ -126,9 +140,20 @@
     if (f.ninho) await levarAoNinho(e, f);
   }
   async function levarAoNinho(e, f) {
-    if (E.ninho.length >= 3) { await UI.dialogo('🥚 Ninho', 'Seu Ninho já tem 3 seres vivos. Acompanhe a transformação deles antes de trazer outro.', ['Ok']); return; }
-    E.ninho.push({ ciclo: e.ciclo, fase: f.id, desde: null }); salvar();
-    UI.toast(f.emoji + ' ' + f.nome + ' de ' + e.nome + ' no Ninho! Abra o Ninho para cuidar.', 3500);
+    if (E.ninho.length >= 3) { await UI.dialogo('🌱 Viveiro', 'Seu Viveiro já tem 3 seres vivos. Acompanhe a transformação deles antes de trazer outro.', ['Ok']); return; }
+    E.ninho.push({ ciclo: e.ciclo, fase: f.id, desde: null, dado: [] }); salvar(); Som.tocar('ninho');
+    const passo = Registro.ciclo(e.ciclo).passos.find((p) => p.de === f.id);
+    UI.toast(f.emoji + ' ' + f.nome + ' no Viveiro! Precisa de: ' + passo.precisa.map((r) => RECURSOS[r].emoji + ' ' + RECURSOS[r].curto.toLowerCase()).join(' e ') + '.', 4200);
+  }
+
+  /* ---------- colher: a fonte dá um pouco e rebrota (nunca tudo de uma vez) ---------- */
+  function colher(fo) {
+    const id = fo.dado.recurso, r = RECURSOS[id], tem = E.bolsa[id] || 0;
+    if (!fo.cheia) { UI.toast('⏳ ' + fo.dado.nome + ' está rebrotando. Volte daqui a pouco.', 2600); return; }
+    if (tem >= BOLSA_MAX) { UI.toast(r.emoji + ' Sua bolsa já tem ' + tem + '. Deixe o resto para a natureza.', 3000); return; }
+    const n = Math.min(fo.dado.da || 1, BOLSA_MAX - tem);
+    E.bolsa[id] = tem + n; E.colheu[id] = true; Mundo.colher(fo); salvar(); Som.tocar('cuidar');
+    UI.toast(r.emoji + ' +' + n + ' ' + r.curto.toLowerCase() + ' na bolsa (' + E.bolsa[id] + ')' + (E.ninho.length ? ' · leve ao Viveiro' : ''), 3000);
   }
 
   async function falar(n) {
@@ -139,23 +164,78 @@
   }
   async function olharJardim(a) {
     const k = Math.round(Ruido.clareza(a.id) * 100);
-    const temBorboleta = mundo.companheiros.some((c) => c.id === 'borboleta-azul');
-    await UI.dialogo('🌸 ' + a.nome, a.texto + ' Clareza do jardim: ' + k + '%.' + (temBorboleta ? ' Sua borboleta está agitada perto das flores. Na próxima atualização do jogo você vai poder soltá-la aqui.' : ''), [temBorboleta ? 'Combinado!' : 'Vou descobrir quem falta']);
+    const faltam = a.relacoes.map(Registro.relacao).filter((r) => E.relacoes[r.id] !== 'ativada');
+    const temAqui = faltam.find((r) => mundo.companheiros.some((c) => c.id === r.de));
+    const texto = k >= 100 ? 'O jardim está vivo de novo: flor aberta, borboleta e jataí levando pólen. Clareza: 100%.'
+      : a.texto.split('.')[0] + '. Clareza do jardim: ' + k + '%. ' + (temAqui ? 'Sua ' + Registro.especie(temAqui.de).nome.toLowerCase() + ' está agitada: chegue perto das flores e toque em ' + temAqui.ativar.verbo + '.' : 'Ainda falta: ' + faltam.map((r) => Registro.especie(r.de).emoji).join(' ') + '.');
+    await UI.dialogo('🌸 ' + a.nome, texto, [k >= 100 ? 'Que lindo!' : temAqui ? 'Combinado!' : 'Vou descobrir quem falta']);
   }
 
-  /* ---------- Ninho: cuidar inicia a mudança; o tempo real faz o resto ---------- */
-  function cuidar(i) {
+  /* ---------- Ativar no mundo: soltar o bicho do Viveiro ou reativar um lugar ---------- */
+  const soltarDe = (especieId) => Registro.relacoesDe(especieId).find((r) => r.ativar && r.ativar.tipo === 'soltar' && E.relacoes[r.id] !== 'ativada');
+  let cine = null;   // câmera do clímax: afasta, mostra o antes/depois e volta
+  async function ativar(r) {
+    const area = Registro.area(r.ativar.onde), e = Registro.especie(r.ativar.especie), antes = Ruido.clareza(area.id);
+    let inicio = null;
+    if (r.ativar.tipo === 'soltar') {
+      inicio = Mundo.dispensar(e.id);
+      const i = E.ninho.findIndex((n) => { const c = Registro.ciclo(n.ciclo); return c.especie === e.id && !c.passos.some((p) => p.de === n.fase); });
+      if (i >= 0) E.ninho.splice(i, 1);   // libera a vaga do Viveiro
+    } else if (r.ativar.ponto) inicio = new V3(r.ativar.ponto[0], Mundo.altura(r.ativar.ponto[0], r.ativar.ponto[1]) + 1.6, r.ativar.ponto[1]);
+    Biodex.relacao(r.id, 'ativada'); salvar();
+    Mundo.povoar(r, inicio); Mundo.onda(area.id); Som.tocar('ativar');
+    const J = Jogador.J, p = jog.mesh.position;
+    // Menos movimento: sem afastar a câmera (a onda e o som continuam)
+    const calmo = Ajustes.calmo();
+    cine = { t: 0, dur: 7, d0: J.dist, p0: J.camPitch, y0: J.camYaw, dA: calmo ? J.dist : 40, pA: calmo ? J.camPitch : 0.82, yaw: calmo ? J.camYaw : Math.atan2(p.x - area.x, p.z - area.z) };
+    J.bloqueado = true;
+    await espera(3800);
+    const depois = Ruido.clareza(area.id);
+    (area.efeitos || []).forEach((ef) => { if (antes < ef.em && depois >= ef.em && ef.texto) UI.toast(ef.texto, 4200); });
+    await UI.dialogo(e.emoji + ' ' + e.nome, r.ativar.texto + ' Clareza: ' + Math.round(antes * 100) + '% → ' + Math.round(depois * 100) + '%.', ['Que lindo!']);
+    for (const ef of area.efeitos || []) if (ef.fala && antes < ef.em && depois >= ef.em) { const n = Registro.R.npcs[ef.fala.npc]; await UI.dialogo(n.emoji + ' ' + n.nome, ef.fala.texto, ['Vamos lá!']); }
+  }
+  const espera = (ms) => new Promise((r) => setTimeout(r, ms));
+  function camera3(dt) {
+    if (!cine) return;
+    const J = Jogador.J; cine.t += dt;
+    const ida = Math.min(1, cine.t / 1.6), volta = Math.max(0, Math.min(1, (cine.t - cine.dur + 1.8) / 1.8)), k = ida * (1 - volta);
+    const s = k * k * (3 - 2 * k);
+    let dy = cine.yaw - cine.y0; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+    J.dist = cine.d0 + (cine.dA - cine.d0) * s; J.camPitch = cine.p0 + (cine.pA - cine.p0) * s; J.camYaw = cine.y0 + dy * Math.min(1, ida * 1.2);
+    if (cine.t >= cine.dur) { J.dist = cine.d0; J.camPitch = cine.p0; cine = null; if (!UI.aberto()) J.bloqueado = false; }
+  }
+
+  /* ---------- Viveiro: arrastar (ou tocar) o que o ser vivo precisa; o tempo real faz o resto ---------- */
+  // errar nunca gasta nada: o item volta para a bolsa e o Viveiro diz o que ajuda
+  function dar(i, rec) {
     const n = E.ninho[i]; if (!n || n.desde) return;
-    const c = Registro.ciclo(n.ciclo);
-    n.desde = Date.now(); Biodex.cuidou(c.especie); salvar(); Som.tocar('cuidar');
-    UI.ninho(cuidar, rever);
+    const c = Registro.ciclo(n.ciclo), passo = c.passos.find((p) => p.de === n.fase); if (!passo) return;
+    const e = Registro.especie(c.especie), f = e.fases.find((x) => x.id === n.fase), r = RECURSOS[rec];
+    n.dado = n.dado || [];
+    const lista = (ids) => ids.map((x) => RECURSOS[x].emoji + ' ' + RECURSOS[x].curto.toLowerCase()).join(' e ');
+    const falta = () => passo.precisa.filter((x) => !n.dado.includes(x));
+    if (!passo.precisa.includes(rec)) { Som.tocar('toque'); abrirViveiro({ i, tipo: 'erro', texto: r.emoji + ' ' + r.curto + ' não ajuda agora. ' + f.nome + ' precisa de ' + lista(falta()) + '.' }); return; }
+    if (n.dado.includes(rec)) { abrirViveiro({ i, tipo: 'info', texto: r.emoji + ' Já tem ' + r.curto.toLowerCase() + '. Falta ' + lista(falta()) + '.' }); return; }
+    if (!r.ferramenta) {
+      if (!(E.bolsa[rec] > 0)) { abrirViveiro({ i, tipo: 'info', texto: r.emoji + ' Sua bolsa está sem ' + r.curto.toLowerCase() + '. ' + (r.onde || '') }); return; }
+      E.bolsa[rec]--;
+    }
+    n.dado.push(rec);
+    if (!falta().length) {
+      n.desde = Date.now(); n.dado = []; Biodex.cuidou(c.especie); salvar(); Som.tocar('cuidar');
+      abrirViveiro({ i, tipo: 'ok', texto: '🤲 Tudo pronto! Agora é com o tempo. ' + passo.sinal });
+      return;
+    }
+    salvar(); Som.tocar('ninho');
+    abrirViveiro({ i, tipo: 'ok', texto: r.emoji + ' Isso! Agora falta ' + lista(falta()) + '.' });
   }
   // replay: a criança vê a transformação que aconteceu enquanto estava longe (ou de novo, quando quiser)
   function rever(i) {
     const n = E.ninho[i]; if (!n || !n.novo) return;
     const c = Registro.ciclo(n.ciclo), e = Registro.especie(c.especie), { de, para } = n.novo;
     UI.fecharPainel(); delete n.novo; salvar(); seloNinho();
-    UI.transformacao(e, de, para, () => UI.ninho(cuidar, rever));
+    UI.transformacao(e, de, para, () => abrirViveiro());
   }
   // confere as transformações (também conta o tempo com o jogo fechado)
   function conferirNinho(silencioso) {
@@ -164,18 +244,19 @@
       if (!n.desde) return;
       const c = Registro.ciclo(n.ciclo), passo = c.passos.find((p) => p.de === n.fase);
       if (!passo || agora < n.desde + passo.minutos * 60000) return;
-      n.fase = passo.para; n.desde = null;
+      n.fase = passo.para; n.desde = null; n.dado = [];
       const e = Registro.especie(c.especie), f = e.fases.find((x) => x.id === passo.para);
       n.novo = { de: passo.de, para: passo.para };   // guarda o momento para o replay
       Biodex.transformou(e.id, passo.para);
       const fim = !c.passos.some((p) => p.de === n.fase);
       if (fim) Mundo.companheiro(e.id);
       const de = e.fases.find((x) => x.id === passo.de).nome.toLowerCase();
-      const frase = f.emoji + ' ' + (fim ? e.nome + ' completou o ciclo e agora acompanha você!' : 'Mudou! ' + e.nome + ' passou de ' + de + ' para ' + f.nome.toLowerCase() + '.');
+      const onde = fim && c.ativar ? ' Leve até ' + Registro.area(c.ativar.onde).nome + '.' : '';
+      const frase = f.emoji + ' ' + (fim ? e.nome + ' completou o ciclo e agora acompanha você!' + onde : 'Mudou! ' + e.nome + ' passou de ' + de + ' para ' + f.nome.toLowerCase() + '.');
       mudancas.push(frase);
       if (!silencioso) { UI.toast(frase, 4000); Som.tocar('transformar'); }
       salvar();
-      if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninho(cuidar, rever);
+      if (viveiroAberto()) abrirViveiro();
     });
     return mudancas;
   }
@@ -184,7 +265,7 @@
   function abrirBiodex() { UI.biodex(BIOMA, abrirFicha); }
   function abrirFicha(id) { UI.ficha(id, abrirBiodex); }
   $('bt-codex').addEventListener('click', abrirBiodex);
-  $('bt-ninho').addEventListener('click', () => UI.ninho(cuidar, rever));
+  $('bt-ninho').addEventListener('click', () => abrirViveiro());
   $('bt-mapa').addEventListener('click', () => UI.mapa());
   $('bt-ajustes').addEventListener('click', () => UI.ajustes(atualizarObjetivo));
   // resposta imediata ao toque (antes de qualquer diálogo abrir)
@@ -232,9 +313,16 @@
     if (a.npc) { const n = mundo.npcs.find((x) => x.dado.id === a.npc); return n && n.pos; }
     if (a.marca) { const m = mundo.marcas.find((x) => x.especie.id + ':' + x.fase.id === a.marca); return m && m.mesh.visible ? m.pos : null; }
     if (a.lugar === 'jardim' && mundo.placaJardim) return mundo.placaJardim.pos;
+    if (a.fonte) { const f = mundo.fontes.find((x) => x.dado.id === a.fonte); return f && f.pos; }
+    if (a.caixa) {
+      const c = mundo.caixas.find((x) => x.rel.id === a.caixa); if (!c) return null;
+      // sem a relação descoberta, a seta leva primeiro até quem faz (a jataí na horta)
+      if (E.relacoes[a.caixa] !== c.rel.ativar.requer && c.rel.prova && c.rel.prova.area) { const ar = Registro.area(c.rel.prova.area); return new V3(ar.x, Mundo.altura(ar.x, ar.z), ar.z); }
+      return c.pos;
+    }
     return null;
   }
-  $('objetivo').addEventListener('click', () => { const j = jornada(); if (j) UI.jornada(JORNADA, j.i, E, () => UI.ninho(cuidar, rever), () => { pedido = true; }); });
+  $('objetivo').addEventListener('click', () => { const j = jornada(); if (j) UI.jornada(JORNADA, j.i, E, () => abrirViveiro(), () => { pedido = true; }); });
   // escada de ajuda: marco no cenário → a criança pede ou fica ~20 s sem se aproximar → seta e farol
   let semProgresso = 0, melhorDist = Infinity, pedido = false, ultT = 0;
   // farol: coluna de luz dourada sobre o alvo, visível de longe
@@ -260,11 +348,15 @@
     g.hidden = false; g.style.left = ((x + 1) / 2 * innerWidth) + 'px'; g.style.top = ((1 - y) / 2 * innerHeight) + 'px';
     $('guia-seta').style.transform = 'rotate(' + ang + 'rad)'; $('guia-dist').textContent = Math.round(d) + ' m';
   }
-  // selo do Ninho: quantos estão prontos para cuidar (convite, nunca cobrança)
+  // selo do Viveiro: só aparece quando dá para fazer algo agora (convite, nunca cobrança)
   function seloNinho() {
-    const prontos = E.ninho.filter((n) => n.novo || (!n.desde && Registro.ciclo(n.ciclo).passos.some((p) => p.de === n.fase))).length;
+    const prontos = E.ninho.filter((n) => {
+      if (n.novo) return true;
+      const passo = !n.desde && Registro.ciclo(n.ciclo).passos.find((p) => p.de === n.fase);
+      return passo && passo.precisa.every((x) => (n.dado || []).includes(x) || RECURSOS[x].ferramenta || E.bolsa[x] > 0);
+    }).length;
     $('selo-ninho').hidden = !prontos; $('selo-ninho').textContent = '✨';
-    $('bt-ninho').setAttribute('aria-label', prontos ? 'Ninho: tem novidade' : 'Ninho');
+    $('bt-ninho').setAttribute('aria-label', prontos ? 'Viveiro: tem novidade' : 'Viveiro');
   }
   // primeira vez que o botão de ação aparece: dica curta, uma vez só
   function dicaPrimeiraAcao() {
@@ -275,8 +367,8 @@
   }
 
   window.__terra = {
-    estado: E, mundo, jog, salvar, erros, Biodex, Registro, Ruido, jornada,
-    // testes: adianta o relógio do Ninho em N minutos
+    estado: E, mundo, jog, salvar, erros, Biodex, Registro, Ruido, jornada, dar, ativar, get cine() { return cine; },
+    // testes: adianta o relógio do Viveiro em N minutos
     acelerar(min) { E.ninho.forEach((n) => { if (n.desde) n.desde -= min * 60000; }); conferirNinho(); }
   };
 
@@ -290,19 +382,24 @@
       camera.position.set(Math.sin(a) * 46, 15, 8 + Math.cos(a) * 46); camera.lookAt(0, 5, 8);
       renderer.render(scene, camera); return;
     }
+    camera3(dt);
     Jogador.update(dt, Mundo.altura, livre);
     Mundo.update(dt, jog.mesh.position);
     $('hora').textContent = mundo.hora + (mundo.chuva ? '🌧️' : '');
     acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); atualizarObjetivo(); dicaPrimeiraAcao(); }
-    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); seloNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninhoAtualizar(); }
+    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); seloNinho(); if (viveiroAberto()) UI.ninhoAtualizar(); }
     guiar(now / 1000);
-    Som.atualizar(dt, { clareza: clarezaAqui, noite: mundo.noite, chuva: mundo.chuva });
+    // no clímax todas as camadas da música tocam juntas
+    Som.atualizar(dt, { clareza: cine ? 1 : clarezaAqui, noite: mundo.noite, chuva: mundo.chuva });
     // etiquetas
     const p = jog.mesh.position, lista = [];
     mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: 0.9 + (b.fase.escala || 1) * 1.6 }); } });
     mundo.marcas.forEach((m) => { if (m.mesh.visible && Math.hypot(p.x - m.pos.x, p.z - m.pos.z) < 22 && !(E.achados[m.especie.id + ':' + m.fase.id] && !m.fase.ninho)) lista.push({ pos: m.pos, texto: E.achados[m.especie.id + ':' + m.fase.id] ? m.fase.emoji + ' ' + m.fase.nome : '🔍', alt: 2 }); });
     mundo.npcs.forEach((n) => { if (Math.hypot(p.x - n.pos.x, p.z - n.pos.z) < 60) lista.push({ pos: n.pos, texto: n.dado.emoji + ' ' + n.dado.nome, classe: 'npc', alt: 4.2 }); });
-    mundo.companheiros.forEach((c) => lista.push({ pos: c.pos, texto: c.texto, alt: 2.4 }));
+    const aqui = Mundo.areaEm(p.x, p.z);
+    mundo.companheiros.forEach((c) => { const r = soltarDe(c.id), longe = r && !(aqui && aqui.id === r.ativar.onde); lista.push({ pos: c.pos, texto: c.texto + (longe ? ' → ' + Registro.area(r.ativar.onde).nome : ''), alt: 2.4 }); });
+    mundo.fontes.forEach((f) => { if (f.cheia && Math.hypot(p.x - f.pos.x, p.z - f.pos.z) < 18) lista.push({ pos: f.pos, texto: RECURSOS[f.dado.recurso].emoji + ' ' + f.dado.nome, alt: f.y + 0.8 }); });
+    mundo.caixas.forEach((c) => { if (E.relacoes[c.rel.id] !== 'ativada' && Math.hypot(p.x - c.pos.x, p.z - c.pos.z) < 24) lista.push({ pos: c.pos, texto: '📦 ' + c.rel.ativar.objeto, alt: 3.2 }); });
     if (mundo.placaJardim && Math.hypot(p.x - mundo.placaJardim.pos.x, p.z - mundo.placaJardim.pos.z) < 80) lista.push({ pos: mundo.placaJardim.pos, texto: '🌸 Jardim Polinizador · ' + Math.round(Ruido.clareza('jardim') * 100) + '%', classe: Ruido.clareza('jardim') < 0.5 ? 'ruido' : 'obra', alt: 3.4 });
     UI.etiquetas(camera, lista);
     renderer.render(scene, camera);

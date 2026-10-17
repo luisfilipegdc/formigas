@@ -6,7 +6,7 @@
    ===================================================================== */
 const Estado = (function () {
   const CHAVE = 'terracodex2', CHAVE_V1 = 'terracodex1';
-  const novo = () => ({ v: 2, comecou: false, biodex: {}, ninho: [], relacoes: {}, falou: {}, achados: {}, pos: [0, 0, 8], migrado: false });
+  const novo = () => ({ v: 2, comecou: false, biodex: {}, ninho: [], relacoes: {}, falou: {}, achados: {}, bolsa: {}, colheu: {}, pos: [0, 0, 8], migrado: false });
   let d = novo();
   // quem ainda não começou a jornada nova recebe a migração (mesmo que já tenha aberto a página antes)
   try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s && s.v === 2 && s.comecou) d = Object.assign(novo(), s); else migrar(); } catch (e) { migrar(); }

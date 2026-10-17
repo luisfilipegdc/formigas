@@ -3,19 +3,25 @@
    prova: como a relação é descoberta (vira "Conectado")
      ver-acao → o bicho faz a ação numa área e o jogador observa na hora
      ativar   → só é descoberta quando o jogador ativa a espécie no mundo
-   ativar: como o jogador religa a relação no mundo (Sprint 2 em diante)
+   ativar: como o jogador religa a relação no mundo
+     soltar   → o bicho que completou o ciclo no Viveiro é solto na área (onde)
+     reativar → um objeto no mapa (ponto) é reativado; requer: estado da relação antes
+     texto    → o que a criança vê acontecer
    CONTEÚDO EM REVISÃO CIENTÍFICA.
    ===================================================================== */
 Relacao({ id: 'borboleta-poliniza-flor', de: 'borboleta-azul', tipo: 'poliniza', para: 'Flores do jardim',
   texto: 'Pousa nas flores para beber néctar e leva pólen de uma flor para outra.',
   prova: { tipo: 'ativar' },
-  ativar: { tipo: 'soltar', especie: 'borboleta-azul', fase: 'adulto', onde: 'jardim' },
+  ativar: { tipo: 'soltar', especie: 'borboleta-azul', fase: 'adulto', onde: 'jardim', verbo: 'Soltar',
+    texto: 'A borboleta-azul pousa numa flor, bebe néctar e voa para a próxima. Nas patas e no corpo, leva pólen de flor em flor.' },
   revisao: { status: 'rascunho', fonte: '', revisor: '' } });
 
 Relacao({ id: 'jatai-poliniza-flor', de: 'jatai', tipo: 'poliniza', para: 'Flores da horta',
   texto: 'A jataí pousa na flor e sai com pólen grudado nas patas de trás.',
   prova: { tipo: 'ver-acao', area: 'horta', acao: 'na flor' },
-  ativar: { tipo: 'reativar', especie: 'jatai', onde: 'jardim' },
+  ativar: { tipo: 'reativar', especie: 'jatai', onde: 'jardim', ponto: [55, 90], objeto: 'Caixa-isca de jataí', verbo: 'Reativar', requer: 'vista',
+    vazio: 'Uma caixa de madeira vazia, feita para abelhas nativas morarem. Quem será que mora numa caixa assim? Observe quem visita as flores da horta.',
+    texto: 'Você abriu a entradinha da caixa-isca. Um enxame de jataís da horta se mudou para ela e já saiu de flor em flor.' },
   revisao: { status: 'rascunho', fonte: '', revisor: '' } });
 
 Relacao({ id: 'sauva-cultiva-fungo', de: 'formiga-sauva', tipo: 'cultiva', para: 'Fungo do formigueiro',
@@ -31,5 +37,6 @@ Relacao({ id: 'lagartixa-come-mosquito', de: 'lagartixa', tipo: 'come', para: 'M
 Relacao({ id: 'sapo-come-mosquito', de: 'sapo-cururu', tipo: 'come', para: 'Mosquitos',
   texto: 'De noite, na beira da água, o sapo come mosquitos e outros insetos.',
   prova: { tipo: 'ativar' },
-  ativar: { tipo: 'soltar', especie: 'sapo-cururu', fase: 'adulto', onde: 'vereda' },
+  ativar: { tipo: 'soltar', especie: 'sapo-cururu', fase: 'adulto', onde: 'vereda', verbo: 'Soltar',
+    texto: 'O sapo pula para a beira da água e some no capim. À noite, a vereda volta a cantar e os mosquitos diminuem.' },
   revisao: { status: 'rascunho', fonte: '', revisor: '' } });

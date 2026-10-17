@@ -3,7 +3,7 @@
    O nível de cada espécie sai do que o jogador FEZ no mundo:
      visto        → viu alguma fase de vida
      encontrado   → viu duas fases diferentes
-     cuidado      → cuidou de uma fase no Ninho/Viveiro
+     cuidado      → cuidou de uma fase no Viveiro
      transformado → acompanhou uma mudança de fase
      conectado    → descobriu uma relação da espécie com o ecossistema
      ativado      → ativou a espécie no mundo e religou a relação

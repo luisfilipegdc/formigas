@@ -3,7 +3,7 @@
    forma: desenho 3D do bicho (formas.js) · escala: tamanho no mapa (1 = forma padrão). Bichos pequenos ficam pequenos
    e ganham um brilho no chão para serem achados.
    fases: a primeira com anda: true é a que circula pela área; fases com
-   ponto: [x, z] aparecem paradas no mapa; ninho: true pode ir para o Ninho.
+   ponto: [x, z] aparecem paradas no mapa; ninho: true pode ir para o Viveiro.
    CONTEÚDO EM REVISÃO CIENTÍFICA: nomes científicos, espécies e textos
    são placeholders (revisao.status = 'rascunho') até validação.
    ===================================================================== */
@@ -14,7 +14,8 @@ Especie({
   fases: [
     { id: 'ovo', nome: 'Ovo', emoji: '🟡', ponto: [-96, 84], marca: 'ovo', cor: '#f2d24b', ninho: true,
       achado: 'Numa folha da horta, um ovinho amarelo do tamanho de um grão de areia. A lagarta vai precisar desta mesma planta.' },
-    { id: 'lagarta', nome: 'Lagarta', emoji: '🐛' },
+    { id: 'lagarta', nome: 'Lagarta', emoji: '🐛', ponto: [-23, -110], marca: 'lagarta',
+      achado: 'Na planta-hospedeira, uma lagarta comendo folha sem parar. É a mesma planta onde a borboleta-azul põe os ovos.' },
     { id: 'crisalida', nome: 'Crisálida', emoji: '🟢' },
     { id: 'adulto', nome: 'Adulto', emoji: '🦋', anda: true, voa: true, cor: '#3a6fe0', escala: 0.7, forma: 'borboleta' }
   ],

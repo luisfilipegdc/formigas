@@ -1,6 +1,6 @@
 /* =====================================================================
-   Bioma Cerrado · ciclos de vida do Ninho (Viveiro na Sprint 2)
-   passo: de → para, recursos que precisa e tempo real em minutos.
+   Bioma Cerrado · ciclos de vida do Viveiro
+   passo: de → para, recursos que precisa (a criança arrasta até o nicho) e tempo real em minutos.
    Tempos curtos para o teste; no lançamento passam a horas.
    ===================================================================== */
 Ciclo({
