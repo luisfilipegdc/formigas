@@ -20,29 +20,29 @@
 
 <!-- HUD -->
 <header class="hud" id="hud" hidden>
-  <div class="clareza" title="Clareza da área: sobe quando as ligações entre os seres vivos voltam">
-    <span id="area-nome">Base Brasília</span><i><b id="clareza-bar"></b></i>
+  <div class="local vidro" title="Clareza da área: sobe quando as ligações entre os seres vivos voltam">
+    <span class="local-ico">📍</span>
+    <div class="local-txt"><b id="area-nome">Base Brasília</b><div class="clareza"><small>Clareza</small><i><b id="clareza-bar"></b></i><span id="hora">☀️</span></div></div>
   </div>
-  <div class="hud-meio"><span id="hora">☀️</span></div>
   <nav class="hud-botoes">
-    <button type="button" id="bt-codex">📖 <small>BioDex</small></button>
-    <button type="button" id="bt-ninho">🥚 <small>Ninho</small></button>
-    <button type="button" id="bt-mapa">🗺️ <small>Mapa</small></button>
+    <button type="button" id="bt-codex"><span class="bola vidro">📖</span><small>BioDex</small></button>
+    <button type="button" id="bt-ninho"><span class="bola vidro">🥚</span><small>Ninho</small></button>
+    <button type="button" id="bt-mapa"><span class="bola vidro">🗺️</span><small>Mapa</small></button>
   </nav>
 </header>
 
 <!-- ação de contexto -->
 <div class="acao" id="acao" hidden>
-  <p id="acao-nome"></p>
-  <button type="button" id="acao-bt">Observar</button>
+  <p id="acao-nome" class="vidro"></p>
+  <button type="button" id="acao-bt"><span id="acao-ico">🔍</span><small id="acao-txt">Observar</small></button>
 </div>
-<div class="dica" id="dica" hidden></div>
+<div class="dica vidro" id="dica" hidden></div>
 <div class="joystick" id="joystick" hidden><i></i></div>
 <div class="toast" id="toast"></div>
 
 <!-- diálogo -->
 <section class="caixa" id="dialogo" hidden>
-  <header><span id="dialogo-quem"></span></header>
+  <header><span class="avatar" id="dialogo-avatar">🌳</span><span id="dialogo-quem"></span></header>
   <p id="dialogo-texto"></p>
   <div class="opcoes" id="dialogo-opcoes"></div>
 </section>
@@ -55,10 +55,9 @@
 
 <!-- início -->
 <section class="inicio" id="inicio">
+  <div class="inicio-logo"><small>TERRA CODEX</small><h1>Brasil Vivo</h1><p>Um RPG ecológico no coração do Cerrado</p></div>
   <div class="inicio-card">
-    <p class="sobre">Terra Codex</p>
-    <h1>Brasil Vivo</h1>
-    <p>Você chega a <b>Brasília</b>, a Cidade-Núcleo, no coração do Cerrado. O Ruído apagou as ligações entre os seres vivos: tem flor sem polinizador e vereda sem sapo.</p>
+    <p>Você chega a <b>Brasília</b>, a Cidade-Núcleo. O Ruído apagou as ligações entre os seres vivos: tem flor sem polinizador e vereda sem sapo.</p>
     <p>Observe, encontre, cuide e veja a vida se transformar. O que você descobre muda o mundo.</p>
     <button type="button" class="btn grande" id="inicio-bt">Começar em Brasília 🌾</button>
     <p class="mini">Fatia vertical em teste · conteúdo em revisão científica · sem anúncios, sem chat, sem localização, sem dados de criança.</p>
@@ -74,6 +73,7 @@
 <script src="biomas/cerrado/relacoes.js"></script>
 <script src="js/nucleo/estado.js"></script>
 <script src="js/nucleo/biodex.js"></script>
+<script src="js/formas.js"></script>
 <script src="js/mundo.js"></script>
 <script src="js/jogador.js"></script>
 <script src="js/ui.js"></script>

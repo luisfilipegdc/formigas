@@ -8,12 +8,8 @@ const Jogador = (function () {
 
   function criar(scene, camera, pos) {
     J.camera = camera;
-    const g = new THREE.Group();
-    const corpo = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1.4, 4, 10), new THREE.MeshLambertMaterial({ color: '#2F8A47' })); corpo.position.y = 1.5; corpo.castShadow = true; g.add(corpo);
-    const cab = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 10), new THREE.MeshLambertMaterial({ color: '#e8c39e' })); cab.position.y = 2.9; cab.castShadow = true; g.add(cab);
-    const chapeu = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.0, 0.35, 12), new THREE.MeshLambertMaterial({ color: '#F5C451' })); chapeu.position.y = 3.4; g.add(chapeu);
-    const mochila = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.1, 0.5), new THREE.MeshLambertMaterial({ color: '#7a4a2a' })); mochila.position.set(0, 1.7, -0.7); g.add(mochila);
-    J.pernas = [-0.3, 0.3].map((x) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.2, 0.9, 8), new THREE.MeshLambertMaterial({ color: '#2c3e30' })); p.position.set(x, 0.45, 0); g.add(p); return p; });
+    // exploradora com chapéu e mochila (formas.js)
+    const g = Formas.pessoa({ pele: '#c98d64', cabelo: '#2a1a10', camisa: '#2f8a47', calca: '#5a4a32', chapeu: '#e8c77a', mochila: true });
     g.position.copy(pos); J.mesh = g; scene.add(g);
     controles();
     return J;
@@ -61,8 +57,9 @@ const Jogador = (function () {
       if (livre(novo.x, novo.z)) { p.x = novo.x; p.z = novo.z; }
       J.yaw = Math.atan2(dir.x, dir.z); J.mesh.rotation.y = J.yaw;
       J.andando += dt * 10 * corr;
-      J.pernas[0].rotation.x = Math.sin(J.andando) * 0.6; J.pernas[1].rotation.x = -Math.sin(J.andando) * 0.6;
-    } else { J.pernas[0].rotation.x *= 0.8; J.pernas[1].rotation.x *= 0.8; }
+      J.ritmo = Math.min(1, (J.ritmo || 0) + dt * 6);
+    } else J.ritmo = Math.max(0, (J.ritmo || 0) - dt * 5);
+    J.mesh.userData.animar(J.andando, J.ritmo || 0);
     p.x = Math.max(-210, Math.min(210, p.x)); p.z = Math.max(-210, Math.min(210, p.z));
     p.y += (altura(p.x, p.z) - p.y) * Math.min(1, dt * 12);
     // câmera atrás, olhando para o personagem

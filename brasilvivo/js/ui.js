@@ -16,7 +16,11 @@ const UI = (function () {
   function dialogo(quem, texto, opcoes) {
     return new Promise((res) => {
       aberto = true; Jogador.J.bloqueado = true;
-      const d = $('dialogo'); d.hidden = false; $('dialogo-quem').textContent = quem; $('dialogo-texto').textContent = texto;
+      const d = $('dialogo'); d.hidden = false;
+      // retrato: o emoji do começo do nome ("🌳 Guardiã Ipê")
+      const pt = String(quem).split(' '), temIco = pt.length > 1 && !/[A-Za-zÀ-ú0-9?]/.test(pt[0]);
+      $('dialogo-avatar').textContent = temIco ? pt[0] : '✨'; $('dialogo-quem').textContent = temIco ? pt.slice(1).join(' ') : quem;
+      $('dialogo-texto').textContent = texto;
       const o = $('dialogo-opcoes'); o.innerHTML = '';
       (opcoes || ['Continuar']).forEach((op, i) => {
         const b = document.createElement('button'); b.type = 'button'; b.textContent = typeof op === 'string' ? op : op.t; if (op.classe) b.className = op.classe;
@@ -31,6 +35,11 @@ const UI = (function () {
   $('painel-x').addEventListener('click', fecharPainel);
 
   const pontos = (id) => { const ms = Biodex.marcos(id); return '<span class="pontos" aria-label="' + ms.length + ' de 6 marcos">' + Registro.MARCOS.map((m) => '<i class="' + (ms.includes(m.id) ? 'ok' : '') + '"></i>').join('') + '</span>'; };
+  // retrato 3D da fase que anda (cai para o emoji se não der para desenhar)
+  function imgBicho(e, classe) {
+    const f = e.fases.find((x) => x.anda), src = f && f.forma && Formas.retrato(f.forma, f.cor);
+    return src ? '<img class="' + (classe || 'retrato') + '" src="' + src + '" alt="">' : e.emoji;
+  }
   const nomeArea = (x, z) => { const a = Mundo.areaEm(x, z); return a ? a.no : 'pelo Cerrado'; };
 
   /* ---------- BioDex regional ---------- */
@@ -38,7 +47,7 @@ const UI = (function () {
     const lista = Registro.lista('especies', bioma), b = Registro.R.biomas[bioma];
     const h = '<div class="cartas">' + lista.map((e) => {
       const ms = Biodex.marcos(e.id), visto = ms.length > 0;
-      return '<button type="button" class="carta' + (visto ? ' vista' : ' silhueta') + (ms.includes('ativado') ? ' ativada' : '') + '" data-id="' + e.id + '"><div class="em">' + e.emoji + '</div><b>' + (visto ? esc(e.nome) : '???') + '</b>' + (visto ? pontos(e.id) + '<small>' + Biodex.rotulo(e.id) + '</small>' : '<small>' + esc(e.grupo) + '</small>') + '</button>';
+      return '<button type="button" class="carta' + (visto ? ' vista' : ' silhueta') + (ms.includes('ativado') ? ' ativada' : '') + '" data-id="' + e.id + '"><div class="em">' + imgBicho(e) + '</div><b>' + (visto ? esc(e.nome) : '???') + '</b>' + (visto ? pontos(e.id) + '<small>' + Biodex.rotulo(e.id) + '</small>' : '<small>' + esc(e.grupo) + '</small>') + '</button>';
     }).join('') + '</div><p class="mini">Cada ponto é algo que você viveu no mundo: ver, encontrar outra fase, cuidar, ver a transformação, descobrir o que o ser vivo faz e ativá-lo no mundo.</p>';
     painel('📖 BioDex do ' + b.nome + ' · ' + Biodex.vistas(bioma) + '/' + lista.length, h);
     $('painel-corpo').querySelectorAll('.carta').forEach((el) => el.addEventListener('click', () => aoClicar(el.dataset.id)));
@@ -48,14 +57,14 @@ const UI = (function () {
   function ficha(id, voltar) {
     const e = Registro.especie(id), ms = Biodex.marcos(id), visto = ms.length > 0;
     let h = '<div class="ficha">';
-    h += '<div class="ficha-topo"><div class="ficha-em">' + e.emoji + '</div><div><h3>' + (visto ? esc(e.nome) : '???') + '</h3>' + pontos(id) + '<small class="rot">' + (Biodex.rotulo(id) || 'Ainda não visto') + '</small></div></div>';
+    h += '<div class="ficha-topo"><div class="ficha-em">' + imgBicho(e) + '</div><div><h3>' + (visto ? esc(e.nome) : '???') + '</h3>' + pontos(id) + '<small class="rot">' + (Biodex.rotulo(id) || 'Ainda não visto') + '</small></div></div>';
     if (visto) h += '<p class="funcao">' + esc(e.funcao) + '</p>';
     else h += '<p class="funcao">Procure ' + (e.hora.includes('noite') ? 'à noite ' : 'de dia ') + esc(Registro.area(e.area).no) + '.</p>';
     // fases de vida: vistas aparecem; as outras são silhuetas com pista de onde procurar
     h += '<h4>Fases de vida</h4><div class="fases">' + e.fases.map((f) => {
       const viu = Biodex.viuFase(id, f.id);
       const pista = f.ponto ? 'Procure ' + nomeArea(f.ponto[0], f.ponto[1]) : f.anda ? 'Circula ' + (e.hora.includes('noite') ? 'à noite' : 'de dia') : e.ciclo ? 'Aparece ao cuidar no Ninho' : '';
-      return '<div class="fase' + (viu ? ' ok' : '') + '"><span class="em">' + (viu ? f.emoji : '?') + '</span><b>' + (viu ? esc(f.nome) : '???') + '</b>' + (viu ? '' : '<small>' + esc(pista) + '</small>') + '</div>';
+      return '<div class="fase' + (viu ? ' ok' : '') + '"><span class="em">' + (viu ? (f.anda ? imgBicho(e, 'retrato mini') : f.emoji) : '?') + '</span><b>' + (viu ? esc(f.nome) : '???') + '</b>' + (viu ? '' : '<small>' + esc(pista) + '</small>') + '</div>';
     }).join('') + '</div>';
     // relações com o ecossistema
     const rels = Registro.relacoesDe(id);
@@ -77,6 +86,19 @@ const UI = (function () {
   }
 
   /* ---------- Ninho: cuidar sem pergunta (vira Viveiro na Sprint 2) ---------- */
+  function progresso(n, passo, agora) {
+    const total = passo.minutos * 60000, falta = Math.max(0, n.desde + total - agora), seg = Math.ceil(falta / 1000);
+    return [Math.min(100, (1 - falta / total) * 100), seg > 60 ? 'Mais ou menos ' + Math.ceil(seg / 60) + ' min' : seg > 0 ? 'Quase: ' + seg + ' s' : 'Mudando agora…'];
+  }
+  // a cada segundo só a barra e o tempo mudam (redesenhar tudo engolia o toque em "Cuidar")
+  function ninhoAtualizar() {
+    const agora = Date.now();
+    Estado.dados.ninho.forEach((n, i) => {
+      const b = document.querySelector('[data-nb="' + i + '"]'), t = document.querySelector('[data-nt="' + i + '"]'); if (!b || !n.desde) return;
+      const passo = Registro.ciclo(n.ciclo).passos.find((p) => p.de === n.fase); if (!passo) return;
+      const [pct, txt] = progresso(n, passo, agora); b.style.width = pct + '%'; t.textContent = txt;
+    });
+  }
   function ninho(aoCuidar) {
     const agora = Date.now(), N = Estado.dados.ninho;
     const lista = N.map((n, i) => {
@@ -86,8 +108,8 @@ const UI = (function () {
       if (!passo) corpo = '<small>🌿 Completou o ciclo e acompanha você. Logo vai poder ativá-la no mundo.</small>';
       else if (!n.desde) corpo = '<small>Precisa de: ' + passo.precisa.map((r) => rec[r].emoji + ' ' + esc(rec[r].nome)).join(' · ') + '</small><button type="button" class="btn" data-i="' + i + '">🤲 Cuidar</button>';
       else {
-        const total = passo.minutos * 60000, falta = Math.max(0, n.desde + total - agora), seg = Math.ceil(falta / 1000);
-        corpo = '<div class="barra"><b style="width:' + Math.min(100, (1 - falta / total) * 100) + '%"></b></div><small>' + esc(passo.sinal) + '</small><small>' + (seg > 60 ? 'Mais ou menos ' + Math.ceil(seg / 60) + ' min' : seg > 0 ? 'Quase: ' + seg + ' s' : 'Mudando agora…') + '</small>';
+        const [pct, txt] = progresso(n, passo, agora);
+        corpo = '<div class="barra"><b data-nb="' + i + '" style="width:' + pct + '%"></b></div><small>' + esc(passo.sinal) + '</small><small data-nt="' + i + '">' + txt + '</small>';
       }
       return '<div class="ninho"><div class="em">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + '</div></div>';
     }).join('');
@@ -126,5 +148,5 @@ const UI = (function () {
     }
   }
 
-  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, mapa, etiquetas, aberto: () => aberto || !$('painel').hidden };
+  return { toast, dica, dialogo, painel, fecharPainel, biodex, ficha, ninho, ninhoAtualizar, mapa, etiquetas, aberto: () => aberto || !$('painel').hidden };
 })();

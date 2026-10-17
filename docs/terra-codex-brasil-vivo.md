@@ -35,6 +35,8 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 | Ruído | A Clareza de cada área é a fração das suas relações já ativadas. Área cinza esconde os bichos dela (o sapo some da vereda) |
 | Save v2 | `localStorage` `terracodex2`. Na primeira vez, migra o Vale Vivo (`terracodex1` fica intacto): cartas viram espécies vistas, ovos do Ninho seguem no ciclo. A galinha não é do Cerrado e fica de fora |
 
+| Visual | 3D estilizado com material "toon": céu em degradê com pôr do sol e estrelas, capim e flores, árvores tortas e cupinzeiros do Cerrado, buritis, Base Brasília modernista (praça, pavilhão curvo, casas sobre pilotis). Bichos e personagens desenhados em `brasilvivo/js/formas.js`; a BioDex mostra retratos renderizados desses modelos. Interface em vidro verde-escuro com botões redondos |
+
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
 ## Como os dados se organizam

@@ -17,7 +17,8 @@
   const MOBILE = Math.min(screen.width, screen.height) < 820 || /iPhone|Android.+Mobile/i.test(navigator.userAgent);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2)); renderer.setSize(innerWidth, innerHeight);
-  renderer.shadowMap.enabled = !MOBILE; renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.5, 600);
   addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); });
@@ -74,7 +75,7 @@
     if (mundo.placaJardim) cand('jardim', mundo.placaJardim, mundo.placaJardim.pos, '🌸 ' + mundo.placaJardim.area.nome, 'Olhar 👀', 7);
     perto = melhor;
     const a = $('acao'); a.hidden = !melhor || UI.aberto();
-    if (melhor) { $('acao-nome').textContent = melhor.nome; $('acao-bt').textContent = melhor.acao; }
+    if (melhor) { const pt = melhor.acao.split(' '), ico = pt.pop(); $('acao-nome').textContent = melhor.nome; $('acao-ico').textContent = ico; $('acao-txt').textContent = pt.join(' '); }
   }
   $('acao-bt').addEventListener('click', agir);
   addEventListener('keydown', (e) => { if ((e.key === 'e' || e.key === 'E' || e.key === ' ') && perto && !UI.aberto()) agir(); });
@@ -172,7 +173,7 @@
     $('area-nome').textContent = a ? a.nome : 'Cerrado aberto';
     $('clareza-bar').style.width = Math.round(k * 100) + '%';
     $('clareza-bar').classList.toggle('ruido', k < 0.5);
-    if (id !== areaAtual) { areaAtual = id; if (a && !UI.aberto()) UI.toast('📍 ' + a.nome + (k < 0.5 ? ' · tomada pelo Ruído 🌫️' : ''), 2200); }
+    if (id !== areaAtual) { areaAtual = id; if (a && k < 0.5 && !UI.aberto()) UI.toast('🌫️ ' + a.nome + ' está tomada pelo Ruído', 2600); }
     UI.dica(a && k < 0.5 ? '🌫️ O Ruído apagou as ligações daqui. Os seres vivos sumiram.' : null);
   }
 
@@ -186,12 +187,17 @@
   let last = performance.now(), acc = 0, accN = 0;
   renderer.setAnimationLoop(() => {
     const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
-    if (!document.body.classList.contains('jogando')) { renderer.render(scene, camera); return; }
+    if (!document.body.classList.contains('jogando')) {
+      // tela de início: câmera passeia devagar sobre a Base
+      const a = now / 1000 * 0.06; Mundo.update(0, jog.mesh.position);
+      camera.position.set(Math.sin(a) * 46, 15, 8 + Math.cos(a) * 46); camera.lookAt(0, 5, 8);
+      renderer.render(scene, camera); return;
+    }
     Jogador.update(dt, Mundo.altura, livre);
     Mundo.update(dt, jog.mesh.position);
     $('hora').textContent = mundo.hora + (mundo.chuva ? '🌧️' : '');
     acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); }
-    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) { const sc = $('painel-corpo').scrollTop; UI.ninho(cuidar); $('painel-corpo').scrollTop = sc; } }
+    accN += dt; if (accN > 1) { accN = 0; conferirNinho(); if (!$('painel').hidden && $('painel-titulo').textContent.startsWith('🥚')) UI.ninhoAtualizar(); }
     // etiquetas
     const p = jog.mesh.position, lista = [];
     mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: 0.9 + (b.fase.escala || 1) * 1.6 }); } });

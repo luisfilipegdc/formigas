@@ -17,6 +17,7 @@ Bioma({
   }
 });
 
+// visual dos moradores: cores de pele, cabelo, roupa e chapéu (formas.js)
 // no: o nome com preposição, para as pistas ("procure na Horta Comunitária")
 // ruido: 0 = área viva desde o início · 1 = área tomada pelo Ruído (só clareia com relações ativadas)
 Area({ id: 'base', bioma: 'cerrado', nome: 'Base Brasília', no: 'na Base Brasília', x: 0, z: 0, r: 42, ruido: 0,
@@ -33,22 +34,22 @@ Area({ id: 'jardim', bioma: 'cerrado', nome: 'Jardim Polinizador', no: 'no Jardi
   efeitos: [{ em: 0.5, faz: 'flores-abrem' }, { em: 1, faz: 'abre-rota', rota: 'rota-vereda' }],
   texto: 'As flores do jardim estão fechadas e cinzentas. Nenhum polinizador aparece por aqui.' });
 
-Npc({ id: 'ipe', bioma: 'cerrado', nome: 'Guardiã Ipê', emoji: '🌳', x: 9, z: 38, cor: '#f5c451',
+Npc({ id: 'ipe', bioma: 'cerrado', nome: 'Guardiã Ipê', emoji: '🌳', x: 9, z: 38, cor: '#3f7a3a', visual: { pele: '#8a5a3a', cabelo: '#1e3a1a', chapeu: '#f5c43a', saia: true, calca: '#5a3a24' },
   falas: {
     inicio: 'Bem-vindo a Brasília, a Cidade-Núcleo. O Ruído apagou as ligações entre os seres vivos: tem flor sem polinizador, vereda sem sapo. Observe, cuide e veja o que cada um faz. Sua BioDex guarda tudo.',
     pista: 'Comece pelo que está perto: a horta, a rota do Cerrado, as paredes da Base à noite. Cada ser vivo que você entende muda alguma coisa por aqui.'
   } });
-Npc({ id: 'flor', bioma: 'cerrado', nome: 'Dona Flor', emoji: '👩‍🌾', x: -60, z: 50, cor: '#d35f8f',
+Npc({ id: 'flor', bioma: 'cerrado', nome: 'Dona Flor', emoji: '👩‍🌾', x: -60, z: 50, cor: '#d35f8f', visual: { pele: '#b97a52', cabelo: '#d8d0c4', chapeu: '#e8c77a', saia: true, calca: '#6a4a3a' },
   falas: {
     inicio: 'Minha horta floresce, mas o jardim ali do outro lado da Base ficou cinza. Lá as flores nem abrem. Antes vinha borboleta, vinha abelhinha... Sumiram.',
     pista: 'Dizem que a borboleta-azul começa a vida bem pequena, numa folha. Já viu algum ovinho por aqui nos canteiros?'
   } });
-Npc({ id: 'rio', bioma: 'cerrado', nome: 'Seu Rio', emoji: '🎣', x: 50, z: -30, cor: '#3b7dd8',
+Npc({ id: 'rio', bioma: 'cerrado', nome: 'Seu Rio', emoji: '🎣', x: 50, z: -30, cor: '#3b7dd8', visual: { pele: '#c98d64', cabelo: '#6a6a6a', chapeu: '#8a6a44', calca: '#4a4a3a' },
   falas: {
     inicio: 'A vereda era cheia de sapo cantando de noite. Agora está quieta e cheia de mosquito.',
     pista: 'Vi um cordão de ovos de sapo numa poça que está secando, ali na beira. Se levar para a água limpa do Ninho, quem sabe...'
   } });
-Npc({ id: 'tico', bioma: 'cerrado', nome: 'Tico', emoji: '🧒', x: 12, z: -18, cor: '#f5a53b',
+Npc({ id: 'tico', bioma: 'cerrado', nome: 'Tico', emoji: '🧒', x: 12, z: -18, cor: '#f5a53b', visual: { pele: '#6e4630', cabelo: '#1a1410', calca: '#2f6fb0', escala: 0.72 },
   falas: {
     inicio: 'Tem uma lagartixa na parede lá de casa! Ela só aparece de noite, perto da lâmpada.',
     pista: 'O que será que ela fica fazendo lá parada? Vem olhar de noite comigo.'
