@@ -54,6 +54,16 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
+## Versão 2D em pixel art (protótipo para comparar)
+
+Em `brasilvivo/2d/` (publicada em `/brasilvivo/2d/`). Mesmo conteúdo, mesmo save (`terracodex2`) e as mesmas regras: o laço `2d/js/jogo2d.js` saiu de `js/jogo.js` e muda só o que se vê. A interface (`js/ui.js`), o Registro, os dados do Cerrado, a BioDex, o som e os ajustes são os mesmos arquivos do 3D.
+
+- `2d/js/pixel.js`: todos os sprites desenhados em código, sem imagem externa. Personagens e bichos em mapas de caracteres, árvores e pedras em bolhas sombreadas em 4 tons com pontilhado, contorno escuro automático, texturas de chão 16 × 16.
+- `2d/js/mundo2d.js`: mundo visto de cima, 5 px por metro, com as mesmas coordenadas do 3D. O chão é uma grade de células de 4 px pintada em pedaços de 128 px guardados em cache. No Ruído as células ficam cinza; com a Clareza, cada célula fica verde quando a onda dourada passa por ela.
+- `2d/css/pixel.css`: bordas, cantos e sombras em degrau, Pixelify Sans nos títulos. O texto corrido continua em Nunito.
+- No clímax, a câmera desliza até o centro do jardim e volta. Com "Menos movimento", ela fica no jogador.
+- As telas de início do 3D e do 2D têm um link para a outra versão.
+
 ## Como os dados se organizam
 
 - `brasilvivo/js/nucleo/registro.js`: `Especie()`, `Ciclo()`, `Relacao()`, `Area()`, `Bioma()`, `Npc()` e `Registro.validar()` (lista referências quebradas no console). Vocabulário fechado de relações (`poliniza`, `come`, `abriga`, `decompoe`, `dispersa`, `cultiva`) e de jeitos de ativar (`soltar`, `proteger`, `replantar`, `reativar`, `observar-habitat`, `posicionar`).

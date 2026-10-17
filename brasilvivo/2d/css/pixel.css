@@ -1,0 +1,26 @@
+/* =====================================================================
+   Terra Codex · Brasil Vivo 2D · pele em pixel art sobre o design system
+   Mesmos componentes de ../css/jogo.css; aqui só mudam bordas, cantos,
+   sombras em degrau e a fonte de títulos (Pixelify Sans). O texto corrido
+   continua em Nunito para ser fácil de ler.
+   ===================================================================== */
+:root { --pix: #1d1a24; --fonte-pixel: 'Pixelify Sans', 'Nunito', system-ui, sans-serif; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 10px; }
+#tela { position: fixed; left: 0; top: 0; image-rendering: pixelated; image-rendering: crisp-edges; background: #6aa84f; }
+img.retrato, .celebra-card img, .carta img, .ficha-em img { image-rendering: pixelated; }
+.vidro { border-radius: 6px; border: 0; box-shadow: 0 0 0 3px var(--pix), inset 0 0 0 2px rgba(255, 255, 255, .14), 0 4px 0 3px rgba(0, 0, 0, .25); }
+.bola { border-radius: 8px; }
+.local b, #area-nome, .objetivo small, .hud-botoes small, .acao small, .etq, .painel h2, .caixa header span, .inicio-logo h1, .inicio-logo small, .celebra-card b, .celebra-card small, .jornada .n { font-family: var(--fonte-pixel); letter-spacing: .02em; }
+.etq { border-radius: 4px; box-shadow: 0 0 0 2px var(--pix); }
+.painel { border-radius: 10px 10px 0 0; box-shadow: 0 0 0 4px var(--pix), 0 -6px 0 4px rgba(0, 0, 0, .18); }
+.caixa { border-radius: 10px; box-shadow: 0 0 0 4px var(--pix), 0 8px 0 4px rgba(0, 0, 0, .25); }
+.caixa .avatar { border-radius: 8px; box-shadow: 0 0 0 3px var(--pix); }
+.btn, .caixa .opcoes button { border-radius: 6px; box-shadow: 0 0 0 3px var(--pix), 0 5px 0 3px var(--pix); font-family: var(--fonte-pixel); font-weight: 700; letter-spacing: .02em; }
+.btn:active, .caixa .opcoes button:active { transform: translateY(3px); box-shadow: 0 0 0 3px var(--pix), 0 2px 0 3px var(--pix); }
+.acao button { border-radius: 14px; box-shadow: 0 0 0 4px var(--pix), 0 6px 0 4px var(--pix); }
+.carta, .ninho, .item, .bandeja, .rels li, .fase, .jornada li, .detalhes, .chip { border-radius: 6px; }
+.carta, .ninho, .item { box-shadow: 0 0 0 3px var(--pix), 0 4px 0 3px rgba(29, 26, 36, .35); }
+.celebra-card { border-radius: 10px; border: 0; box-shadow: 0 0 0 4px var(--pix), 0 0 0 8px var(--cor-acao), var(--sombra-2); }
+.toast { border-radius: 6px; box-shadow: 0 0 0 3px var(--pix); }
+.inicio-logo h1 { font-weight: 700; text-shadow: 3px 3px 0 var(--pix), -1px -1px 0 var(--pix), 1px -1px 0 var(--pix), -1px 1px 0 var(--pix); }
+.troca-versao { color: inherit; font-weight: 900; }
+.joystick { border-radius: 50%; }
