@@ -2,7 +2,7 @@
 
 > Nova direção do Terra Codex (outubro de 2026): um RPG ecológico no **Brasil Vivo**, um Brasil ficcional feito de biomas reais. O jogador começa em **Brasília, a Cidade-Núcleo**, no Cerrado. Ninguém avança por capítulo: avança por descoberta, cuidado, transformação e restauração.
 > O plano completo (diagnóstico, BioDex 3D, Viveiro, Ruído, dados, arquitetura e roadmap) está no documento do Claude "Terra Codex · Brasil Vivo — plano de adaptação".
-> Está em `brasilvivo/` e é publicado em `/explorar/brasilvivo/`. O MVP anterior (`jogo/`, Vale Vivo) ainda está no ar; com a Sprint 2 pronta, ele pode sair quando for decidido.
+> Está em `brasilvivo/` e é publicado em `/explorar/brasilvivo/`. O MVP anterior (`jogo/`, Vale Vivo) saiu do ar; o endereço antigo redireciona para cá e o progresso dele é migrado.
 > **Conteúdo em revisão científica.** Espécies, nomes científicos, distribuição e relações são rascunho (`revisao.status = 'rascunho'`) até passarem por revisão.
 
 ## Regra central
@@ -19,7 +19,7 @@ Objetivo do primeiro ciclo: ver a borboleta → descobrir a lagarta → cuidar n
 |---|---|---|
 | 1 · Base nova | T1 textos e mapa · T2 registro de conteúdo · T3 save v2 · T4 BioDex sem quiz | Feita |
 | 2 · Ciclo da borboleta | T5 Viveiro · T6 lagarta na planta · T7 Jardim Polinizador | Feita |
-| 3 · Encantamento e prova | T8 visor 3D · T9 modelo da borboleta · T10 teste do loop (Playwright) | A fazer |
+| 3 · Encantamento e prova | T8 visor da BioDex · T9 borboleta em todas as fases · T10 teste do loop (Playwright) | Feita (em pixel art) |
 
 Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depois com 20, sem explicar demais. Medir se entendem o ciclo, se querem voltar, se contam o que aconteceu com a borboleta e se o adulto percebe valor educativo.
 
@@ -53,6 +53,16 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 | Jornada | 7 passos: Dona Flor → ovinho → colher folhas → Viveiro → até virar borboleta → soltar no jardim → trazer as jataís |
 
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
+
+## O que a Sprint 3 entrega (em pixel art)
+
+| Tarefa | Como está |
+|---|---|
+| T8 Visor da BioDex | No lugar do visor 3D do plano, a ficha abre com a fase escolhida em tamanho grande, animada, no lugar onde ela vive (folha, galho, flor, água, chão, parede). Botões trocam entre as fases já vistas; tocar no bicho faz ele pular. O texto embaixo conta o que acontece naquela fase |
+| T9 Borboleta em todas as fases | Ovo (com brilho), lagarta que anda ondulando, crisálida pendurada com pontos dourados, adulta batendo as asas em 4 quadros. Também girino e sapinho, ovos de sapo e jataí em detalhe. Os mesmos sprites animam o Viveiro e o replay da transformação |
+| T10 Teste do loop | `ferramentas/teste-brasilvivo.js` joga o ciclo inteiro e confere 24 pontos (2D e, com `3d`, a versão antiga). Rodar antes de cada teste com crianças |
+
+Depois da Sprint 3 vem o portão humano: kit em `docs/terra-codex-playtest.md`, com folha de observação para imprimir.
 
 ## Versão 2D em pixel art (a principal)
 

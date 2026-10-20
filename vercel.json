@@ -2,7 +2,12 @@
   "redirects": [
     {
       "source": "/jogo",
-      "destination": "/jogo/",
+      "destination": "/brasilvivo/",
+      "permanent": false
+    },
+    {
+      "source": "/jogo/:path*",
+      "destination": "/brasilvivo/",
       "permanent": false
     },
     {

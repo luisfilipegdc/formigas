@@ -289,6 +289,49 @@ const Pixel = (function () {
     return TEX;
   }
 
+  /* ---------- fases de vida em detalhe (Viveiro, replay e visor da BioDex) ---------- */
+  // borboleta adulta de cima: as asas "fecham" encolhendo na horizontal a partir do corpo
+  const BORB = ['bb....k.k....bb', 'bLBb...k...bBLb', 'bLLBb..k..bBLLb', 'bBLLBb.k.bBLLBb', 'bBBLLBbkbBLLBBb', '.bBBBBBkBBBBBb.', '..bbbbbkbbbbb..', '..bBwBbkbBwBb..', '.bBBBBbkbBBBBb.', '.bBBBb.k.bBBBb.', '..bbb..k..bbb..', '.......k.......'];
+  function esmagar(linhas, f) {
+    const c = (linhas[0].length - 1) / 2;
+    return linhas.map((l) => { let o = ''; for (let x = 0; x < l.length; x++) { if (x === c) { o += l[x]; continue; } const src = c + Math.round((x - c) / f); o += src < 0 || src >= l.length || (src > c) !== (x > c) ? '.' : l[src]; } return o; });
+  }
+  const FASES = {
+    'borboleta-azul:ovo': { cores: { y: '#d8a822', Y: '#f2d24b', w: '#fff8d0' }, quadros: [['..yy..', '.yYYy.', '.yYwy.', 'yYYYYy', 'yYyYYy', 'yYYYYy', '.yYyy.', '..yy..'], ['..yy..', '.yYYy.', '.yYYy.', 'yYwYYy', 'yYyYYy', 'yYYYYy', '.yYyy.', '..yy..']], cena: 'folha' },
+    'borboleta-azul:lagarta': { cores: { G: '#5fae3a', g: '#3f7a2a', y: '#f2d24b', h: '#3a5a2a', H: '#4f7a34', k: '#1d1a24', p: '#2a4a1a' }, quadros: [['...GG...GG..hhh.', '..GyGG.GyGG.hHHh', '.GGGGGGGGGGGHkHh', 'gGGGGGGGGGGGHHHh', '.p.p.p.p.p.p.pp.'], ['.GG....GG...hhh.', 'GyGG..GyGG..hHHh', 'GGGGGGGGGGGGHkHh', 'gGGGGGGGGGGGHHHh', 'p.p.p.p.p.p..pp.']], cena: 'folha' },
+    'borboleta-azul:crisalida': { cores: { s: '#d8d0c0', c: '#3f8a3a', C: '#7cc04a', d: '#c9a227', D: '#fff09a' }, quadros: [['...ss...', '...ss...', '..cCCc..', '.cCCCCc.', '.cCdCCc.', 'cCCCCCCc', 'cCCdCdCc', 'cCCCCCCc', '.cCCCCc.', '.cCCCCc.', '..cCCc..', '..cCCc..', '...cc...'], ['...ss...', '...ss...', '..cCCc..', '.cCCCCc.', '.cCDCCc.', 'cCCCCCCc', 'cCCDCDCc', 'cCCCCCCc', '.cCCCCc.', '.cCCCCc.', '..cCCc..', '..cCCc..', '...cc...']], cena: 'galho' },
+    'borboleta-azul:adulto': { cores: { b: '#1f3f9a', B: '#3a6fe0', L: '#8fb8ff', k: '#2a2030', w: '#f6f0dc' }, quadros: [BORB, esmagar(BORB, 0.62), esmagar(BORB, 0.28), esmagar(BORB, 0.62)], cena: 'flor' },
+    'sapo-cururu:ovos': { cores: { j: '#cfe6f2', J: '#eaf6fb', k: '#1d1a24' }, quadros: [['.jjjjjjjjjjjjjj.', 'jkJjkjjkJjkjjkJj', 'jjjkjjJjkjjJjkjj', '.jjjjjjjjjjjjjj.'], ['.jjjjjjjjjjjjjj.', 'jkjjkJjkjjkJjkjj', 'jjJkjjjjkJjjjkjJ', '.jjjjjjjjjjjjjj.']], cena: 'agua' },
+    'sapo-cururu:girino': { cores: { K: '#3a3a30', w: '#e8e0c0', t: '#5a5a48' }, quadros: [['.KKK......', 'KKwKKttt..', 'KKKKK..ttt', '.KKK......'], ['.KKK....t.', 'KKwKKtt.t.', 'KKKKK.tt..', '.KKK......']], cena: 'agua' },
+    'sapo-cururu:sapinho': { cores: { g: '#5a5228', G: '#8a7a3a', L: '#b0a050', k: '#1d1a24', y: '#e8d27a', t: '#6a6040' }, quadros: [['.yk..ky.', 'gGGGGGGg', 'gGLGGLGg', '.gGGGGg.', 'g.gttg.g'], ['.yk..ky.', 'gGGGGGGg', 'gGLGGLGg', '.gGGGGg.', '.g.tt.g.']], cena: 'agua' },
+    'jatai:operaria': { cores: { y: '#f2c94a', k: '#2a2030', w: '#eef6ff', W: '#c8dcf0' }, quadros: [['..w.....w..', '.wWw...wWw.', '.wWWw.wWWw.', '..wwkkkww..', '..kyykyyk..', '.kyykyykyk.', '..kyykyyk..', '...k...k...'], ['...........', '...........', '.wWWw.wWWw.', 'wWWWwkwWWWw', '..kyykyyk..', '.kyykyykyk.', '..kyykyyk..', '...k...k...']], cena: 'flor' }
+  };
+  const CENA_MARCA = { tronco: 'chao', olheiro: 'chao', parede: 'parede', lagarta: 'folha', ovo: 'folha' };
+  // quadros de uma fase: desenho próprio, senão o bicho do mapa, senão a marca
+  function quadrosFase(e, f) {
+    const d = FASES[e.id + ':' + f.id];
+    if (d) return { quadros: d.quadros.map((q) => mapa(q, d.cores)), cena: d.cena };
+    if (f.anda && f.forma) return { quadros: bicho(f.forma, f.cor), cena: f.voa ? 'flor' : e.hora && e.hora.includes('noite') ? 'parede' : 'chao' };
+    if (f.marca) { const m = f.marca === 'tronco' ? tronco() : f.marca === 'olheiro' ? olheiros() : f.marca === 'parede' ? ovosParede() : f.marca === 'lagarta' ? lagartaFolha() : ovoFolha(f.cor); return { quadros: [m], cena: CENA_MARCA[f.marca] || 'chao' }; }
+    return null;
+  }
+  // folha de sprites (quadros lado a lado) como imagem, para animar com CSS
+  const folhas = {};
+  function folha(especieId, faseId) {
+    const k = especieId + ':' + faseId; if (folhas[k] !== undefined) return folhas[k];
+    const e = Registro.especie(especieId), f = e && e.fases.find((x) => x.id === faseId), q = e && f && quadrosFase(e, f);
+    if (!q) return (folhas[k] = null);
+    const w = Math.max(...q.quadros.map((c) => c.width)), h = Math.max(...q.quadros.map((c) => c.height)), c = tela(w * q.quadros.length, h), g = c.getContext('2d');
+    q.quadros.forEach((im, i) => g.drawImage(im, i * w + ((w - im.width) >> 1), h - im.height));
+    return (folhas[k] = { url: c.toDataURL(), w, h, n: q.quadros.length, cena: q.cena });
+  }
+  // HTML de um sprite animado que cabe numa caixa de "caixa" px
+  function faseHtml(especieId, faseId, caixa, classe) {
+    const s = folha(especieId, faseId); if (!s) return null;
+    const z = Math.max(1, Math.floor(caixa / Math.max(s.w, s.h))), W = s.w * z, H = s.h * z;
+    return '<span class="spr ' + (classe || '') + '" style="width:' + W + 'px;height:' + H + 'px;background-image:url(' + s.url + ');background-size:' + (W * s.n) + 'px ' + H + 'px;--n:' + s.n + ';--larg:' + (W * s.n) + 'px;animation-duration:' + (s.n * (s.n > 2 ? 0.12 : 0.45)) + 's"></span>';
+  }
+
   /* retrato grande para a BioDex (o mesmo sprite, ampliado sem suavizar) */
   const retratos = {};
   function retrato(forma, cor) {
@@ -301,7 +344,7 @@ const Pixel = (function () {
     return retratos[k];
   }
 
-  return { semente, tela, tom, mistura, mapa, espelho, bolha, contornar, pessoa, bicho, arvore, arvoreLarga, arvoreRala, arbusto, nuvem, ipe, buriti, cupinzeiro, pedra, tufo, flor, botao, casa, pavilhao, muro, canteiro, placa, estaca, planta, caixa, tronco, olheiros, ovoFolha, ovosParede, lagartaFolha, algas, pedrinhas, espelhoAgua, brilho, sombra, texturas, retrato, AMARELO, ROSA, CINZA, VERDES, BAYER };
+  return { semente, tela, tom, mistura, mapa, espelho, bolha, contornar, pessoa, bicho, arvore, arvoreLarga, arvoreRala, arbusto, nuvem, ipe, buriti, cupinzeiro, pedra, tufo, flor, botao, casa, pavilhao, muro, canteiro, placa, estaca, planta, caixa, tronco, olheiros, ovoFolha, ovosParede, lagartaFolha, algas, pedrinhas, espelhoAgua, brilho, sombra, texturas, retrato, folha, faseHtml, AMARELO, ROSA, CINZA, VERDES, BAYER };
 })();
 // a interface (ui.js) pede retratos a Formas: no 2D eles são pixel art
-const Formas = { retrato: Pixel.retrato };
+const Formas = { retrato: Pixel.retrato, faseHtml: Pixel.faseHtml, cena: (e, f) => { const s = Pixel.folha(e, f); return s && s.cena; } };

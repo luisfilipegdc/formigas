@@ -99,7 +99,7 @@ Em telas pequenas os botões se reorganizam (faixa rolável em cima e barra emba
 
 - `bicho3d.html` + `css/bicho3d.css`: a tela padrão do Modo Explorar.
 - `js/bicho3d.js`: o motor (cena, câmera, botões, partes, tamanho real, passeio, Por dentro / Como funciona, ficha e bolso).
-- `jogo/`: **Terra Codex**, primeiro MVP (Vale Vivo), publicado em `/explorar/jogo/`. Ver `docs/terra-codex-mvp.md`. Sai do ar quando o Brasil Vivo tiver o Jardim Polinizador.
+- `jogo/`: o primeiro MVP do Terra Codex (Vale Vivo) saiu do ar; o endereço `/explorar/jogo/` leva para o Brasil Vivo, que migra o progresso salvo. O código antigo fica no histórico do git. Ver `docs/terra-codex-mvp.md`.
 - `brasilvivo/`: **Terra Codex · Brasil Vivo**, a nova direção (Brasília/Cerrado, BioDex sem quiz, ciclos de vida), em `/explorar/brasilvivo/`. Ver `docs/terra-codex-brasil-vivo.md`.
 - `js/modelos/<id>.js`: um arquivo por bicho (formiga, abelha, cigarra, aranha, lagartixa, escorpião), carregado só quando o bicho é aberto.
 - `js/core3d.js`: peças 3D comuns (escultura SDF, pernas, texturas).

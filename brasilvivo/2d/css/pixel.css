@@ -39,3 +39,33 @@ img.retrato, .celebra-card img, .carta img, .ficha-em img { image-rendering: pix
 .fase { box-shadow: 0 0 0 2px var(--pix); }
 .fase .em img { image-rendering: pixelated; }
 .ficha h3 { font-family: var(--fonte-pixel); font-weight: 700; }
+
+/* sprites de fase animados (folha de quadros + steps) */
+.spr { display: inline-block; vertical-align: bottom; image-rendering: pixelated; background-repeat: no-repeat; background-position: 0 0; animation: quadros steps(var(--n)) infinite; }
+@keyframes quadros { to { background-position: calc(-1 * var(--larg)) 0; } }
+.ninho .em .spr, .fase .em .spr { animation-duration: .9s; }
+
+/* visor da BioDex: a fase em tamanho grande, no lugar onde ela vive */
+.visor { position: relative; height: 200px; border-radius: 8px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; box-shadow: 0 0 0 3px var(--pix); margin-bottom: 8px;
+  background: linear-gradient(180deg, #a9dcf2 0 62%, #6aa84f 62% 72%, #4f8a3a 72% 76%, #b88e5a 76%); }
+.visor::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .04) 0 2px, transparent 2px 4px); }
+.visor-bicho { background: none; border: 0; padding: 0 0 30px; cursor: pointer; position: relative; z-index: 1; }
+.visor-bicho.pula { animation: pular .5s var(--curva-mola); }
+@keyframes pular { 30% { transform: translateY(-22px) scale(1.06, .94); } 60% { transform: translateY(0) scale(.96, 1.04); } }
+.cena-folha { background: radial-gradient(ellipse 70% 26% at 50% 88%, #7cc04a 0 60%, #4f9a34 61% 70%, transparent 71%), linear-gradient(180deg, #bfe6f4, #e6f6e8); }
+.cena-folha .visor-bicho { padding-bottom: 34px; }
+.cena-galho { align-items: flex-start; background: linear-gradient(180deg, transparent 0 18px, #7a5634 18px 30px, #55391f 30px 34px, transparent 34px), radial-gradient(circle at 20% 20%, #86cc4a 0 10%, transparent 11%), radial-gradient(circle at 82% 14%, #62a83a 0 12%, transparent 13%), linear-gradient(180deg, #bfe6f4, #e6f6e8); }
+.cena-galho .visor-bicho { padding: 30px 0 0; }
+.cena-flor { background: radial-gradient(circle at 18% 84%, #ef5a7a 0 5%, transparent 6%), radial-gradient(circle at 80% 80%, #f5c840 0 5%, transparent 6%), radial-gradient(circle at 62% 92%, #b48ae8 0 4%, transparent 5%), linear-gradient(180deg, #a9dcf2 0 70%, #6aa84f 70% 80%, #4f8a3a 80%); }
+.cena-flor .visor-bicho { padding-bottom: 70px; animation: pairar 2.4s ease-in-out infinite; }
+@keyframes pairar { 50% { transform: translateY(-10px); } }
+.cena-agua { background: repeating-linear-gradient(0deg, #3f97c8 0 10px, #4ea4d4 10px 12px), #3f97c8; }
+.cena-agua .visor-bicho { padding-bottom: 60px; }
+.cena-parede { background: repeating-linear-gradient(0deg, #cfc2a6 0 2px, #e6dcc6 2px 22px), linear-gradient(180deg, #2a3a78, #4a5a98); background-blend-mode: multiply; }
+.cena-parede .visor-bicho { padding-bottom: 60px; }
+.visor-fases { display: flex; gap: 8px; justify-content: center; margin: 0 0 10px; }
+.visor-fases button { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 6px; background: rgba(255, 249, 236, .85); box-shadow: 0 0 0 2px var(--pix); cursor: pointer; }
+.visor-fases button.on { background: var(--cor-acao); box-shadow: 0 0 0 2px var(--pix), 0 3px 0 2px var(--pix); }
+.visor-txt { font-size: var(--t-md); line-height: 1.4; margin: 0 0 12px; }
+.ninho .em .spr { margin: auto; }
+.transforma .troca .spr { vertical-align: middle; }

@@ -40,6 +40,23 @@ const UI = (function () {
     const f = e.fases.find((x) => x.anda), src = f && f.forma && Formas.retrato(f.forma, f.cor);
     return src ? '<img class="' + (classe || 'retrato') + '" src="' + src + '" alt="">' : e.emoji;
   }
+  // sprite animado da fase (versão 2D); sem ele, o emoji (versão 3D)
+  const temSprite = () => typeof Formas !== 'undefined' && !!Formas.faseHtml;
+  const icone = (e, f, tam, classe) => (temSprite() && Formas.faseHtml(e.id, f.id, tam, classe)) || f.emoji;
+  function textoFase(e, f) {
+    if (f.achado) return f.achado;
+    if (f.anda) return e.textos.visto;
+    const c = e.ciclo && Registro.ciclo(e.ciclo), p = c && c.passos.find((x) => x.de === f.id);
+    return p ? p.sinal : '';
+  }
+  // visor: a fase escolhida em tamanho grande, animada, no lugar onde ela vive
+  function visor(e, faseId) {
+    const vistas = e.fases.filter((f) => Biodex.viuFase(e.id, f.id)); if (!vistas.length || !temSprite()) return '';
+    const f = vistas.find((x) => x.id === faseId) || vistas.find((x) => x.anda) || vistas[vistas.length - 1];
+    return '<div class="visor cena-' + (Formas.cena(e.id, f.id) || 'chao') + '"><button type="button" class="visor-bicho" aria-label="' + esc(f.nome) + ': toque para ver de perto">' + icone(e, f, 132) + '</button></div>' +
+      (vistas.length > 1 ? '<div class="visor-fases" role="tablist">' + vistas.map((v) => '<button type="button" role="tab" aria-selected="' + (v.id === f.id) + '" data-fase="' + v.id + '" class="' + (v.id === f.id ? 'on' : '') + '" aria-label="' + esc(v.nome) + '">' + icone(e, v, 26) + '</button>').join('') + '</div>' : '') +
+      '<p class="visor-txt"><b>' + esc(f.nome) + ':</b> ' + esc(textoFase(e, f)) + '</p>';
+  }
   const nomeArea = (x, z) => { const a = Mundo.areaEm(x, z); return a ? a.no : 'pelo Cerrado'; };
 
   /* ---------- BioDex regional ---------- */
@@ -54,17 +71,17 @@ const UI = (function () {
   }
 
   // ficha: encantamento primeiro (nome, o que faz, fases, relações); ciência nos detalhes
-  function ficha(id, voltar) {
-    const e = Registro.especie(id), ms = Biodex.marcos(id), visto = ms.length > 0;
-    let h = '<div class="ficha">';
-    h += '<div class="ficha-topo"><div class="ficha-em">' + imgBicho(e) + '</div><div><h3>' + (visto ? esc(e.nome) : '???') + '</h3>' + pontos(id) + '<small class="rot">' + (Biodex.rotulo(id) || 'Ainda não visto') + '</small></div></div>';
+  function ficha(id, voltar, faseId) {
+    const e = Registro.especie(id), ms = Biodex.marcos(id), visto = ms.length > 0, vis = visto ? visor(e, faseId) : '';
+    let h = '<div class="ficha">' + vis;
+    h += '<div class="ficha-topo">' + (vis ? '' : '<div class="ficha-em">' + imgBicho(e) + '</div>') + '<div><h3>' + (visto ? esc(e.nome) : '???') + '</h3>' + pontos(id) + '<small class="rot">' + (Biodex.rotulo(id) || 'Ainda não visto') + '</small></div></div>';
     if (visto) h += '<p class="funcao">' + esc(e.funcao) + '</p>';
     else h += '<p class="funcao">Procure ' + (e.hora.includes('noite') ? 'à noite ' : 'de dia ') + esc(Registro.area(e.area).no) + '.</p>';
     // fases de vida: vistas aparecem; as outras são silhuetas com pista de onde procurar
     h += '<h4>Fases de vida</h4><div class="fases">' + e.fases.map((f) => {
       const viu = Biodex.viuFase(id, f.id);
       const pista = f.ponto ? 'Procure ' + nomeArea(f.ponto[0], f.ponto[1]) : f.anda ? 'Circula ' + (e.hora.includes('noite') ? 'à noite' : 'de dia') : e.ciclo ? 'Aparece ao cuidar no Viveiro' : '';
-      return '<div class="fase' + (viu ? ' ok' : '') + '"><span class="em">' + (viu ? (f.anda ? imgBicho(e, 'retrato mini') : f.emoji) : '?') + '</span><b>' + (viu ? esc(f.nome) : '???') + '</b>' + (viu ? '' : '<small>' + esc(pista) + '</small>') + '</div>';
+      return '<div class="fase' + (viu ? ' ok' : '') + '"><span class="em">' + (viu ? (temSprite() ? icone(e, f, 40) : f.anda ? imgBicho(e, 'retrato mini') : f.emoji) : '?') + '</span><b>' + (viu ? esc(f.nome) : '???') + '</b>' + (viu ? '' : '<small>' + esc(pista) + '</small>') + '</div>';
     }).join('') + '</div>';
     // relações com o ecossistema
     const rels = Registro.relacoesDe(id);
@@ -83,6 +100,9 @@ const UI = (function () {
     h += '<p><button type="button" class="btn sec" id="bt-voltar">← BioDex</button></p></div>';
     painel('📖 BioDex do ' + Registro.R.biomas[e.bioma].nome, h);
     $('bt-voltar').addEventListener('click', voltar);
+    $('painel-corpo').querySelectorAll('[data-fase]').forEach((b) => b.addEventListener('click', () => { Som.tocar('toque'); ficha(id, voltar, b.dataset.fase); }));
+    const vb = $('painel-corpo').querySelector('.visor-bicho');
+    if (vb) vb.addEventListener('click', () => { Som.tocar('observar'); vb.classList.remove('pula'); void vb.offsetWidth; vb.classList.add('pula'); });
   }
 
   /* ---------- Viveiro: arrastar o que o ser vivo precisa até o nicho (ou tocar) ---------- */
@@ -117,7 +137,7 @@ const UI = (function () {
       }
       const m = msg && msg.i === i ? msg : null;
       const rever = n.novo ? '<button type="button" class="btn sec rever" data-r="' + i + '">✨ Ver como foi</button>' : '';
-      return '<div class="ninho' + (n.novo ? ' novo' : '') + (m ? ' ' + m.tipo : '') + '"' + (alvo ? ' data-alvo="' + i + '"' : '') + '><div class="em nicho-' + esc(c.nicho || 'terrario') + '">' + f.emoji + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + (m ? '<p class="viv-msg" role="status">' + esc(m.texto) + '</p>' : '') + rever + '</div></div>';
+      return '<div class="ninho' + (n.novo ? ' novo' : '') + (m ? ' ' + m.tipo : '') + '"' + (alvo ? ' data-alvo="' + i + '"' : '') + '><div class="em nicho-' + esc(c.nicho || 'terrario') + '">' + icone(e, f, 52) + '</div><div style="flex:1"><b>' + esc(f.nome) + ' <small style="display:inline">· ' + esc(e.nome) + '</small></b>' + corpo + (m ? '<p class="viv-msg" role="status">' + esc(m.texto) + '</p>' : '') + rever + '</div></div>';
     }).join('');
     // bolsa: ferramentas sempre à mão + o que foi colhido no mundo
     const itens = Object.keys(rec).filter((r) => rec[r].ferramenta || bolsa[r] > 0);
@@ -163,7 +183,7 @@ const UI = (function () {
   function transformacao(e, de, para, fim) {
     const fd = e.fases.find((x) => x.id === de), fp = e.fases.find((x) => x.id === para);
     enfileirar((el) => {
-      el.innerHTML = '<div class="celebra-card transforma"><div class="troca"><span class="de">' + fd.emoji + '</span><span class="seta">➜</span><span class="para">' + fp.emoji + '</span></div><small>Assim foi a transformação</small><b>' + esc(e.nome) + ': ' + esc(fd.nome.toLowerCase()) + ' → ' + esc(fp.nome.toLowerCase()) + '</b></div>';
+      el.innerHTML = '<div class="celebra-card transforma"><div class="troca"><span class="de">' + icone(e, fd, 64) + '</span><span class="seta">➜</span><span class="para">' + icone(e, fp, 64) + '</span></div><small>Assim foi a transformação</small><b>' + esc(e.nome) + ': ' + esc(fd.nome.toLowerCase()) + ' → ' + esc(fp.nome.toLowerCase()) + '</b></div>';
       el.hidden = false; Som.tocar('transformar');
       if (fim) setTimeout(fim, 3200);
       return 3300;

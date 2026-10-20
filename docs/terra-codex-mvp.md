@@ -1,5 +1,7 @@
 # Terra Codex · MVP do Capítulo 1: Vale Vivo
 
+> **Fora do ar:** substituído pelo Brasil Vivo (`brasilvivo/`); `/explorar/jogo/` redireciona para lá. O texto abaixo é o registro histórico.
+>
 > Primeira fatia jogável (outubro de 2026). Está em `jogo/` e é publicada junto com o site, em `/explorar/jogo/`. Sem build: HTML, CSS e JavaScript com o Three.js que já está em `vendor/`.
 > **Conteúdo em revisão científica.** O jogo não tem cobrança, conta, chat nem coleta de dados: salva só no aparelho (`localStorage`, chave `terracodex1`).
 > O desenho completo está no GDD (documento do Claude) e o estado anterior do projeto no branch `voltaformiga`.
