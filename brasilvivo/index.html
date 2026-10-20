@@ -11,9 +11,10 @@
 <meta name="robots" content="noindex">
 <title>Terra Codex · Brasil Vivo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/jogo.css">
+<link rel="stylesheet" href="2d/css/pixel.css">
 </head>
 <body>
 <canvas id="tela"></canvas>
@@ -68,11 +69,11 @@
     <p>Observe, encontre, cuide e veja a vida se transformar. O que você descobre muda o mundo.</p>
     <button type="button" class="btn grande" id="inicio-bt">Começar em Brasília 🌾</button>
     <button type="button" class="btn sec inicio-aj" id="inicio-ajustes">⚙️ Ajustes de texto, som e movimento</button>
-    <p class="mini"><a href="2d/" class="troca-versao">Ver a versão 2D em pixel art</a> · Fatia vertical em teste · conteúdo em revisão científica · sem anúncios, sem chat, sem localização, sem dados de criança.</p>
+    <p class="mini"><a href="3d/" class="troca-versao">Ver a versão 3D (antiga)</a> · Fatia vertical em teste · conteúdo em revisão científica · sem anúncios, sem chat, sem localização, sem dados de criança.</p>
   </div>
 </section>
 
-<script src="../vendor/three/three.min.js"></script>
+<script src="2d/js/pixel.js"></script>
 <script src="js/nucleo/registro.js"></script>
 <script src="biomas/brasil-vivo.js"></script>
 <script src="biomas/cerrado/bioma.js"></script>
@@ -84,10 +85,10 @@
 <script src="js/nucleo/biodex.js"></script>
 <script src="js/som.js"></script>
 <script src="js/ajustes.js"></script>
-<script src="js/formas.js"></script>
-<script src="js/mundo.js"></script>
-<script src="js/jogador.js"></script>
+<script src="2d/js/mundo2d.js"></script>
+<script src="2d/js/jogador2d.js"></script>
+<script>/* a interface (ui.js) é a mesma do 3D; no 2D as etiquetas são desenhadas pelo jogo2d */ window.THREE = { Vector3: function () {} };</script>
 <script src="js/ui.js"></script>
-<script src="js/jogo.js"></script>
+<script src="2d/js/jogo2d.js"></script>
 </body>
 </html>

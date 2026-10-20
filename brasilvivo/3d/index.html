@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<script>/* sem a barra no fim (/brasilvivo), os arquivos relativos não carregam: corrige o endereço */ if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) location.replace(location.pathname + '/' + location.search + location.hash);</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#164A3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Terra Codex">
+<meta name="description" content="Terra Codex · Brasil Vivo: um RPG ecológico em que você explora o Cerrado a partir de Brasília, cuida de ciclos de vida e completa a BioDex. Fatia vertical em teste.">
+<meta name="robots" content="noindex">
+<title>Terra Codex · Brasil Vivo 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/jogo.css">
+</head>
+<body>
+<canvas id="tela"></canvas>
+<div id="etiquetas" aria-hidden="true"></div>
+
+<!-- HUD -->
+<header class="hud" id="hud" hidden>
+  <div class="hud-esq">
+  <div class="local vidro" title="Clareza da área: sobe quando as ligações entre os seres vivos voltam">
+    <span class="local-ico">📍</span>
+    <div class="local-txt"><b id="area-nome">Base Brasília</b><div class="clareza"><small>Clareza</small><i><b id="clareza-bar"></b></i><span id="hora">☀️</span></div></div>
+  </div>
+  <button type="button" class="objetivo vidro" id="objetivo" hidden><span class="obj-ico" id="obj-ico">💬</span><span><small id="obj-n">Passo 1 de 5</small><b id="obj-txt"></b></span></button>
+  </div>
+  <nav class="hud-botoes">
+    <button type="button" id="bt-codex"><span class="bola vidro">📖</span><small>BioDex</small></button>
+    <button type="button" id="bt-ninho" aria-label="Viveiro"><span class="bola vidro">🌱</span><small>Viveiro</small><span class="selo" id="selo-ninho" hidden></span></button>
+    <button type="button" id="bt-mapa"><span class="bola vidro">🗺️</span><small>Mapa</small></button>
+    <button type="button" id="bt-ajustes" aria-label="Ajustes"><span class="bola vidro">⚙️</span><small>Ajustes</small></button>
+  </nav>
+</header>
+
+<!-- ação de contexto -->
+<div class="acao" id="acao" hidden>
+  <p id="acao-nome" class="vidro"></p>
+  <button type="button" id="acao-bt"><span id="acao-ico">🔍</span><small id="acao-txt">Observar</small></button>
+</div>
+<div class="dica vidro" id="dica" hidden></div>
+<div class="joystick" id="joystick" hidden><i></i></div>
+<div class="toast" id="toast"></div>
+<div class="guia" id="guia" hidden><i id="guia-seta">➜</i><small id="guia-dist"></small></div>
+<div class="celebra" id="celebra" hidden></div>
+
+<!-- diálogo -->
+<section class="caixa" id="dialogo" hidden>
+  <header><span class="avatar" id="dialogo-avatar">🌳</span><span id="dialogo-quem"></span></header>
+  <p id="dialogo-texto"></p>
+  <div class="opcoes" id="dialogo-opcoes"></div>
+</section>
+
+<!-- painéis -->
+<section class="painel" id="painel" hidden>
+  <header><h2 id="painel-titulo"></h2><button type="button" class="fechar" id="painel-x" aria-label="Fechar">✕</button></header>
+  <div class="painel-corpo" id="painel-corpo"></div>
+</section>
+
+<!-- início -->
+<section class="inicio" id="inicio">
+  <div class="inicio-logo"><small>TERRA CODEX</small><h1>Brasil Vivo</h1><p>Um RPG ecológico no coração do Cerrado</p></div>
+  <div class="inicio-card">
+    <p>Você chega a <b>Brasília</b>, a Cidade-Núcleo. O Ruído apagou as ligações entre os seres vivos: tem flor sem polinizador e vereda sem sapo.</p>
+    <p>Observe, encontre, cuide e veja a vida se transformar. O que você descobre muda o mundo.</p>
+    <button type="button" class="btn grande" id="inicio-bt">Começar em Brasília 🌾</button>
+    <button type="button" class="btn sec inicio-aj" id="inicio-ajustes">⚙️ Ajustes de texto, som e movimento</button>
+    <p class="mini"><a href="../" class="troca-versao">Voltar para a versão principal (2D)</a> · Fatia vertical em teste · conteúdo em revisão científica · sem anúncios, sem chat, sem localização, sem dados de criança.</p>
+  </div>
+</section>
+
+<script src="../../vendor/three/three.min.js"></script>
+<script src="../js/nucleo/registro.js"></script>
+<script src="../biomas/brasil-vivo.js"></script>
+<script src="../biomas/cerrado/bioma.js"></script>
+<script src="../biomas/cerrado/especies.js"></script>
+<script src="../biomas/cerrado/ciclos.js"></script>
+<script src="../biomas/cerrado/relacoes.js"></script>
+<script src="../biomas/cerrado/jornada.js"></script>
+<script src="../js/nucleo/estado.js"></script>
+<script src="../js/nucleo/biodex.js"></script>
+<script src="../js/som.js"></script>
+<script src="../js/ajustes.js"></script>
+<script src="../js/formas.js"></script>
+<script src="../js/mundo.js"></script>
+<script src="../js/jogador.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/jogo.js"></script>
+</body>
+</html>

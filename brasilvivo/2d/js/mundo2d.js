@@ -101,8 +101,12 @@ const Mundo = (function () {
       if (ocupado(x, z) || Math.hypot(x, z) < 46 || AREAS.some((a) => a.id !== 'rota' && Math.hypot(x - a.x, z - a.z) < a.r + 2) || TRILHAS.some((s) => distSeg(x, z, s) < 4)) continue;
       arv.push([x, z]); M.arvPos.push([x, z, 0.8]);
     }
-    const modelos = Array.from({ length: 8 }, (_, k) => Pixel.arvore(100 + k));
-    arv.forEach(([x, z], k) => S(modelos[k % 8], x, z));
+    // variedade do Cerrado: árvore torta comum, pequizeiro de copa larga e árvore rala da seca
+    const modelos = Array.from({ length: 8 }, (_, k) => Pixel.arvore(100 + k)), largas = Array.from({ length: 3 }, (_, k) => Pixel.arvoreLarga(150 + k)), ralas = Array.from({ length: 4 }, (_, k) => Pixel.arvoreRala(170 + k));
+    arv.forEach(([x, z], k) => { const q = rnd(); S(q < 0.18 ? largas[k % 3] : q < 0.36 ? ralas[k % 4] : modelos[k % 8], x, z); });
+    const arbs = Array.from({ length: 6 }, (_, k) => Pixel.arbusto(600 + k));
+    for (let i = 0, n = 0; i < 900 && n < 170; i++) { const x = R(-208, 208), z = R(-208, 208); if (ocupado(x, z) || Math.hypot(x, z - 4) < 26 || TRILHAS.some((s) => distSeg(x, z, s) < 3) || AREAS.some((a) => a.id === 'jardim' && Math.hypot(x - a.x, z - a.z) < a.r + 2)) continue; S(arbs[n % 6], x, z, { oy: 10 }); n++; }
+    M.nuvens = [1, 2, 3].map(Pixel.nuvem);
     const buritis = Array.from({ length: 3 }, (_, k) => Pixel.buriti(200 + k));
     for (let i = 0; i < 20; i++) { const z = -190 + i * 20 + R(0, 8), lado = i % 2 ? 1 : -1, x = RIO_X + Math.sin(z * 0.04) * 5 + lado * (RIO_LARGURA + R(4, 8)); S(buritis[i % 3], x, z); M.arvPos.push([x, z, 0.6]); }
     const cups = Array.from({ length: 3 }, (_, k) => Pixel.cupinzeiro(300 + k));
@@ -145,7 +149,8 @@ const Mundo = (function () {
       if (anda && area) for (let k = 0; k < 2; k++) M.bichos.push(bicho(e, anda, area));
       e.fases.filter((f) => f.ponto).forEach((f) => M.marcas.push(marca(e, f)));
     });
-    Registro.lista('npcs', bioma).forEach((n) => M.npcs.push({ dado: n, pos: new V3(n.x, 0, n.z), sprites: Pixel.pessoa(Object.assign({ camisa: n.cor }, n.visual || {})), t0: rnd() * 6, mesh: { visible: true } }));
+    Registro.lista('npcs', bioma).forEach((n) => M.npcs.push({ dado: n, pos: new V3(n.x, 0, n.z), casa: { x: n.x, z: n.z }, sprites: Pixel.pessoa(Object.assign({ camisa: n.cor }, n.visual || {})), dir: 'baixo', espera: 2 + rnd() * 4, passo: 0, t0: rnd() * 6, mesh: { visible: true } }));
+    M.part = [];
     (Registro.R.biomas[bioma].fontes || []).forEach((f) => M.fontes.push(fonte(f)));
     Object.values(Registro.R.relacoes).forEach((r) => { if (r.ativar && r.ativar.ponto && AREAS.some((a) => a.id === r.ativar.onde)) { const [x, z] = r.ativar.ponto; M.caixas.push({ rel: r, pos: new V3(x, 0, z), img: [Pixel.caixa(false), Pixel.caixa(true)] }); M.arvPos.push([x, z, 0.8]); } });
 
@@ -177,7 +182,19 @@ const Mundo = (function () {
     if (f.forma === 'pedras') { o.img = [Pixel.pedrinhas(), Pixel.pedrinhas()]; }
     return o;
   }
-  function colher(fo) { fo.cheia = false; fo.volta = fo.dado.volta || 40; }
+  function colher(fo) {
+    fo.cheia = false; fo.volta = fo.dado.volta || 40;
+    efeito(fo.dado.forma === 'planta' ? 'folhas' : fo.dado.forma === 'agua' || fo.dado.forma === 'algas' ? 'agua' : 'poeira', fo.pos.x, fo.pos.z, 1);
+  }
+  /* partículas: folhas ao colher, gotas, poeira do passo, pólen no jardim vivo */
+  const CORES_P = { folhas: ['#62a83a', '#86cc4a', '#3f7a2a'], agua: ['#7cc4ea', '#bfe6f8', '#3f97c8'], poeira: ['#d4c08a', '#b8a272', '#e6d6a6'], polen: ['#ffe36a', '#fff6c0', '#f5c840'] };
+  function efeito(tipo, x, z, y) {
+    const n = tipo === 'poeira' ? 3 : tipo === 'polen' ? 1 : 12, cores = CORES_P[tipo];
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * 6.28, v = tipo === 'polen' ? 0.3 : tipo === 'poeira' ? 0.8 : 2 + Math.random() * 2;
+      M.part.push({ x, z, y: y || (tipo === 'poeira' ? 0.1 : 0.4), vx: Math.cos(a) * v, vz: Math.sin(a) * v * 0.6, vy: tipo === 'polen' ? 0.6 : tipo === 'poeira' ? 0.4 : 3 + Math.random() * 2, g: tipo === 'polen' ? 0 : tipo === 'poeira' ? 0.5 : 9, vida: tipo === 'polen' ? 1.6 : tipo === 'poeira' ? 0.45 : 0.9, cor: cores[i % cores.length], tam: tipo === 'folhas' ? 2 : 1 });
+    }
+  }
 
   function companheiro(especieId) {
     if (M.companheiros.some((c) => c.id === especieId)) return;
@@ -238,6 +255,23 @@ const Mundo = (function () {
       c.pos.y = c.voa ? 1.8 + Math.sin(M.t * 4 + i) * 0.4 : Math.abs(Math.sin(M.t * 8 + i)) * 0.3 * (d > 1.2 ? 1 : 0);
     });
     M.fontes.forEach((f) => { if (!f.cheia && (f.volta -= dt) <= 0) f.cheia = true; });
+    // moradores passeiam perto de casa e param, virados para a criança, quando ela chega perto
+    M.npcs.forEach((n) => {
+      const dxj = jogador.x - n.pos.x, dzj = jogador.z - n.pos.z;
+      n.andando = false;
+      if (Math.hypot(dxj, dzj) < 8) { n.dir = Math.abs(dxj) > Math.abs(dzj) ? (dxj > 0 ? 'dir' : 'esq') : (dzj > 0 ? 'baixo' : 'cima'); n.alvo = null; return; }
+      if (!n.alvo) { if ((n.espera -= dt) > 0) return; const a = Math.random() * 6.28, r = 1 + Math.random() * 2.5; n.alvo = { x: n.casa.x + Math.cos(a) * r, z: n.casa.z + Math.sin(a) * r }; }
+      const dx = n.alvo.x - n.pos.x, dz = n.alvo.z - n.pos.z, l = Math.hypot(dx, dz);
+      if (l < 0.2) { n.alvo = null; n.espera = 2 + Math.random() * 5; n.dir = 'baixo'; return; }
+      n.pos.x += dx / l * dt * 1.6; n.pos.z += dz / l * dt * 1.6; n.andando = true; n.passo += dt * 5;
+      n.dir = Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? 'dir' : 'esq') : (dz > 0 ? 'baixo' : 'cima');
+    });
+    // partículas
+    for (let i = M.part.length - 1; i >= 0; i--) { const q = M.part[i]; q.vida -= dt; q.x += q.vx * dt; q.z += q.vz * dt; q.vy -= q.g * dt; q.y = Math.max(0, q.y + q.vy * dt); if (q.y === 0) { q.vx *= 0.8; q.vz *= 0.8; } if (q.vida <= 0) M.part.splice(i, 1); }
+    M.poeiraT = (M.poeiraT || 0) - dt;
+    if (window.Jogador && Jogador.J.movendo && M.poeiraT <= 0 && estado(jogador.x, jogador.z) !== 'verde') { M.poeiraT = 0.22; efeito('poeira', jogador.x, jogador.z + 0.2); }
+    M.polenT = (M.polenT || 0) - dt;
+    if (M.polenT <= 0 && M.flores.length) { M.polenT = 0.12; const abertas = M.flores.filter((f) => f.aberta); if (abertas.length) { const f = abertas[Math.floor(Math.random() * abertas.length)]; efeito('polen', f.pos.x + (Math.random() - 0.5), f.pos.z, 1.3); } }
     // Clareza mostrada: segue a real; na onda, só muda onde ela já passou
     AREAS.forEach((a) => { if (!(M.onda && M.onda.area === a.id)) M.cor[a.id] = Ruido.clareza(a.id); });
     if (M.onda) { const o = M.onda; o.r += dt * (o.r < o.max ? 15 : 34); if (o.r >= o.fim) { M.cor[o.area] = o.alvo; M.onda = null; } }
@@ -304,8 +338,16 @@ const Mundo = (function () {
     }
     // coisas planas
     M.planos.forEach((p) => { if (vis(p.x, p.z, 40)) g.drawImage(p.img, px(p.x) - cx - (p.img.width >> 1), pz(p.z) - cy - (p.img.height >> 1)); });
-    M.capim.forEach((c) => { if (!vis(c.x, c.z, 10)) return; g.drawImage(M.tufos[estado(c.x, c.z)][c.v], px(c.x) - cx - 4, pz(c.z) - cy - 7); });
-    M.floresCampo.forEach((f) => { if (vis(f.x, f.z, 6)) g.drawImage(f.img, px(f.x) - cx - 3, pz(f.z) - cy - 6); });
+    // vento: o capim e as flores balançam 1 px em ondas que atravessam o campo
+    const vento = (x, z) => Math.round(Math.sin(t * 1.7 + x * 0.22 + z * 0.12) * 1.1);
+    M.capim.forEach((c) => { if (!vis(c.x, c.z, 10)) return; g.drawImage(M.tufos[estado(c.x, c.z)][c.v], px(c.x) - cx - 4 + vento(c.x, c.z), pz(c.z) - cy - 7); });
+    M.floresCampo.forEach((f) => { if (vis(f.x, f.z, 6)) g.drawImage(f.img, px(f.x) - cx - 3 + vento(f.x, f.z), pz(f.z) - cy - 6); });
+    // brilho na água
+    for (let i = 0; i < 46; i++) {
+      const z = (cy + (i * 37) % (H + 20)) / PPM - TAM / 2, x = RIO_X + Math.sin(z * 0.04) * 5 + ((i * 53) % 22) - 11;
+      if (Math.sin(t * 2.3 + i * 1.7) < 0.55) continue;
+      g.fillStyle = (M.cor.vereda || 0) > 0.5 ? '#d8f0fb' : '#a8b6ba'; g.fillRect(px(x) - cx, pz(z) - cy, 2 + (i % 2), 1);
+    }
     M.marcas.forEach((m) => { if (m.plano && m.mesh.visible && vis(m.pos.x, m.pos.z, 30)) g.drawImage(m.img, px(m.pos.x) - cx - (m.img.width >> 1), pz(m.pos.z) - cy - (m.img.height >> 1)); });
     M.fontes.forEach((f) => { if (f.plano && vis(f.pos.x, f.pos.z, 20)) g.drawImage(f.img[1], px(f.pos.x) - cx - (f.img[1].width >> 1), pz(f.pos.z) - cy - (f.img[1].height >> 1)); });
     // onda de restauração: anel dourado no chão
@@ -318,12 +360,12 @@ const Mundo = (function () {
     const L = [];
     const add = (img, x, z, ox, oy, lift, sombra, alpha) => { if (img && vis(x, z, 70)) L.push([z, img, px(x) - ox, pz(z) - oy - Math.round(lift || 0), sombra, px(x), pz(z), alpha]); };
     M.decor.forEach((d) => add(d.img, d.x, d.z, d.ox, d.oy));
-    M.flores.forEach((f) => { const pulo = f.aberta && f.pop < 1 ? Math.sin(f.pop * Math.PI) * 4 : 0; add(f.aberta ? M.imgFlor[f.cor] : M.imgBotao, f.pos.x, f.pos.z, 3, 6, pulo); });
+    M.flores.forEach((f) => { const pulo = f.aberta && f.pop < 1 ? Math.sin(f.pop * Math.PI) * 4 : 0; add(f.aberta ? M.imgFlor[f.cor] : M.imgBotao, f.pos.x, f.pos.z, 3 - (f.aberta ? vento(f.pos.x, f.pos.z) : 0), 6, pulo); });
     M.trilha.forEach((f) => { if (f.aberta) add(M.imgFlor[f.cor], f.pos.x, f.pos.z, 3, 6, f.pop < 1 ? Math.sin(f.pop * Math.PI) * 4 : 0); });
     M.marcas.forEach((m) => { if (!m.plano && m.mesh.visible) add(m.img, m.pos.x, m.pos.z + 0.05, m.img.width >> 1, m.img.height - 1, m.lift); });
     M.fontes.forEach((f) => { if (!f.plano && f.img) add(f.img[f.cheia ? 1 : 0], f.pos.x, f.pos.z, f.img[1].width >> 1, f.img[1].height - 1); });
     M.caixas.forEach((c) => { const im = c.img[Estado.dados.relacoes[c.rel.id] === 'ativada' ? 1 : 0]; add(im, c.pos.x, c.pos.z, im.width >> 1, im.height - 1); });
-    M.npcs.forEach((n) => { const s = n.sprites.baixo[0]; add(s, n.pos.x, n.pos.z, s.width >> 1, s.height - 1, Math.max(0, Math.sin(t * 2 + n.t0)) > 0.97 ? 1 : 0, 10); });
+    M.npcs.forEach((n) => { const q = n.sprites[n.dir], s = n.andando ? q[1 + (Math.floor(n.passo) % 2)] : q[0]; add(s, n.pos.x, n.pos.z, s.width >> 1, s.height - 1, !n.andando && Math.sin(t * 2 + n.t0) > 0.97 ? 1 : 0, 10); });
     const animal = (b, quadro) => { const q = b.quadros[quadro], img = b.dir < 0 ? (b.quadrosE || (b.quadrosE = b.quadros.map(Pixel.espelho)))[quadro] : q; add(img, b.pos.x, b.pos.z, q.width >> 1, q.height - 1, b.pos.y * PPM, q.width + 2); };
     M.bichos.forEach((b) => { if (!b.mesh.visible) return; const bate = b.fase.voa ? (Math.floor((t + b.fase0) * (b.agindo > 0 ? 6 : 9)) % 2) : (b.alvo || b.agindo > 0 ? Math.floor((t + b.fase0) * 6) % 2 : 0); animal(b, bate); });
     M.companheiros.forEach((c) => animal({ quadros: c.quadros, dir: c.dir, pos: c.pos, set quadrosE(v) { c.quadrosE = v; }, get quadrosE() { return c.quadrosE; } }, c.voa ? Math.floor(t * 9) % 2 : Math.floor(t * 6) % 2));
@@ -346,6 +388,14 @@ const Mundo = (function () {
       g.fillStyle = 'rgba(70,66,84,.55)';
       for (let i = 0; i < 70 * (1 - k); i++) { const ang = i * 2.39996, rr = Math.sqrt((i * 0.618) % 1) * a.r, x = a.x + Math.cos(ang + t * 0.05) * rr, z = a.z + Math.sin(ang + t * 0.05) * rr + Math.sin(t * 0.7 + i) * 0.8; g.fillRect(px(x) - cx, pz(z) - cy - ((t * 6 + i * 7) % 18), 1, 1); }
     });
+    // partículas
+    M.part.forEach((q) => { if (!vis(q.x, q.z, 4)) return; g.fillStyle = q.cor; g.fillRect(px(q.x) - cx, pz(q.z) - cy - Math.round(q.y * PPM), q.tam, q.tam); });
+    // sombras de nuvem passando devagar
+    if (M.dia > 0.3) {
+      g.save(); g.globalAlpha = 0.07 * M.dia;
+      M.nuvens.forEach((nv, i) => { for (let k = 0; k < 3; k++) { const wx = ((i * 830 + k * 1700 + t * 7) % 2800) - 300, wy = (i * 610 + k * 900) % 2200; const sx = wx - cx, sy = wy - cy; if (sx > -nv.width && sx < W && sy > -nv.height && sy < H) g.drawImage(nv, Math.round(sx), Math.round(sy), nv.width * 2, nv.height * 2); } });
+      g.restore();
+    }
     // chuva
     if (M.chuva) { g.fillStyle = 'rgba(200,220,255,.55)'; for (let i = 0; i < 90; i++) { const x = (i * 97 + t * 40) % (W + 20) - 10, y = (i * 53 + t * 160) % (H + 20) - 10; g.fillRect(Math.round(x), Math.round(y), 1, 3); } }
     // noite e fim de tarde
@@ -365,5 +415,5 @@ const Mundo = (function () {
   // posição na tela (px internos) de um ponto do mundo
   function naTela(pos, alt) { return { x: px(pos.x) - M.cam.x, y: pz(pos.z) - M.cam.y - (alt || 0) * PPM }; }
 
-  return { construir, update, desenhar, naTela, altura, areaEm, companheiro, dispensar, povoar, onda, colher, M, PPM, TAM, px, pz, RIO_X, RIO_LARGURA };
+  return { construir, update, desenhar, naTela, altura, areaEm, companheiro, dispensar, povoar, onda, colher, efeito, M, PPM, TAM, px, pz, RIO_X, RIO_LARGURA };
 })();

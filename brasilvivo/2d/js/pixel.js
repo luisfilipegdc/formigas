@@ -138,6 +138,40 @@ const Pixel = (function () {
     g.drawImage(copa, 0, 0);
     return c;
   }
+  // pequizeiro: copa larga e baixa, verde-escuro, com pequis amarelos
+  function arvoreLarga(seed) {
+    const r = semente(seed), w = 48, h = 40, c = tela(w, h), g = c.getContext('2d');
+    traco(g, [[24, 39], [23, 32], [25, 24]], 5, '#5a3e26', '#3e2a18');
+    traco(g, [[24, 30], [14, 24]], 2, '#5a3e26', '#3e2a18'); traco(g, [[24, 29], [34, 23]], 2, '#5a3e26', '#3e2a18');
+    contornar(c);
+    const copa = bolha(w, 28, [[24, 15, 11], [12, 17, 8 + r() * 2], [36, 17, 8 + r() * 2], [18, 10, 7], [31, 10, 7]], ['#233f1e', '#36602a', '#4f8034', '#76a644']);
+    g.drawImage(copa, 0, 0);
+    for (let i = 0; i < 5; i++) { g.fillStyle = '#e8c23a'; const x = 8 + Math.floor(r() * 32), y = 10 + Math.floor(r() * 12); g.fillRect(x, y, 2, 2); g.fillStyle = '#fff09a'; g.fillRect(x, y, 1, 1); }
+    return c;
+  }
+  // árvore rala da seca: galhos à mostra e poucos tufos de folha oliva
+  function arvoreRala(seed) {
+    const r = semente(seed), w = 36, h = 42, c = tela(w, h), g = c.getContext('2d');
+    const m = 18 + Math.round((r() - 0.5) * 6);
+    traco(g, [[18, 41], [17, 33], [m, 24], [m + 3, 14]], 3, '#7a5634', '#55391f');
+    traco(g, [[m, 26], [m - 9, 17]], 2, '#7a5634', '#55391f'); traco(g, [[m + 1, 22], [m + 9, 15]], 2, '#7a5634', '#55391f'); traco(g, [[m - 6, 20], [m - 10, 22]], 1, '#7a5634');
+    contornar(c);
+    const pal = ['#4a5222', '#6e7832', '#929c44', '#bcc064'];
+    [[m + 3, 11, 5], [m - 9, 14, 4.5], [m + 9, 12, 4.5]].forEach(([x, y, rr]) => g.drawImage(bolha(14, 12, [[7, 6, rr]], pal), Math.round(x - 7), Math.round(y - 6)));
+    return c;
+  }
+  function arbusto(seed) {
+    const r = semente(seed), pal = r() > 0.5 ? VERDES2 : ['#3a4a1e', '#5a6e2a', '#7e943a', '#a8bc56'];
+    const c = bolha(18, 12, [[9, 7, 5], [4.5, 8, 3.5 + r()], [13.5, 8, 3.5 + r()]], pal);
+    if (r() > 0.55) { const g = c.getContext('2d'); g.fillStyle = r() > 0.5 ? '#e86aa8' : '#f5f0e0'; [[5, 5], [11, 4], [14, 7]].forEach(([x, y]) => g.fillRect(x, y, 1, 1)); }
+    return c;
+  }
+  function nuvem(seed) {
+    const r = semente(seed), w = 120, h = 60, c = tela(w, h), g = c.getContext('2d');
+    g.fillStyle = '#000';
+    for (let i = 0; i < 7; i++) { const x = 25 + r() * 70, y = 22 + r() * 16, rr = 12 + r() * 14; for (let yy = -rr; yy <= rr; yy++) { const lw = Math.round(Math.sqrt(rr * rr - yy * yy) * 1.4); g.fillRect(Math.round(x - lw), Math.round(y + yy * 0.6), lw * 2, 1); } }
+    return c;
+  }
   function ipe(cores) {
     const w = 56, h = 62, c = tela(w, h), g = c.getContext('2d');
     traco(g, [[28, 61], [27, 50], [30, 40], [29, 30]], 6, '#6b4a2c', '#4a321e');
@@ -267,7 +301,7 @@ const Pixel = (function () {
     return retratos[k];
   }
 
-  return { semente, tela, tom, mistura, mapa, espelho, bolha, contornar, pessoa, bicho, arvore, ipe, buriti, cupinzeiro, pedra, tufo, flor, botao, casa, pavilhao, muro, canteiro, placa, estaca, planta, caixa, tronco, olheiros, ovoFolha, ovosParede, lagartaFolha, algas, pedrinhas, espelhoAgua, brilho, sombra, texturas, retrato, AMARELO, ROSA, CINZA, VERDES, BAYER };
+  return { semente, tela, tom, mistura, mapa, espelho, bolha, contornar, pessoa, bicho, arvore, arvoreLarga, arvoreRala, arbusto, nuvem, ipe, buriti, cupinzeiro, pedra, tufo, flor, botao, casa, pavilhao, muro, canteiro, placa, estaca, planta, caixa, tronco, olheiros, ovoFolha, ovosParede, lagartaFolha, algas, pedrinhas, espelhoAgua, brilho, sombra, texturas, retrato, AMARELO, ROSA, CINZA, VERDES, BAYER };
 })();
 // a interface (ui.js) pede retratos a Formas: no 2D eles são pixel art
 const Formas = { retrato: Pixel.retrato };

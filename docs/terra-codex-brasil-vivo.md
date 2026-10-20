@@ -54,15 +54,17 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
-## Versão 2D em pixel art (protótipo para comparar)
+## Versão 2D em pixel art (a principal)
 
-Em `brasilvivo/2d/` (publicada em `/brasilvivo/2d/`). Mesmo conteúdo, mesmo save (`terracodex2`) e as mesmas regras: o laço `2d/js/jogo2d.js` saiu de `js/jogo.js` e muda só o que se vê. A interface (`js/ui.js`), o Registro, os dados do Cerrado, a BioDex, o som e os ajustes são os mesmos arquivos do 3D.
+Desde que foi escolhida, a 2D abre em `/brasilvivo/`. A 3D antiga continua em `/brasilvivo/3d/`, e `/brasilvivo/2d/` leva para a principal. O código da 2D fica em `brasilvivo/2d/js` e `brasilvivo/2d/css`. Mesmo conteúdo, mesmo save (`terracodex2`) e as mesmas regras: o laço `2d/js/jogo2d.js` saiu de `js/jogo.js` e muda só o que se vê. A interface (`js/ui.js`), o Registro, os dados do Cerrado, a BioDex, o som e os ajustes são os mesmos arquivos do 3D.
 
 - `2d/js/pixel.js`: todos os sprites desenhados em código, sem imagem externa. Personagens e bichos em mapas de caracteres, árvores e pedras em bolhas sombreadas em 4 tons com pontilhado, contorno escuro automático, texturas de chão 16 × 16.
 - `2d/js/mundo2d.js`: mundo visto de cima, 5 px por metro, com as mesmas coordenadas do 3D. O chão é uma grade de células de 4 px pintada em pedaços de 128 px guardados em cache. No Ruído as células ficam cinza; com a Clareza, cada célula fica verde quando a onda dourada passa por ela.
 - `2d/css/pixel.css`: bordas, cantos e sombras em degrau, Pixelify Sans nos títulos. O texto corrido continua em Nunito.
 - No clímax, a câmera desliza até o centro do jardim e volta. Com "Menos movimento", ela fica no jogador.
 - As telas de início do 3D e do 2D têm um link para a outra versão.
+- Vida no cenário: variedade de árvores do Cerrado (torta, pequizeiro de copa larga, árvore rala da seca), arbustos, capim e flores balançando com o vento, brilho na água, sombras de nuvem, moradores passeando perto de casa (param e se viram quando a criança chega), folhas ao colher, poeira ao andar no seco e pólen subindo das flores do jardim restaurado.
+- BioDex em pixel art: cada bicho aparece num canteirinho de grama; os que ainda não foram vistos aparecem como silhueta cinza.
 
 ## Como os dados se organizam
 

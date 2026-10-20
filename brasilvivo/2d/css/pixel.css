@@ -9,7 +9,7 @@
 img.retrato, .celebra-card img, .carta img, .ficha-em img { image-rendering: pixelated; }
 .vidro { border-radius: 6px; border: 0; box-shadow: 0 0 0 3px var(--pix), inset 0 0 0 2px rgba(255, 255, 255, .14), 0 4px 0 3px rgba(0, 0, 0, .25); }
 .bola { border-radius: 8px; }
-.local b, #area-nome, .objetivo small, .hud-botoes small, .acao small, .etq, .painel h2, .caixa header span, .inicio-logo h1, .inicio-logo small, .celebra-card b, .celebra-card small, .jornada .n { font-family: var(--fonte-pixel); letter-spacing: .02em; }
+.local b, #area-nome, .objetivo small, .hud-botoes small, .acao small, .etq, .caixa header span, .inicio-logo h1, .inicio-logo small, .celebra-card b, .celebra-card small, .jornada .n { font-family: var(--fonte-pixel); letter-spacing: .02em; }
 .etq { border-radius: 4px; box-shadow: 0 0 0 2px var(--pix); }
 .painel { border-radius: 10px 10px 0 0; box-shadow: 0 0 0 4px var(--pix), 0 -6px 0 4px rgba(0, 0, 0, .18); }
 .caixa { border-radius: 10px; box-shadow: 0 0 0 4px var(--pix), 0 8px 0 4px rgba(0, 0, 0, .25); }
@@ -24,3 +24,18 @@ img.retrato, .celebra-card img, .carta img, .ficha-em img { image-rendering: pix
 .inicio-logo h1 { font-weight: 700; text-shadow: 3px 3px 0 var(--pix), -1px -1px 0 var(--pix), 1px -1px 0 var(--pix), -1px 1px 0 var(--pix); }
 .troca-versao { color: inherit; font-weight: 900; }
 .joystick { border-radius: 50%; }
+
+/* BioDex em pixel art: cada bicho num "canteiro" de grama, como num jogo de coleção */
+.carta { padding-top: 12px; }
+.carta::before { top: 10px; width: 84px; height: 70px; border-radius: 4px; background:
+  linear-gradient(180deg, transparent 0 46px, #6aa84f 46px 52px, #4f8a3a 52px 56px, #b88e5a 56px),
+  repeating-linear-gradient(90deg, rgba(255, 255, 255, .0) 0 6px, rgba(255, 255, 255, .25) 6px 7px),
+  linear-gradient(180deg, #bfe3f2, #e8f6ea); box-shadow: 0 0 0 2px var(--pix); }
+.carta .em img, .ficha-em img { width: 64px; height: 64px; object-fit: contain; image-rendering: pixelated; margin-top: 2px; }
+.carta.silhueta::before { background: linear-gradient(180deg, transparent 0 46px, #9b98a6 46px 52px, #7d7a88 52px 56px, #6a6672 56px), linear-gradient(180deg, #d8d4de, #ece8f0); }
+.carta b { font-family: var(--fonte-pixel); font-weight: 700; letter-spacing: .02em; margin-top: 10px; }
+.pontos i { border-radius: 1px; }
+.ficha-em { border-radius: 6px; box-shadow: 0 0 0 3px var(--pix); background: linear-gradient(180deg, #bfe3f2 0 70%, #6aa84f 70% 80%, #b88e5a 80%); }
+.fase { box-shadow: 0 0 0 2px var(--pix); }
+.fase .em img { image-rendering: pixelated; }
+.ficha h3 { font-family: var(--fonte-pixel); font-weight: 700; }
