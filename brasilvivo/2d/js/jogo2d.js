@@ -2,7 +2,7 @@
    Terra Codex · Brasil Vivo 2D · laço principal (versão em pixel art)
    As mesmas regras do 3D (js/jogo.js): ações de contexto, Viveiro de
    arrastar, ativar no mundo, jornada, escada de ajuda. Muda só o que se vê:
-   mundo de cima em pixel art (mundo2d.js), câmera que segue e, no clímax,
+   mundo de cima ilustrado (mundo2d.js e arte.js), câmera que segue e, no clímax,
    desliza até o centro da área restaurada. O save é o mesmo do 3D.
    ===================================================================== */
 (function () {
@@ -12,15 +12,17 @@
   const E = Estado.dados;
   const salvar = () => Estado.salvar(jog.pos);
 
-  /* ---------- tela: pixels grandes, sem suavizar ---------- */
+  /* ---------- tela: resolução real do aparelho, desenho suave ---------- */
   const canvas = $('tela'), g = canvas.getContext('2d');
   let W = 0, H = 0, ESC = 2;
   function medir() {
     ESC = Math.max(2, Math.round(Math.min(innerWidth, innerHeight) / 200));
-    W = Math.ceil(innerWidth / ESC); H = Math.ceil(innerHeight / ESC);
-    canvas.width = W; canvas.height = H; canvas.style.width = W * ESC + 'px'; canvas.style.height = H * ESC + 'px';
-    g.imageSmoothingEnabled = false;
+    W = innerWidth / ESC; H = innerHeight / ESC;
+    const dpr = Math.min(devicePixelRatio || 1, 2.5);
+    canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr); canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px';
   }
+  // cada quadro desenha em unidades do mundo (1/5 m); a escala leva para os pixels reais
+  const prepararTela = () => { g.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; };
   medir(); addEventListener('resize', medir);
   const mundo = Mundo.construir(BIOMA);
   const jog = Jogador.criar(new V3(E.pos[0], 0, E.pos[2]));
@@ -29,7 +31,7 @@
     const tx = Mundo.px(x) - W / 2, ty = Mundo.pz(z) - H / 2;
     cam.fx = cam.fx === undefined ? tx : cam.fx + (tx - cam.fx) * k; cam.fy = cam.fy === undefined ? ty : cam.fy + (ty - cam.fy) * k;
     const max = Mundo.TAM * Mundo.PPM; cam.fx = Math.max(0, Math.min(max - W, cam.fx)); cam.fy = Math.max(0, Math.min(max - H, cam.fy));
-    cam.x = Math.round(cam.fx); cam.y = Math.round(cam.fy);
+    cam.x = cam.fx; cam.y = cam.fy;
   }
   seguir(E.pos[0], E.pos[2], 1);
   E.ninho.forEach((n) => { const c = Registro.ciclo(n.ciclo); if (!c.passos.some((p) => p.de === n.fase)) Mundo.companheiro(c.especie); });
@@ -376,10 +378,11 @@
   function desenharFarol(t) {
     if (!farol) return;
     const q = Mundo.naTela(farol, 0), r = 10 + Math.sin(t * 4) * 2;
-    g.save(); g.strokeStyle = 'rgba(255,216,74,.85)'; g.lineWidth = 2; g.beginPath(); g.ellipse(Math.round(q.x), Math.round(q.y), r, r * 0.5, 0, 0, 6.29); g.stroke();
-    const y = Math.round(q.y - 26 - Math.abs(Math.sin(t * 3)) * 6), x = Math.round(q.x);
-    g.fillStyle = '#1d1a24'; g.fillRect(x - 4, y - 1, 9, 5); g.fillRect(x - 2, y + 4, 5, 3); g.fillRect(x - 1, y + 7, 3, 2);
-    g.fillStyle = '#ffd84a'; g.fillRect(x - 3, y, 7, 3); g.fillRect(x - 1, y + 3, 3, 3); g.fillRect(x, y + 6, 1, 2);
+    g.save(); g.strokeStyle = 'rgba(255,216,74,.85)'; g.lineWidth = 1.6; g.beginPath(); g.ellipse(q.x, q.y, r, r * 0.5, 0, 0, 6.29); g.stroke();
+    // seta dourada que pula sobre o alvo
+    const y = q.y - 28 - Math.abs(Math.sin(t * 3)) * 6, x = q.x;
+    g.beginPath(); g.moveTo(x - 3, y); g.lineTo(x + 3, y); g.lineTo(x + 3, y + 4); g.lineTo(x + 6, y + 4); g.lineTo(x, y + 10); g.lineTo(x - 6, y + 4); g.lineTo(x - 3, y + 4); g.closePath();
+    g.fillStyle = '#ffd84a'; g.fill(); g.strokeStyle = '#2e2519'; g.lineWidth = 0.9; g.lineJoin = 'round'; g.stroke();
     g.restore();
   }
   // etiquetas em HTML sobre o canvas (texto nítido, emoji legível)
@@ -404,13 +407,13 @@
     if (!document.body.classList.contains('jogando')) {
       // tela de início: a câmera passeia devagar sobre a Base
       const a = now / 1000 * 0.08; Mundo.update(dt, jog.pos);
-      seguir(Math.sin(a) * 30, 8 + Math.cos(a) * 22, 1); Mundo.desenhar(g, W, H, null); return;
+      seguir(Math.sin(a) * 30, 8 + Math.cos(a) * 22, 1); prepararTela(); Mundo.desenhar(g, W, H, null); return;
     }
     const kc = camera3(dt);
     Jogador.update(dt, livre);
     Mundo.update(dt, jog.pos);
     seguir(jog.pos.x + ((cine ? cine.x : 0) - jog.pos.x) * kc, jog.pos.z + ((cine ? cine.z : 0) - jog.pos.z) * kc, Math.min(1, dt * (kc > 0 ? 4 : 8)));
-    Mundo.desenhar(g, W, H, jog);
+    prepararTela(); Mundo.desenhar(g, W, H, jog);
     desenharFarol(now / 1000);
     $('hora').textContent = mundo.hora + (mundo.chuva ? '🌧️' : '');
     acc += dt; if (acc > 0.2) { acc = 0; procurarPerto(); atualizarArea(); atualizarObjetivo(); dicaPrimeiraAcao(); }

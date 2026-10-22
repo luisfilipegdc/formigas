@@ -7,7 +7,7 @@ const Jogador = (function () {
   const J = { vel: 12, teclas: {}, joy: { x: 0, y: 0 }, andando: 0, bloqueado: false, dir: 'baixo' };
 
   function criar(pos) {
-    J.pos = pos; J.sprites = Pixel.pessoa({ pele: '#c98d64', cabelo: '#2a1a10', camisa: '#2f8a47', calca: '#5a4a32', chapeu: '#e8c77a', mochila: true });
+    J.pos = pos; J.sprites = Arte.pessoa({ pele: '#c98d64', cabelo: '#2a1a10', camisa: '#2f8a47', calca: '#5a4a32', chapeu: '#e8c77a', mochila: true });
     J.sprite = () => { const q = J.sprites[J.dir]; return J.movendo ? q[1 + (Math.floor(J.andando) % 2)] : q[0]; };
     controles();
     return J;

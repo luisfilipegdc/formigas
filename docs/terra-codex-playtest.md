@@ -7,7 +7,7 @@
 
 - Termo de autorização assinado pelo responsável (modelo abaixo) e "você topa jogar?" perguntado à criança. Ela pode parar quando quiser.
 - Aparelho carregado, som ligado em volume médio, `/explorar/brasilvivo/` aberto, progresso zerado (apagar `terracodex2` ou usar janela anônima).
-- Versão principal: a 2D em pixel art (`/explorar/brasilvivo/`). A 3D antiga fica em `/brasilvivo/3d/` e não entra no teste.
+- Versão principal: a 2D ilustrada (`/explorar/brasilvivo/`). A 3D antiga fica em `/brasilvivo/3d/` e não entra no teste.
 - Tempo do Viveiro curto (versão de teste): cada transformação leva 1,5 a 2 minutos; o ciclo inteiro leva uns 6 minutos de espera, preenchidos explorando.
 - Na véspera, rodar o teste automático (`node ferramentas/teste-brasilvivo.js`) para ter certeza de que o ciclo inteiro funciona.
 

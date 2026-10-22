@@ -19,7 +19,7 @@ Objetivo do primeiro ciclo: ver a borboleta → descobrir a lagarta → cuidar n
 |---|---|---|
 | 1 · Base nova | T1 textos e mapa · T2 registro de conteúdo · T3 save v2 · T4 BioDex sem quiz | Feita |
 | 2 · Ciclo da borboleta | T5 Viveiro · T6 lagarta na planta · T7 Jardim Polinizador | Feita |
-| 3 · Encantamento e prova | T8 visor da BioDex · T9 borboleta em todas as fases · T10 teste do loop (Playwright) | Feita (em pixel art) |
+| 3 · Encantamento e prova | T8 visor da BioDex · T9 borboleta em todas as fases · T10 teste do loop (Playwright) | Feita (2D ilustrada) |
 
 Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depois com 20, sem explicar demais. Medir se entendem o ciclo, se querem voltar, se contam o que aconteceu com a borboleta e se o adulto percebe valor educativo.
 
@@ -54,7 +54,7 @@ Depois da Sprint 3, o **portão humano**: teste observado com 5 crianças, depoi
 
 O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa real.
 
-## O que a Sprint 3 entrega (em pixel art)
+## O que a Sprint 3 entrega
 
 | Tarefa | Como está |
 |---|---|
@@ -64,17 +64,17 @@ O que saiu desta versão: quiz, Ecos, batalhas, chefe, obras com conta, mapa rea
 
 Depois da Sprint 3 vem o portão humano: kit em `docs/terra-codex-playtest.md`, com folha de observação para imprimir.
 
-## Versão 2D em pixel art (a principal)
+## Versão 2D ilustrada (a principal)
 
-Desde que foi escolhida, a 2D abre em `/brasilvivo/`. A 3D antiga continua em `/brasilvivo/3d/`, e `/brasilvivo/2d/` leva para a principal. O código da 2D fica em `brasilvivo/2d/js` e `brasilvivo/2d/css`. Mesmo conteúdo, mesmo save (`terracodex2`) e as mesmas regras: o laço `2d/js/jogo2d.js` saiu de `js/jogo.js` e muda só o que se vê. A interface (`js/ui.js`), o Registro, os dados do Cerrado, a BioDex, o som e os ajustes são os mesmos arquivos do 3D.
+A 2D abre em `/brasilvivo/`; a 3D antiga fica em `/brasilvivo/3d/`. Mesmo conteúdo, mesmo save (`terracodex2`) e as mesmas regras: o laço `2d/js/jogo2d.js` saiu de `js/jogo.js`, e a interface (`js/ui.js`), os dados, a BioDex, o som e os ajustes são os mesmos arquivos do 3D.
 
-- `2d/js/pixel.js`: todos os sprites desenhados em código, sem imagem externa. Personagens e bichos em mapas de caracteres, árvores e pedras em bolhas sombreadas em 4 tons com pontilhado, contorno escuro automático, texturas de chão 16 × 16.
-- `2d/js/mundo2d.js`: mundo visto de cima, 5 px por metro, com as mesmas coordenadas do 3D. O chão é uma grade de células de 4 px pintada em pedaços de 128 px guardados em cache. No Ruído as células ficam cinza; com a Clareza, cada célula fica verde quando a onda dourada passa por ela.
-- `2d/css/pixel.css`: bordas, cantos e sombras em degrau, Pixelify Sans nos títulos. O texto corrido continua em Nunito.
-- No clímax, a câmera desliza até o centro do jardim e volta. Com "Menos movimento", ela fica no jogador.
-- As telas de início do 3D e do 2D têm um link para a outra versão.
-- Vida no cenário: variedade de árvores do Cerrado (torta, pequizeiro de copa larga, árvore rala da seca), arbustos, capim e flores balançando com o vento, brilho na água, sombras de nuvem, moradores passeando perto de casa (param e se viram quando a criança chega), folhas ao colher, poeira ao andar no seco e pólen subindo das flores do jardim restaurado.
-- BioDex em pixel art: cada bicho aparece num canteirinho de grama; os que ainda não foram vistos aparecem como silhueta cinza.
+Primeiro foi feita em pixel art; depois do teste, o visual passou a ser **ilustrado, estilo livro infantil**:
+
+- `2d/js/arte.js`: tudo desenhado em vetor no canvas, sem imagem externa. Curvas suaves, contorno macio, luz de cima à esquerda. Gente com 4 direções e passos; borboleta (asas com reflexo e ocelos, 4 quadros), jataí, saúva (3 partes, patas que alternam), lagartixa (corpo que afina, almofadinhas), cururu (olhos dourados, verrugas). Árvores do Cerrado com copa de folhinhas, ipês floridos, buritis, Base Brasília modernista. Cada desenho é feito em alta resolução e guarda o tamanho lógico (`lw` × `lh`).
+- `2d/js/mundo2d.js`: mundo visto de cima, 5 unidades por metro. O chão é um mapa de cores (1 cor por célula de 80 cm) ampliado com suavização e média de cópias deslocadas: as bordas ficam macias como aquarela. No Ruído as células ficam cinza; com a Clareza, viram verdes quando a onda dourada passa.
+- O canvas usa a resolução real da tela; a câmera anda sem pular de pixel em pixel.
+- `2d/css/ilustrado.css`: canvas em tela cheia, BioDex com o bicho num canteirinho, sprites animados das fases, visor e tela inicial. O resto da interface segue o design system (`css/jogo.css`).
+- Vida no cenário: vento no capim e nas flores, brilho na água, sombras de nuvem, moradores passeando, folhas ao colher, poeira ao andar, pólen no jardim, vaga-lumes à noite.
 
 ## Como os dados se organizam
 
