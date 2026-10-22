@@ -1,0 +1,73 @@
+/* =====================================================================
+   biblioteca.css — Biblioteca 3D (catálogo + visor)
+   Usa as variáveis e componentes de marca.css.
+   ===================================================================== */
+body { background: var(--bg); color: var(--text); font-family: var(--font); margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+.bib-topo { padding-top: 18px; }
+.bib-topo h1 { margin: 6px 0 4px; font-size: clamp(30px, 6vw, 44px); color: var(--color-nature); font-weight: 900; line-height: 1.05; }
+.bib-topo p { margin: 0 0 14px; font-size: 17px; line-height: 1.45; color: var(--text-soft); max-width: 640px; font-weight: 600; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chips .chip { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); font: inherit; font-weight: 800; font-size: 15px; color: var(--text); cursor: pointer; }
+.chips .chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+
+.bib-grade { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.bib-carta { position: relative; display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; background: var(--surface); border-radius: var(--radius-l); overflow: hidden; box-shadow: var(--shadow-m); transition: transform .15s ease, box-shadow .15s ease; }
+.bib-carta:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(73, 53, 40, .06), 0 14px 28px rgba(73, 53, 40, .12); }
+.bib-carta:active { transform: scale(.98); }
+.bc-foto { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; background: radial-gradient(circle at 50% 40%, #ffffff, #f1ead6 70%); overflow: hidden; }
+.bc-foto i { font-style: normal; font-size: 58px; opacity: .55; animation: respira 1.6s ease-in-out infinite; }
+.bc-foto img { width: 100%; height: 100%; object-fit: contain; animation: surgir .4s ease; }
+.bc-foto.foto img { object-fit: cover; }
+.bc-txt { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 16px; }
+.bc-txt small { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--color-leaf); }
+.bc-txt b { font-size: 19px; font-weight: 900; color: var(--color-nature); line-height: 1.15; }
+.bc-txt span { font-size: 15px; line-height: 1.4; color: var(--text-soft); font-weight: 600; }
+.bc-visto { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: var(--color-lime); color: var(--color-nature); display: grid; place-items: center; font-weight: 900; box-shadow: var(--shadow-s); }
+.bc-selo { position: absolute; top: 10px; left: 10px; background: var(--color-accent); color: var(--text); font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 999px; box-shadow: var(--shadow-s); }
+.bib-nota { font-size: 13px; color: var(--text-soft); margin: 18px 0 40px; }
+@keyframes respira { 50% { opacity: .3; transform: scale(.94); } }
+@keyframes surgir { from { opacity: 0; transform: scale(.96); } }
+
+/* ---------- visor em tela cheia ---------- */
+body.visor-aberto { overflow: hidden; }
+.visor3d { position: fixed; inset: 0; z-index: 50; background: radial-gradient(ellipse at 50% 35%, #fffdf6 0%, #f3ead2 65%, #e8dcbc 100%); }
+.visor3d[hidden] { display: none; }
+#tela3d { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
+.v-topo { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 10px; padding: max(12px, env(safe-area-inset-top)) var(--gutter) 8px; pointer-events: none; }
+.v-topo > * { pointer-events: auto; }
+.v-bola { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--surface); box-shadow: var(--shadow-m); font-size: 22px; font-weight: 900; color: var(--color-nature); cursor: pointer; }
+.v-titulo { flex: 1; min-width: 0; }
+.v-titulo small { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--color-leaf); }
+.v-titulo b { display: block; font-size: clamp(20px, 4.4vw, 28px); font-weight: 900; color: var(--color-nature); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-idade { flex: none; display: flex; background: var(--surface); border-radius: 999px; padding: 4px; box-shadow: var(--shadow-m); }
+.v-idade button { width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; font-size: 20px; cursor: pointer; }
+.v-idade button.on { background: var(--color-accent); }
+.v-aviso { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(max(12px, env(safe-area-inset-top)) + 64px); margin: 0; width: fit-content; max-width: calc(100% - 2 * var(--gutter)); background: rgba(22, 74, 58, .9); color: #fff; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 8px 14px; border-radius: var(--radius-m); }
+.v-lado { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+.v-lado button { width: 76px; min-height: 68px; border: 0; border-radius: var(--radius-m); background: var(--surface); box-shadow: var(--shadow-m); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 4px; font: inherit; color: var(--text); }
+.v-lado button span { font-size: 24px; line-height: 1; }
+.v-lado button small { font-size: 11.5px; font-weight: 800; line-height: 1.15; text-align: center; }
+.v-lado button:first-child { background: var(--color-accent); }
+.v-lado button.pulso { animation: pulso .4s ease; }
+@keyframes pulso { 40% { transform: scale(.92); } }
+.v-base { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 var(--gutter) max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.v-base > * { pointer-events: auto; }
+.v-cartao { max-width: 520px; background: rgba(255, 255, 255, .95); border-radius: var(--radius-l); padding: 14px 18px; box-shadow: var(--shadow-m); }
+.v-cartao b { display: block; font-size: 19px; font-weight: 900; color: var(--color-nature); margin-bottom: 4px; }
+.v-cartao p { margin: 0; font-size: 16.5px; line-height: 1.45; font-weight: 600; }
+.v-cartao .v-dica { margin-top: 6px; font-size: 14px; color: var(--text-soft); }
+.v-partes { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.v-partes::-webkit-scrollbar { display: none; }
+.v-partes button { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; background: rgba(255, 255, 255, .92); box-shadow: var(--shadow-s); font: inherit; font-weight: 800; font-size: 15px; color: var(--text); cursor: pointer; }
+.v-partes button.on { background: var(--color-accent); }
+@media (max-width: 640px) {
+  .v-lado { top: auto; bottom: calc(max(14px, env(safe-area-inset-bottom)) + 190px); transform: none; flex-direction: column; }
+  .v-lado button { width: 64px; min-height: 58px; }
+  .v-lado button small { font-size: 10.5px; }
+  .v-cartao { padding: 12px 14px; }
+  .v-cartao p { font-size: 15.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .bc-foto i, .bc-foto img, .v-lado button.pulso { animation: none; } }
+.bib-voltar { margin-left: auto; min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: var(--color-primary-soft); color: var(--color-nature); font-weight: 800; text-decoration: none; }
