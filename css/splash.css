@@ -5,7 +5,7 @@
    ===================================================================== */
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden;
-  background: radial-gradient(circle at 50% 40%, #2F7A52 0, #164A3A 55%, #0F3529 100%); color: #fff;
+  background: radial-gradient(circle at 50% 40%, #2AB476 0, #1E8A5A 50%, #12503B 100%); color: #fff;
   animation: sai .5s ease 4.6s forwards; cursor: pointer;
 }
 .splash.rapida { animation-delay: 1.5s; }
@@ -18,11 +18,15 @@
   border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
   animation: surge .7s cubic-bezier(.2, 1.4, .4, 1) .25s both;
 }
+.splash-marca { display: flex; flex-direction: column; align-items: center; gap: 6px; animation: surge .8s cubic-bezier(.2, 1.4, .4, 1) .3s both; }
+.splash-marca img { width: min(46vw, 190px); height: auto; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .3)); }
+.splash-marca .marca-nome { font-size: clamp(46px, 13vw, 78px); color: #fff; text-shadow: 0 4px 16px rgba(0, 0, 0, .28); }
+.splash-marca .marca-nome i { color: var(--color-accent, #FFC53D); }
 .splash-logo { width: min(86vw, 460px); height: auto; animation: surge .8s cubic-bezier(.2, 1.4, .4, 1) .3s both; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .3)); }
 .splash-nome { margin: 16px 0 0; line-height: 1; animation: sobe .6s ease .7s both; text-shadow: 0 3px 12px rgba(0,0,0,.3); }
 .splash-nome b { display: block; font-size: clamp(54px, 15vw, 92px); font-weight: 900; color: #fff; letter-spacing: -.03em; }
 .splash-nome i { font-style: normal; font-size: clamp(30px, 8vw, 50px); font-weight: 900; color: var(--color-accent, #FBC02D); }
-.splash-oi { margin: 10px 0 0; font-size: clamp(18px, 4.6vw, 22px); font-weight: 800; color: #DCEBD9; animation: sobe .6s ease 1s both; }
+.splash-oi { margin: 10px 0 0; font-size: clamp(18px, 4.6vw, 22px); font-weight: 800; color: #E3F4EA; animation: sobe .6s ease 1s both; }
 .splash-pular { position: absolute; z-index: 3; right: max(16px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); font-size: 14px; font-weight: 800; color: rgba(255, 255, 255, .75); }
 @keyframes surge { from { opacity: 0; transform: scale(.6) rotate(-8deg); } }
 @keyframes sobe { from { opacity: 0; transform: translateY(14px); } }

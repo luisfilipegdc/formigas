@@ -70,4 +70,10 @@ body.visor-aberto { overflow: hidden; }
   .v-cartao p { font-size: 15.5px; }
 }
 @media (prefers-reduced-motion: reduce) { .bc-foto i, .bc-foto img, .v-lado button.pulso { animation: none; } }
-.bib-voltar { margin-left: auto; min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: var(--color-primary-soft); color: var(--color-nature); font-weight: 800; text-decoration: none; }
+
+/* cabeçalho da página inicial (Biblioteca) */
+.bib-nav a { font-family: var(--font); }
+.bib-topo h1 { font-family: var(--font-titulo); font-weight: 700; letter-spacing: -.01em; }
+.bc-txt b, .v-titulo b, .v-cartao b { font-family: var(--font-titulo); font-weight: 600; }
+@media (max-width: 640px) { .bib-nav .so-largo { display: none; } .bib-nav a { padding: 0 10px; font-size: 15px; } }
+@media (max-width: 380px) { .bib-nav a[href="index.html"] { display: none; } }

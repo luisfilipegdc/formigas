@@ -10,7 +10,7 @@
   radial-gradient(ellipse 60% 70% at 78% 45%, rgba(168, 217, 74, .35), transparent 70%),
   radial-gradient(ellipse 50% 60% at 10% 100%, rgba(70, 167, 88, .18), transparent 70%),
   linear-gradient(180deg, #F3F8E6, var(--bg)); }
-.hero2::before, .hero2::after { content: ''; position: absolute; width: 220px; height: 220px; border-radius: 0 100% 0 100%; background: linear-gradient(135deg, #7CC576, #2F8A47); opacity: .22; }
+.hero2::before, .hero2::after { content: ''; position: absolute; width: 220px; height: 220px; border-radius: 0 100% 0 100%; background: linear-gradient(135deg, #7CC576, #1E8A5A); opacity: .22; }
 .hero2::before { left: -80px; top: 40%; transform: rotate(-20deg); }
 .hero2::after { right: -60px; top: -70px; transform: rotate(60deg); }
 .hero2-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 10px; padding-top: 18px; padding-bottom: 34px; }

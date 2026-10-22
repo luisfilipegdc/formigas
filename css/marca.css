@@ -1,40 +1,42 @@
 /* =====================================================================
-   marca.css — identidade visual "Bio no Bolso"
+   marca.css — identidade visual "Bio no Bolso" (v2, outubro de 2026)
    Variáveis (cores, raios, sombras) e componentes comuns: cabeçalho,
    logo, botões, chips, seções e rodapé. Referência: design/*.png
    ===================================================================== */
 :root {
   /* cores — paleta Bio no Bolso */
-  --color-nature: #164A3A;      /* verde floresta: marca, títulos */
-  --color-primary: #2F8A47;     /* verde-folha (escurecido p/ contraste com texto branco): botões, chip ativo */
-  --color-leaf: #46A758;        /* verde-folha original: ícones e enfeites */
-  --color-lime: #A8D94A;        /* lima: descoberta, progresso */
-  --color-primary-soft: #E5F2DC;
-  --color-accent: #F5C451;      /* amarelo aventura: CTA, 3D, recompensa */
-  --color-accent-soft: #FDF1CF;
-  --color-terra: #D8784C;       /* terracota: detalhes */
-  --color-secondary: #2F6FA8;   /* azul: só apoio (links, dados) */
-  --bg: #FFF8E8;                /* creme */
+  --color-nature: #12503B;      /* verde floresta: marca, títulos */
+  --color-primary: #1E8A5A;     /* verde-folha (escurecido p/ contraste com texto branco): botões, chip ativo */
+  --color-leaf: #22A06B;        /* verde-folha original: ícones e enfeites */
+  --color-lime: #9BD84E;        /* lima: descoberta, progresso */
+  --color-primary-soft: #E3F4EA;
+  --color-accent: #FFC53D;      /* amarelo aventura: CTA, 3D, recompensa */
+  --color-accent-soft: #FFF1C9;
+  --color-terra: #E8774A;       /* terracota: detalhes */
+  --color-secondary: #2F8FC8;   /* azul: só apoio (links, dados) */
+  --bg: #FFF9EF;                /* creme */
   --surface: #FFFFFF;
-  --surface-warm: #FFFCF3;
-  --text: #493528;              /* marrom quente */
-  --text-soft: #7A6656;
-  --line: #EFE2C6;
+  --surface-warm: #FFFDF7;
+  --text: #22302A;              /* marrom quente */
+  --text-soft: #5E6B64;
+  --line: #EDE3CF;
   /* tokens do MIV Bio no Bolso v1.0 (mesmas cores, nomes oficiais) */
-  --forest: #164A3A;
-  --leaf: #46A758;
-  --lime: #A8D94A;
-  --adventure: #F5C451;
-  --terracotta: #D8784C;
-  --cream: #FFF8E8;
-  --brown: #493528;
+  --forest: #12503B;
+  --leaf: #22A06B;
+  --lime: #9BD84E;
+  --adventure: #FFC53D;
+  --terracotta: #E8774A;
+  --cream: #FFF9EF;
+  --brown: #22302A;
   /* forma */
   --radius-s: 12px;
   --radius-m: 18px;
   --radius-l: 26px;
-  --shadow-s: 0 1px 2px rgba(73, 53, 40, .06), 0 2px 8px rgba(73, 53, 40, .06);
-  --shadow-m: 0 2px 4px rgba(73, 53, 40, .06), 0 8px 20px rgba(73, 53, 40, .08);
+  --shadow-s: 0 1px 2px rgba(18, 80, 59, .06), 0 2px 8px rgba(18, 80, 59, .06);
+  --shadow-m: 0 2px 4px rgba(18, 80, 59, .06), 0 8px 22px rgba(18, 80, 59, .09);
   --gutter: max(16px, env(safe-area-inset-left));
+  --color-ceu: #3FA7E0;          /* céu: micromundo e informação */
+  --font-titulo: 'Fredoka', 'Nunito', ui-rounded, system-ui, sans-serif;   /* nome e títulos */
   --font: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* usados pela gaveta da ficha (js/ficha.js) */
   --chip-on: var(--color-primary);
@@ -56,6 +58,16 @@ button, input { font: inherit; color: inherit; }
 .wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gutter); padding-right: max(16px, env(safe-area-inset-right)); }
 [hidden] { display: none !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- títulos com a fonte da marca ---------- */
+h1, h2, h3 { font-family: var(--font-titulo); font-weight: 600; letter-spacing: -.005em; }
+
+/* ---------- marca: símbolo do bolso com broto + nome em Fredoka ---------- */
+.marca { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; flex: none; }
+.marca img { width: 50px; height: 50px; display: block; }
+.marca-nome { font-family: var(--font-titulo); font-weight: 700; font-size: 29px; line-height: 1; color: var(--color-nature); letter-spacing: -.015em; white-space: nowrap; }
+.marca-nome i { font-style: normal; font-weight: 600; font-size: .7em; color: var(--color-terra); margin: 0 .06em; }
+@media (max-width: 520px) { .marca img { width: 40px; height: 40px; } .marca-nome { font-size: 23px; } }
 
 /* ---------- logo ---------- */
 .logo { display: inline-flex; align-items: center; gap: 2px; text-decoration: none; color: var(--color-nature); line-height: .9; flex: none; }
@@ -85,7 +97,7 @@ button, input { font: inherit; color: inherit; }
 }
 .btn:active { transform: scale(.97); }
 .btn-primario { background: var(--color-primary); color: #fff; box-shadow: 0 3px 0 var(--color-nature); }
-.btn-3d { background: var(--color-accent); color: var(--text); box-shadow: 0 3px 0 #D9A234; }
+.btn-3d { background: var(--color-accent); color: var(--color-nature); box-shadow: 0 3px 0 #D9A021; }
 .btn-claro { background: var(--surface); color: var(--color-nature); box-shadow: inset 0 0 0 2px var(--line); }
 
 /* ---------- etiquetas ---------- */

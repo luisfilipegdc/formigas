@@ -11,7 +11,7 @@
 <title>QR Code · Bio no Bolso</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A4 portrait; margin: 12mm; }
   * { box-sizing: border-box; }
@@ -27,6 +27,10 @@
   }
   h1 { font-size: 30pt; line-height: 1.05; margin: 0; font-weight: 800; }
   .logo { width: 66mm; height: auto; margin-bottom: 0; }
+  .marca-qr { display: flex; flex-direction: column; align-items: center; gap: 2mm; width: auto; }
+  .marca-qr img { width: 34mm; height: 34mm; }
+  .marca-qr span { font-family: 'Fredoka', 'Baloo 2', sans-serif; font-weight: 700; font-size: 15mm; line-height: 1; color: #12503B; }
+  .marca-qr i { font-style: normal; font-size: .7em; color: #E8774A; }
   .sub { font-size: 16pt; margin: 3mm 0 8mm; font-weight: 600; }
   #qr { width: 100mm; height: 100mm; padding: 5mm; background: #fff; border: 1mm solid #4a2a12; border-radius: 5mm; }
   #qr svg { width: 100%; height: 100%; display: block; }
@@ -46,7 +50,7 @@
   <button id="print">🖨️ Imprimir</button>
 </div>
 <div class="sheet">
-  <img class="logo" src="img/marca/bnb-logo-720.png" alt="Bio no Bolso">
+  <div class="logo marca-qr"><img src="img/marca/simbolo.svg" alt="" width="120" height="120"><span>Bio <i>no</i> Bolso</span></div>
   <div class="sub">Um mundo de bichos no seu bolso.<br>Animais em 3D para girar, dar zoom e comparar!</div>
   <div id="qr"></div>
   <div class="steps">📱 Aponte a câmera do celular ou do tablet<br>para o código e toque no link.<br>📲 Depois toque em <b>Compartilhar › Adicionar à Tela de Início</b>:<br>assim funciona até sem internet.</div>

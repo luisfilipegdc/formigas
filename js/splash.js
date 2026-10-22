@@ -48,10 +48,10 @@
     bv.setAttribute('aria-modal', 'true');
     bv.setAttribute('aria-labelledby', 'bv-titulo');
     bv.innerHTML = '<div class="caixa"><img src="img/curu/curu-acenando-400.jpg" alt="O Curu acenando">' +
-      '<h2 id="bv-titulo">Olá, explorador!</h2><p>Vamos descobrir a natureza em 3D?</p>' +
-      '<button class="btn btn-primario" type="button" data-ir="biblioteca.html">Abrir a Biblioteca 3D</button>' +
-      '<button class="btn btn-claro" type="button" data-ir="#bichos">Ver os bichos</button>' +
-      '<button class="btn btn-claro" type="button" data-ir="#adultos">Sou responsável</button></div>';
+      '<h2 id="bv-titulo">Olá, explorador!</h2><p>Vamos explorar a natureza em 3D?</p>' +
+      '<button class="btn btn-primario" type="button" data-ir="#filtros">Começar a explorar</button>' +
+      '<button class="btn btn-claro" type="button" data-ir="bichos.html">Ver os bichos</button>' +
+      '<button class="btn btn-claro" type="button" data-ir="bichos.html#adultos">Sou responsável</button></div>';
     document.body.appendChild(bv);
     bv.querySelector('.btn-primario').focus();
     bv.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => {

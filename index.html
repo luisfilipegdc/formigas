@@ -3,34 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF9EF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bio no Bolso">
-<meta name="theme-color" content="#164A3A">
-<meta name="description" content="Bio no Bolso: crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos. Grátis, direto no navegador do iPad.">
+<meta name="description" content="Biblioteca 3D do Bio no Bolso: plantas, rochas, ninhos, fungos e o micromundo para girar, aproximar e descobrir cada parte.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="img/icone/favicon.png">
 <link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Bio no Bolso">
-<meta property="og:description" content="Explore. Descubra. Colecione. Crianças exploram animais em 3D, descobrem curiosidades e comparam tamanhos.">
-<meta property="og:image" content="img/marca/compartilhar.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="pt_BR">
-<title>Bio no Bolso</title>
+<title>Bio no Bolso · Biblioteca 3D da natureza</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/marca.css">
-<link rel="stylesheet" href="css/catalogo.css">
+<link rel="stylesheet" href="css/biblioteca.css">
 <link rel="stylesheet" href="css/splash.css">
+<meta property="og:title" content="Bio no Bolso">
+<meta property="og:description" content="A natureza em 3D, no seu bolso: plantas, pedras, ninhos, fungos, o micromundo e os bichos.">
 </head>
 <body>
 <div class="splash" id="splash" aria-hidden="true">
-  
   <div class="splash-centro">
-    <img class="splash-logo" src="img/marca/bnb-logo-360.png" srcset="img/marca/bnb-logo-360.png 1x, img/marca/bnb-logo-720.png 2x" alt="">
-    <p class="splash-oi">Um mundo de vida no seu bolso.</p>
+    <div class="splash-marca"><img src="img/marca/simbolo.svg" alt="" width="180" height="180"><span class="marca-nome">Bio <i>no</i> Bolso</span></div>
+    <p class="splash-oi">A natureza em 3D, no seu bolso.</p>
   </div>
   <span class="splash-pular">toque para pular</span>
 </div>
@@ -38,159 +32,62 @@
 <script src="js/splash.js"></script>
 <header class="cabecalho">
   <div class="wrap">
-    <a class="logo" href="#topo" aria-label="Bio no Bolso: início"><img class="logo-img" src="img/marca/bnb-horizontal-144.png" srcset="img/marca/bnb-horizontal-72.png 1x, img/marca/bnb-horizontal-144.png 2x" width="216" height="72" alt="Bio no Bolso"></a>
-    <nav class="nav" aria-label="Principal">
-      <a href="biblioteca.html" data-ico="cubo"><span class="rotulo">Biblioteca 3D</span></a>
-      <a href="#bichos" data-ico="busca"><span class="rotulo">Bichos</span></a>
-      <a href="#familias" class="so-largo" data-ico="folha"><span class="rotulo">Famílias</span></a>
-      <a href="#escolas" class="so-largo" data-ico="colecao"><span class="rotulo">Escolas</span></a>
-      <a href="#descobertas" class="nav-bolso" data-ico="bolso"><span class="rotulo">Meu Bolso</span> <span class="contador" id="contador">0</span></a>
-      <button class="btn btn-primario btn-entrar" type="button" id="entrar">Entrar</button>
+    <a class="marca" href="index.html" aria-label="Bio no Bolso: início"><img src="img/marca/simbolo.svg" alt="" width="50" height="50"><span class="marca-nome">Bio <i>no</i> Bolso</span></a>
+    <nav class="nav bib-nav" aria-label="Principal">
+      <a href="index.html" class="on" aria-current="page">Biblioteca 3D</a>
+      <a href="bichos.html">Bichos</a>
+      <a href="bichos.html#descobertas" class="so-largo">Meu Bolso</a>
     </nav>
   </div>
 </header>
 
-<main>
-  <section class="hero2" id="topo">
-    <div class="wrap hero2-in">
-      <div class="hero2-txt">
-        <h1>Um mundo de vida no seu <em>bolso.</em></h1>
-        <p>Gire, aproxime e descubra a natureza em 3D: bichos, plantas, pedras e o micromundo.</p>
-        <div class="hero-acoes"><a class="btn btn-primario btn-g" href="biblioteca.html" data-ico="cubo">Abrir a Biblioteca 3D</a><button class="btn btn-3d btn-g" type="button" id="encontrei" data-ico="pata">Encontrei um!</button></div>
-        <ul class="selos"><li data-ico="folha">Grátis para começar</li><li data-ico="check">Sem anúncios</li><li data-ico="check">Seguro para crianças</li></ul>
-      </div>
-      <div class="hero2-curu">
-        <img src="img/mascote/curu-binoculo-920.png" width="825" height="655" alt="Curu, a perereca exploradora, olhando pelo binóculo">
-        <p class="fala">Olá! Eu sou o <b>Curu</b>.<br>Vamos descobrir quem vive por aí?</p>
-      </div>
-    </div>
+<main class="bib">
+  <section class="wrap bib-topo">
+    <h1>Biblioteca 3D</h1>
+    <p>Gire, aproxime e toque em cada parte para descobrir o que é. Plantas, pedras, ninhos, fungos e coisas tão pequenas que só se veem no microscópio.</p>
+    <div class="chips" id="filtros" role="tablist" aria-label="Categorias"></div>
   </section>
-
-  <div class="wrap">
-    <section class="secao bib-home" id="biblioteca" aria-labelledby="tbib">
-      <div class="secao-topo"><div><h2 id="tbib">Biblioteca <em>3D</em></h2><p>Plantas, pedras, ninhos, fungos e o micromundo. Gire, aproxime e toque em cada parte.</p></div><a class="btn btn-primario" href="biblioteca.html">Ver a biblioteca</a></div>
-      <div class="bh-trilho"><a class="bh-carta" href="biblioteca.html#geodo"><img src="img/biblioteca/geodo.png" alt="" width="240" height="240" loading="lazy"><b>Geodo de ametista</b><span>Abra e veja os cristais</span></a><a class="bh-carta" href="biblioteca.html#cogumelo"><img src="img/biblioteca/cogumelo.png" alt="" width="240" height="240" loading="lazy"><b>Cogumelo</b><span>Solte os esporos</span></a><a class="bh-carta" href="biblioteca.html#flor-ipe"><img src="img/biblioteca/flor-ipe.png" alt="" width="240" height="240" loading="lazy"><b>Flor do ipê</b><span>Ache o pólen</span></a><a class="bh-carta" href="biblioteca.html#celula"><img src="img/biblioteca/celula.png" alt="" width="240" height="240" loading="lazy"><b>Célula animal</b><span>Corte ao meio</span></a><a class="bh-carta" href="biblioteca.html#joao-de-barro"><img src="img/biblioteca/joao-de-barro.png" alt="" width="240" height="240" loading="lazy"><b>Casa do joão-de-barro</b><span>Espie o quarto dos ovos</span></a><a class="bh-carta" href="biblioteca.html#feijao"><img src="img/biblioteca/feijao.png" alt="" width="240" height="240" loading="lazy"><b>Feijão germinando</b><span>Faça a semente brotar</span></a><a class="bh-carta" href="biblioteca.html#quartzo"><img src="img/biblioteca/quartzo.png" alt="" width="240" height="240" loading="lazy"><b>Cristal de quartzo</b><span>Acenda a luz</span></a><a class="bh-carta" href="biblioteca.html#bacteria"><img src="img/biblioteca/bacteria.png" alt="" width="240" height="240" loading="lazy"><b>Bactéria</b><span>Veja o flagelo girar</span></a><a class="bh-carta bh-mais" href="biblioteca.html"><span class="bh-n">16</span><b>Ver tudo</b><span>e os bichos em 3D</span></a></div>
-    </section>
-  </div>
-
-  <div class="wrap">
-    <section class="conhecer" id="comece" aria-labelledby="tconhecer">
-      <h2 id="tconhecer">Que bicho você quer conhecer?</h2>
-      <form class="busca" id="busca" role="search">
-        <span data-ico="busca"></span>
-        <label class="sr" for="q">Procurar um bicho</label>
-        <input id="q" type="search" placeholder="Procurar um bicho…" autocomplete="off">
-        <button type="submit" aria-label="Procurar" data-ico="seta"></button>
-      </form>
-      <div class="cats" id="cats" role="group" aria-label="Grupos de bichos"></div>
-    </section>
-
-    <section class="secao" aria-labelledby="tcomece">
-      <div class="secao-topo"><div><h2 id="tcomece">Comece sua <em>descoberta</em></h2><p>Escolha um bicho para conhecer.</p></div></div>
-      <div class="primeira" id="primeira" hidden><span class="primeira-ico" data-ico="pata"></span><div><b>Sua primeira missão</b>Escolha um bicho para descobrir.</div></div>
-      <div class="destaques" id="destaques"></div>
-    </section>
-
-    <section class="momento" aria-labelledby="tviu">
-      <div class="momento-txt">
-        <h2 id="tviu">Viu um bicho por aí?</h2>
-        <p>Conte qual bicho você encontrou e ganhe a carta dele no seu bolso.</p>
-        <button class="btn btn-3d btn-g" type="button" id="encontrei2" data-ico="pata">Encontrei um bicho!</button>
-        <small>Observe sem tocar e chame um adulto. Em breve: tirar uma foto para descobrir quem é.</small>
-      </div>
-      <div class="fluxo-visual" aria-hidden="true">
-        <figure class="fv-foto"><img src="img/animais/joaninha-1p.jpg" alt=""><figcaption>Você vê</figcaption></figure>
-        <span class="fv-seta">→</span>
-        <figure class="fv-id"><b>Parece ser uma</b><strong>Joaninha!</strong><figcaption>Você descobre</figcaption></figure>
-        <span class="fv-seta">→</span>
-        <figure class="fv-carta"><img src="img/animais/joaninha-1p.jpg" alt=""><em>#004</em><span>Joaninha</span><figcaption>Ganha a carta</figcaption></figure>
-      </div>
-      <img class="momento-curu" src="img/mascote/curu-binoculo-460.png" width="460" height="365" alt="" loading="lazy">
-    </section>
-
-    <section class="secao" id="descobertas" aria-labelledby="tdesc">
-      <div class="secao-topo"><div>
-        <h2 id="tdesc">Novo bicho no <em>bolso!</em></h2>
-        <p>Encontre → descubra → ganhe a carta → complete o Meu Bolso.</p>
-      </div></div>
-      <ol class="passos-linha">
-        <li><b>1</b>Encontre</li><li><b>2</b>Descubra</li><li><b>3</b>Ganhe a carta</li><li><b>4</b>Complete coleções</li>
-      </ol>
-      <div class="descobertas">
-        <div class="painel">
-          <div class="nivel" id="nivel"></div>
-          <div class="progresso-txt"><b id="prog-n"></b><span id="prog-de"></span></div>
-          <div class="barra" aria-hidden="true"><span id="prog-barra"></span></div>
-          <ul class="por-grupo" id="por-grupo" aria-label="Bichos encontrados por grupo"></ul>
-          <div class="album" id="album" aria-label="Cartas do meu bolso"></div>
-          <h3 class="colecoes-t">Coleções</h3>
-          <ul class="colecoes" id="colecoes"></ul>
-        </div>
-        <div class="painel missao" id="missao"></div>
-      </div>
-    </section>
-
-    <section class="secao palco3d" aria-labelledby="t3d">
-      <a class="janela3d" href="bicho3d.html?id=formiga">
-        <img src="img/animais/formiga-1.jpg" alt="Formiga-saúva" loading="lazy">
-        <div class="j3d-topo"><span>Formiga-saúva</span><span class="j3d-abas"><i class="on">Operária</i><i>Rainha</i><i>Zangão</i><i>Ninho</i></span></div>
-        <div class="j3d-lado"><i>Partes</i><i>Folha</i><i>Mandíbula</i><i>Andar</i></div>
-        <div class="j3d-base"><div><h2 id="t3d">Explore em 3D</h2><p>Gire. Aproxime. Veja de pertinho, sem chegar perto.</p></div><span class="btn btn-3d btn-g" data-ico="cubo">Experimentar em 3D</span></div>
-      </a>
-      <div class="palco-lado" id="minis"></div>
-    </section>
-
-    <section class="secao" id="bichos" aria-labelledby="tbichos">
-      <div class="secao-topo"><div>
-        <h2 id="tbichos">Mais bichos para descobrir</h2>
-        <p>Fotos reais, ciclo de vida e curiosidades de cada um.</p>
-      </div></div>
-      <div class="filtros"><div class="chips" id="chips" role="group" aria-label="Categorias"></div></div>
-      <div class="grade" id="grade"></div>
-      <p class="vazio" id="vazio" hidden>Nenhum bicho encontrado com esse nome.</p>
-      <div class="ver-mais"><button class="btn btn-claro btn-g" type="button" id="vermais">Ver todos os bichos</button></div>
-    </section>
-
-    <section class="secao duas" id="adultos">
-      <div class="bloco" id="familias">
-        <img class="bloco-curu" src="img/mascote/curu-binoculo-460.png" alt="" width="460" height="365" loading="lazy">
-        <h2>Feito para pequenos curiosos. Pensado para <em>famílias</em>.</h2>
-        <p>Transforma curiosidade em descoberta: experiências educativas, atividades no mundo real e conteúdo apropriado para crianças.</p>
-        <ul><li data-ico="check">Sem anúncios</li><li data-ico="check">Sem perfil infantil público</li><li data-ico="check">Nada da criança é coletado</li><li data-ico="check">Funciona até sem internet</li></ul>
-        <a class="btn btn-3d btn-g" href="#comece">Começar a explorar</a>
-      </div>
-      <div class="bloco escuro" id="escolas">
-        <h2>É professor ou escola?</h2>
-        <p>Transforme o pátio em laboratório. Explore espécies com a turma, faça missões no pátio e monte descobertas juntos.</p>
-        <ul><li data-ico="check">Roteiro de aula ligado à BNCC</li><li data-ico="check">Funciona nos iPads da escola, sem instalar</li><li data-ico="check">Álbum coletivo da turma (em breve)</li></ul>
-        <button class="btn btn-3d btn-g" type="button" id="roteiro">Ver como funciona em sala</button>
-      </div>
-    </section>
-
-    <section class="aventura">
-      <div><h2>Comece sua aventura</h2><p>Explore bichos gratuitamente e faça sua primeira descoberta.</p></div>
-      <a class="btn btn-3d btn-g" href="#comece">Começar grátis →</a>
-    </section>
-  </div>
+  <section class="wrap">
+    <ul class="bib-grade" id="grade"></ul>
+    <p class="bib-nota">Modelos didáticos: simplificam a natureza para ficar fácil de entender. Textos em revisão científica.</p>
+  </section>
 </main>
 
 <footer class="rodape">
   <div class="wrap rodape-in">
-    <img class="rodape-logo" src="img/marca/bnb-horizontal-72.png" srcset="img/marca/bnb-horizontal-72.png 1x, img/marca/bnb-horizontal-144.png 2x" width="216" height="72" alt="Bio no Bolso" loading="lazy">
-    <nav class="rodape-links"><a href="#comece">Explorar</a><a href="biblioteca.html">Biblioteca 3D</a><a href="#familias">Famílias</a><a href="#escolas">Escolas</a><a href="comparar.html">Comparar</a><a href="qr.html">QR para imprimir</a><button id="apagar" type="button">Esvaziar meu bolso</button></nav>
-    <p class="rodape-priv">Sem anúncios e sem rastreadores. Sem conta, as descobertas ficam só neste aparelho; com conta, vão junto para todos os seus aparelhos. <a href="/privacidade">Privacidade</a></p>
-    <p id="offline" class="offline" hidden></p>
-    <details class="creditos"><summary>Créditos das fotos (iNaturalist, Creative Commons)</summary><ul id="creditos"></ul></details>
+    <img class="rodape-logo" src="img/marca/simbolo.svg" alt="Bio no Bolso" width="56" height="56" loading="lazy">
+    <nav class="rodape-links"><a href="bichos.html">Bichos</a><a href="bichos.html#familias">Famílias</a><a href="bichos.html#escolas">Escolas</a><a href="comparar.html">Comparar</a><a href="qr.html">QR para imprimir</a></nav>
+    <p class="rodape-priv">Sem anúncios e sem rastreadores. O que você explora fica só neste aparelho. <a href="/privacidade">Privacidade</a></p>
   </div>
 </footer>
 
+<!-- visor -->
+<section class="visor3d" id="visor" hidden aria-label="Visor 3D">
+  <canvas id="tela3d" aria-label="Modelo 3D: arraste para girar, use dois dedos para aproximar e toque numa parte"></canvas>
+  <header class="v-topo">
+    <button type="button" class="v-bola" id="v-voltar" aria-label="Voltar para a biblioteca">←</button>
+    <div class="v-titulo"><small id="v-cat"></small><b id="v-nome"></b></div>
+    <div class="v-idade" role="radiogroup" aria-label="Quanto texto mostrar">
+      <button type="button" data-idade="pequeno" role="radio">🧸</button><button type="button" data-idade="explorador" role="radio">🧒</button>
+    </div>
+  </header>
+  <p class="v-aviso" id="v-escala" hidden></p>
+  <div class="v-lado" id="v-acoes"></div>
+  <div class="v-base">
+    <div class="v-cartao" id="v-cartao" aria-live="polite"></div>
+    <div class="v-partes" id="v-partes" role="list"></div>
+  </div>
+</section>
+
+<script src="vendor/three/three.min.js"></script>
+<script src="vendor/three/OrbitControls.js"></script>
+<script src="vendor/three/RoomEnvironment.js"></script>
 <script src="js/catalogo.js"></script>
-<script src="js/icones.js"></script>
-<script src="js/dados.js"></script>
-<script src="js/progresso.js"></script>
-<script src="js/cientista.js"></script>
-<script src="js/ficha.js"></script>
-<script src="js/home.js"></script>
-<script src="js/app.js"></script>
+<script src="js/biblioteca/visor.js"></script>
+<script src="js/biblioteca/plantas.js"></script>
+<script src="js/biblioteca/rochas.js"></script>
+<script src="js/biblioteca/ninhos.js"></script>
+<script src="js/biblioteca/micro.js"></script>
+<script src="js/biblioteca/pagina.js"></script>
 </body>
 </html>
