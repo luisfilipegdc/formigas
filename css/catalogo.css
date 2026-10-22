@@ -309,3 +309,17 @@
   .bloco .btn-g { width: 100%; white-space: normal; text-align: center; }
   .bloco-curu { width: 180px; }
 }
+
+/* Biblioteca 3D em destaque na home: trilho de itens que rola para o lado */
+.bib-home { margin-top: 8px; }
+.bib-home .secao-topo { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.bh-trilho { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 2px 14px; scrollbar-width: none; }
+.bh-trilho::-webkit-scrollbar { display: none; }
+.bh-carta { flex: none; width: 168px; scroll-snap-align: start; display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--surface); border-radius: var(--radius-l); padding: 0 0 14px; box-shadow: var(--shadow-m); overflow: hidden; transition: transform .15s ease; }
+.bh-carta:hover { transform: translateY(-3px); }
+.bh-carta img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; background: radial-gradient(circle at 50% 42%, #ffffff, #f1ead6 72%); }
+.bh-carta b { padding: 10px 14px 0; font-size: 17px; font-weight: 900; color: var(--color-nature); line-height: 1.15; }
+.bh-carta span { padding: 2px 14px 0; font-size: 14px; font-weight: 700; color: var(--text-soft); }
+.bh-mais { justify-content: center; align-items: center; text-align: center; background: var(--color-accent-soft); padding: 18px 0; }
+.bh-mais .bh-n { font-size: 44px; font-weight: 900; color: var(--color-nature); padding: 0; }
+@media (min-width: 900px) { .bh-carta { width: 190px; } }

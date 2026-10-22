@@ -35,11 +35,12 @@
   function grade() {
     const lista = todos.filter((i) => filtro === 'todos' || i.cat === filtro);
     $('grade').innerHTML = lista.map((i) => '<li><a class="bib-carta" href="' + (i.link || '#' + i.id) + '" data-id="' + i.id + '">' +
-      '<span class="bc-foto' + (i.foto ? ' foto' : '') + '" data-mini="' + (i.link ? '' : i.id) + '">' + (i.foto ? '<img src="' + i.foto + '" alt="" loading="lazy">' : '<i>' + i.emoji + '</i>') + '</span>' +
+      '<span class="bc-foto' + (i.foto ? ' foto' : '') + '" data-mini="">' + '<img src="' + (i.foto || 'img/biblioteca/' + i.id + '.png') + '" alt="" loading="lazy" data-id="' + (i.link ? '' : i.id) + '">' + '</span>' +
       '<span class="bc-txt"><small>' + esc(nomeCat(i.cat)) + (i.didatico === false ? ' · forma real' : '') + '</small><b>' + esc(i.nome) + '</b><span>' + esc(i.resumo || '') + '</span></span>' +
       (vistos[i.id] ? '<span class="bc-visto" aria-label="Já explorado">✓</span>' : '') + (i.link ? '<span class="bc-selo">3D completo →</span>' : '') + '</a></li>').join('');
     $('grade').querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); abrir(a.dataset.id); }));
-    miniaturas();
+    // miniatura pronta em img/biblioteca; se faltar, tira a foto do modelo na hora
+    $('grade').querySelectorAll('.bc-foto img[data-id]').forEach((im) => { if (im.dataset.id) im.addEventListener('error', () => { im.parentNode.dataset.mini = im.dataset.id; im.replaceWith(Object.assign(document.createElement('i'), { textContent: Biblioteca.porId[im.dataset.id].emoji })); miniaturas(); }, { once: true }); });
   }
   // as miniaturas são fotos do próprio modelo, tiradas uma por vez quando o navegador está livre
   function miniaturas() {

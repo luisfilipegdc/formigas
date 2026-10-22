@@ -3,7 +3,7 @@
    (por exemplo, no Wi-Fi da escola que bloqueia o endereço).
    A lista abaixo é gerada por: python3 ferramentas/atualizar-cache.py
    ===================================================================== */
-const VERSAO = '8a038b6981';
+const VERSAO = '70f9852b04';
 const CACHE = 'animais3d-' + VERSAO;
 const FONTES = 'animais3d-fontes';
 const ARQUIVOS = [
@@ -69,6 +69,22 @@ const ARQUIVOS = [
   './img/animais/tartaruga-1p.jpg',
   './img/animais/tartaruga-2.jpg',
   './img/animais/tartaruga-3.jpg',
+  './img/biblioteca/amonite.png',
+  './img/biblioteca/bacteria.png',
+  './img/biblioteca/bolor.png',
+  './img/biblioteca/celula.png',
+  './img/biblioteca/cogumelo.png',
+  './img/biblioteca/concha.png',
+  './img/biblioteca/favo.png',
+  './img/biblioteca/feijao.png',
+  './img/biblioteca/flor-ipe.png',
+  './img/biblioteca/folha.png',
+  './img/biblioteca/geodo.png',
+  './img/biblioteca/granito.png',
+  './img/biblioteca/joao-de-barro.png',
+  './img/biblioteca/pena.png',
+  './img/biblioteca/pequi.png',
+  './img/biblioteca/quartzo.png',
   './img/curu/curu-acenando-200.jpg',
   './img/curu/curu-acenando-400.jpg',
   './img/icone/apple-touch-icon.png',
