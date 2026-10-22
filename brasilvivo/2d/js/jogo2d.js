@@ -420,7 +420,7 @@
     Som.atualizar(dt, { clareza: cine ? 1 : clarezaAqui, noite: mundo.noite, chuva: mundo.chuva });
     // etiquetas
     const p = jog.pos, lista = [];
-    mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: 0.9 + (b.fase.escala || 1) * 1.6 }); } });
+    mundo.bichos.forEach((b) => { if (b.mesh.visible && Math.hypot(p.x - b.pos.x, p.z - b.pos.z) < 40) { const viu = Biodex.viuFase(b.especie.id, b.fase.id); lista.push({ pos: b.pos, texto: (viu ? b.especie.emoji + ' ' + b.especie.nome : '❔ ???') + (b.agindo > 0 && !E.relacoes[b.rel.id] ? ' ✨' : ''), classe: b.agindo > 0 ? 'acao' : '', alt: b.quadros[0].height / Mundo.PPM + 1.2 }); } });
     mundo.marcas.forEach((m) => { if (m.mesh.visible && Math.hypot(p.x - m.pos.x, p.z - m.pos.z) < 22 && !(E.achados[m.especie.id + ':' + m.fase.id] && !m.fase.ninho)) lista.push({ pos: m.pos, texto: E.achados[m.especie.id + ':' + m.fase.id] ? m.fase.emoji + ' ' + m.fase.nome : '🔍', alt: 2 }); });
     mundo.npcs.forEach((n) => { if (Math.hypot(p.x - n.pos.x, p.z - n.pos.z) < 60) lista.push({ pos: n.pos, texto: n.dado.emoji + ' ' + n.dado.nome, classe: 'npc', alt: 4.2 }); });
     const aqui = Mundo.areaEm(p.x, p.z);

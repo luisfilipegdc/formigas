@@ -156,7 +156,8 @@ const Mundo = (function () {
 
     M.sombras = [6, 8, 10, 14].reduce((o, w) => { o[w] = Pixel.sombra(w); return o; }, {});
     M.brilhos = [Pixel.brilho(0), Pixel.brilho(1)];
-    M.anel = anel(9);
+    M.folhaSauva = Pixel.mapa(['...gg..', '.gGGGg.', 'gGLGGGg', '.gGGGg.', '..gg...'], { g: '#3f7a2a', G: '#62a83a', L: '#86cc4a' });
+    M.anel = anel(15);
     return M;
   }
   function anel(w) { const h = Math.round(w * 0.45), c = Pixel.tela(w, h), g = c.getContext('2d'); g.fillStyle = 'rgba(255,246,200,.75)'; for (let a = 0; a < 6.28; a += 0.12) g.fillRect(Math.round(w / 2 - 0.5 + Math.cos(a) * (w / 2 - 0.5)), Math.round(h / 2 - 0.5 + Math.sin(a) * (h / 2 - 0.5)), 1, 1); return c; }
@@ -356,6 +357,8 @@ const Mundo = (function () {
       g.save(); g.globalAlpha = a; g.strokeStyle = '#ffe36a'; g.lineWidth = 2; g.beginPath(); g.ellipse(px(o.x) - cx, pz(o.z) - cy, s, s, 0, 0, 6.29); g.stroke();
       g.globalAlpha = a * 0.5; g.lineWidth = 5; g.strokeStyle = '#fff6c0'; g.beginPath(); g.ellipse(px(o.x) - cx, pz(o.z) - cy, Math.max(1, s - 4), Math.max(1, s - 4), 0, 0, 6.29); g.stroke(); g.restore();
     }
+    // anel no chão embaixo dos bichos pequenos que andam (ajuda a achar)
+    M.bichos.forEach((b) => { if (b.mesh.visible && (b.fase.escala || 1) < 0.8 && !b.fase.voa) g.drawImage(M.anel, px(b.pos.x) - cx - 7, pz(b.pos.z) - cy - 3); });
     // tudo que fica de pé, em ordem de profundidade
     const L = [];
     const add = (img, x, z, ox, oy, lift, sombra, alpha) => { if (img && vis(x, z, 70)) L.push([z, img, px(x) - ox, pz(z) - oy - Math.round(lift || 0), sombra, px(x), pz(z), alpha]); };
@@ -367,8 +370,15 @@ const Mundo = (function () {
     M.caixas.forEach((c) => { const im = c.img[Estado.dados.relacoes[c.rel.id] === 'ativada' ? 1 : 0]; add(im, c.pos.x, c.pos.z, im.width >> 1, im.height - 1); });
     M.npcs.forEach((n) => { const q = n.sprites[n.dir], s = n.andando ? q[1 + (Math.floor(n.passo) % 2)] : q[0]; add(s, n.pos.x, n.pos.z, s.width >> 1, s.height - 1, !n.andando && Math.sin(t * 2 + n.t0) > 0.97 ? 1 : 0, 10); });
     const animal = (b, quadro) => { const q = b.quadros[quadro], img = b.dir < 0 ? (b.quadrosE || (b.quadrosE = b.quadros.map(Pixel.espelho)))[quadro] : q; add(img, b.pos.x, b.pos.z, q.width >> 1, q.height - 1, b.pos.y * PPM, q.width + 2); };
-    M.bichos.forEach((b) => { if (!b.mesh.visible) return; const bate = b.fase.voa ? (Math.floor((t + b.fase0) * (b.agindo > 0 ? 6 : 9)) % 2) : (b.alvo || b.agindo > 0 ? Math.floor((t + b.fase0) * 6) % 2 : 0); animal(b, bate); });
-    M.companheiros.forEach((c) => animal({ quadros: c.quadros, dir: c.dir, pos: c.pos, set quadrosE(v) { c.quadrosE = v; }, get quadrosE() { return c.quadrosE; } }, c.voa ? Math.floor(t * 9) % 2 : Math.floor(t * 6) % 2));
+    // voadores batem as asas o tempo todo; os outros só mexem as patas quando andam
+    const quadro = (n, voa, mexe, fase0, rapido) => voa ? Math.floor((t + fase0) * (rapido ? 14 : 10)) % n : mexe ? Math.floor((t + fase0) * 7) % n : 0;
+    M.bichos.forEach((b) => {
+      if (!b.mesh.visible) return;
+      animal(b, quadro(b.quadros.length, b.fase.voa, b.alvo || b.agindo > 0, b.fase0, b.agindo <= 0));
+      // a saúva mostrando o que faz: carrega um pedaço de folha maior que ela
+      if (b.fase.forma === 'formiga' && b.agindo > 0) add(M.folhaSauva, b.pos.x + b.dir * 0.4, b.pos.z + 0.01, 4, 9, 0);
+    });
+    M.companheiros.forEach((c) => animal({ quadros: c.quadros, dir: c.dir, pos: c.pos, set quadrosE(v) { c.quadrosE = v; }, get quadrosE() { return c.quadrosE; } }, quadro(c.quadros.length, c.voa, true, 0, true)));
     if (jog) { const s = jog.sprite(); add(s, jog.pos.x, jog.pos.z, s.width >> 1, s.height - 1, 0, 10); }
     L.sort((a, b) => a[0] - b[0]);
     L.forEach(([, img, x, y, sombra, sx, sz]) => {
@@ -381,7 +391,6 @@ const Mundo = (function () {
     M.fontes.forEach((f) => { if (f.cheia) brilho(f.pos.x, f.pos.z, (f.img ? f.img[1].height : 6) + 5); });
     M.caixas.forEach((c) => { if (Estado.dados.relacoes[c.rel.id] === 'vista') brilho(c.pos.x, c.pos.z, 18); });
     M.bichos.forEach((b) => { if (b.mesh.visible && b.agindo > 0) brilho(b.pos.x, b.pos.z, b.pos.y * PPM + 12); });
-    M.bichos.forEach((b) => { if (b.mesh.visible && (b.fase.escala || 1) < 0.8 && !b.fase.voa) g.drawImage(M.anel, px(b.pos.x) - cx - 4, pz(b.pos.z) - cy - 2); });
     // Ruído: poeira cinza que flutua nas áreas apagadas
     RUIDO.forEach((a) => {
       const k = M.cor[a.id]; if (k >= 1 || !vis(a.x, a.z, a.r * PPM)) return;

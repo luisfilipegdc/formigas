@@ -53,7 +53,7 @@ const UI = (function () {
   function visor(e, faseId) {
     const vistas = e.fases.filter((f) => Biodex.viuFase(e.id, f.id)); if (!vistas.length || !temSprite()) return '';
     const f = vistas.find((x) => x.id === faseId) || vistas.find((x) => x.anda) || vistas[vistas.length - 1];
-    return '<div class="visor cena-' + (Formas.cena(e.id, f.id) || 'chao') + '"><button type="button" class="visor-bicho" aria-label="' + esc(f.nome) + ': toque para ver de perto">' + icone(e, f, 132) + '</button></div>' +
+    return '<div class="visor cena-' + (Formas.cena(e.id, f.id) || 'chao') + '"><button type="button" class="visor-bicho" aria-label="' + esc(f.nome) + ': toque para ver de perto">' + icone(e, f, 168) + '</button></div>' +
       (vistas.length > 1 ? '<div class="visor-fases" role="tablist">' + vistas.map((v) => '<button type="button" role="tab" aria-selected="' + (v.id === f.id) + '" data-fase="' + v.id + '" class="' + (v.id === f.id ? 'on' : '') + '" aria-label="' + esc(v.nome) + '">' + icone(e, v, 26) + '</button>').join('') + '</div>' : '') +
       '<p class="visor-txt"><b>' + esc(f.nome) + ':</b> ' + esc(textoFase(e, f)) + '</p>';
   }

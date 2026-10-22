@@ -73,7 +73,10 @@ const Pixel = (function () {
   const ROSA = ['#8e3c6a', '#d36aa4', '#f2a0c8', '#ffd6ea'];
   const CINZA = ['#55544f', '#76756f', '#97968f', '#b9b8b0'];
 
-  /* ---------- personagens: 10 × 16, frente, costas e lado, 2 passos ---------- */
+  function esmagar(linhas, f) {
+    const c = (linhas[0].length - 1) / 2;
+    return linhas.map((l) => { let o = ''; for (let x = 0; x < l.length; x++) { if (x === c) { o += l[x]; continue; } const src = c + Math.round((x - c) / f); o += src < 0 || src >= l.length || (src > c) !== (x > c) ? '.' : l[src]; } return o; });
+  }  /* ---------- personagens: 10 × 16, frente, costas e lado, 2 passos ---------- */
   const FRENTE = ['..cccccc..', '.cccccccc.', 'CCCCCCCCCC', '.hhhhhhhh.', '.hssssssh.', '.skssssks.', '.srssssrs.', '..ssssss..', '.tttttttt.', 'stttttttts', 'sTttttttTs', '.TTTTTTTT.', '.pppppppp.'];
   const COSTAS = ['..cccccc..', '.cccccccc.', 'CCCCCCCCCC', '.hhhhhhhh.', '.hhhhhhhh.', '.hhhhhhhh.', '.hhhhhhhh.', '..ssssss..', '.toooooot.', 'stoooooots', 'sTooooooTs', '.TTTTTTTT.', '.pppppppp.'];
   const LADO = ['..cccccc..', '.cccccccc.', '.CCCCCCCCC', '.hhhhhhhh.', '.hhhsssss.', '.hhssssks.', '.hhssssss.', '...sssss..', '..otttttt.', '..otttstt.', '..otttstt.', '...TTTTT..', '...ppppp..'];
@@ -99,30 +102,78 @@ const Pixel = (function () {
   }
 
   /* ---------- bichos (2 quadros cada) ---------- */
+  // lagartixa vista de cima: espinha curva com largura variável, patas com almofadinhas, olhos e pintas
+  function lagartixa(cor, quadro) {
+    const W = 26, H = 13, c = tela(W, H), g = c.getContext('2d'), d = g.createImageData(W, H), px = d.data;
+    const C = [tom(cor, -0.42), tom(cor, -0.18), cor, tom(cor, 0.28)].map(rgb), onda = quadro ? 0.9 : -0.9;
+    // espinha: cabeça à direita, cauda curvando para baixo à esquerda (balança entre os quadros)
+    const esp = [[23.5, 6, 2.6], [21.5, 6, 2.1], [19.5, 6, 1.7], [17, 6, 2.5], [14, 6, 2.7], [11, 6.2, 2.1], [8.5, 6.8 + onda * 0.3, 1.4], [6, 7.8 + onda * 0.7, 1.0], [3.5, 8.6 + onda, 0.75], [1.2, 8.6 + onda * 1.3, 0.5]];
+    const pintar = (x, y, k) => { if (x < 0 || y < 0 || x >= W || y >= H) return; const i = (y * W + x) * 4; px[i] = C[k][0]; px[i + 1] = C[k][1]; px[i + 2] = C[k][2]; px[i + 3] = 255; };
+    // patas (antes do corpo, para o corpo cobrir a raiz): frente perto do pescoço, trás perto do quadril
+    const pata = (x0, y0, dx, dy) => { for (let t = 0; t <= 1.001; t += 0.25) pintar(Math.round(x0 + dx * t), Math.round(y0 + dy * t), 1); const fx = Math.round(x0 + dx), fy = Math.round(y0 + dy); pintar(fx, fy, 3); pintar(fx + (dx > 0 ? 1 : -1), fy, 3); pintar(fx, fy + (dy > 0 ? 1 : -1), 3); };
+    const a = quadro ? 1 : -1;
+    pata(17.5, 5, 2 + a, -3.5); pata(17.5, 7, 2 - a, 3.5); pata(11, 5, -1 - a, -3.5); pata(11, 7.4, -1 + a, 3.4);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      let best = -1, rr = 0, cy = 0;
+      for (let k = 0; k < esp.length - 1; k++) {
+        const [x0, y0, r0] = esp[k], [x1, y1, r1] = esp[k + 1], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x + 0.5 - x0) * dx + (y + 0.5 - y0) * dy) / (dx * dx + dy * dy)));
+        const r = r0 + (r1 - r0) * t, qx = x0 + dx * t, qy = y0 + dy * t, dd = Math.hypot(x + 0.5 - qx, y + 0.5 - qy);
+        if (dd <= r && (best < 0 || dd / r < best)) { best = dd / r; rr = r; cy = qy; }
+      }
+      if (best < 0) continue;
+      let v = 1 - best * 0.75 - (y + 0.5 - cy) / rr * 0.35 + (BAYER[y & 3][x & 3] / 16 - 0.5) * 0.18;
+      const pinta = x > 8 && x < 19 && ((x * 7 + y * 3) % 11 === 0);
+      pintar(x, y, pinta ? 0 : v > 0.78 ? 3 : v > 0.45 ? 2 : v > 0.15 ? 1 : 0);
+    }
+    // olhos
+    pintar(23, 4, 0); pintar(23, 7, 0); pintar(25, 6, 1);
+    g.putImageData(d, 0, 0);
+    return contornar(c);
+  }
+  // saúva: três partes redondas bem separadas (abdômen, tórax, cabeça), patas finas, antenas e mandíbulas
+  function sauva(cor, quadro) {
+    const W = 21, H = 13, c = tela(W, H), g = c.getContext('2d'), pal = [tom(cor, -0.45), tom(cor, -0.2), cor, tom(cor, 0.35)];
+    const perna = '#2a1810', a = quadro ? 1.2 : -1.2;
+    // patas saem do tórax: três de cada lado, alternando a cada quadro
+    [[-2.2, a], [0, -a], [2.2, a]].forEach(([dx, o]) => { traco(g, [[11 + dx, 6], [11 + dx + o - 1, 2], [11 + dx + o - 2.5, 0.5]], 1, perna); traco(g, [[11 + dx, 6], [11 + dx - o - 1, 10], [11 + dx - o - 2.5, 11.5]], 1, perna); });
+    traco(g, [[17, 4.5], [18.5, 1.5], [20, 0.5]], 1, perna); traco(g, [[17, 6.5], [18.5, 9.5], [20, 10.5]], 1, perna);   // antenas
+    g.drawImage(bolha(W, H, [[5, 6, 3.6], [11, 6, 2.1], [16, 6, 2.7]], pal, { semContorno: true }), 0, 0);
+    g.fillStyle = '#1d1a24'; g.fillRect(17, 4, 1, 1); g.fillRect(17, 7, 1, 1);   // olhos
+    g.fillStyle = perna; g.fillRect(19, 5, 1, 1); g.fillRect(19, 7, 1, 1);       // mandíbulas
+    return contornar(c);
+  }
+  // sapo-cururu de cima: corpo largo, olhos grandes no alto, patas dobradas, verrugas
+  function sapo(cor, quadro) {
+    const W = 19, H = 17, c = tela(W, H), g = c.getContext('2d'), pal = [tom(cor, -0.42), tom(cor, -0.18), cor, tom(cor, 0.3)];
+    const inf = quadro ? 0.5 : 0;   // respirando: o corpo enche um pouco
+    g.drawImage(bolha(W, H, [[3.5, 13, 2.8], [15.5, 13, 2.8], [4.5, 15, 1.6], [14.5, 15, 1.6], [3.5, 7, 1.6], [15.5, 7, 1.6]], pal, { semContorno: true }), 0, 0);
+    g.drawImage(bolha(W, H, [[9.5, 10, 6.4 + inf], [9.5, 6, 5.2], [5.6, 3.4, 2.4], [13.4, 3.4, 2.4]], pal, { semContorno: true }), 0, 0);
+    // olhos: dourados com pupila
+    [[5, 3], [13, 3]].forEach(([x, y]) => { g.fillStyle = '#e8c45a'; g.fillRect(x, y, 2, 2); g.fillStyle = '#1d1a24'; g.fillRect(x + (quadro ? 1 : 0), y, 1, 2); });
+    // glândulas atrás dos olhos e verrugas
+    g.fillStyle = tom(cor, -0.3); [[4, 6], [14, 6], [7, 9], [12, 10], [9, 12], [6, 12], [13, 13]].forEach(([x, y]) => g.fillRect(x, y, 1, 1));
+    g.fillStyle = tom(cor, 0.45); [[8, 7], [11, 8], [10, 11]].forEach(([x, y]) => g.fillRect(x, y, 1, 1));
+    return contornar(c);
+  }
   function bicho(forma, cor) {
     const c = cor || '#3a6fe0';
     if (forma === 'borboleta') {
-      const k = { b: tom(c, -0.35), B: c, L: tom(c, 0.35), k: '#2a2030', w: '#f6f0dc' };
-      return [mapa(['bb.....bb', 'bBb...bBb', 'bLBbkbBLb', 'bBBBkBBBb', '.bBBkBBb.', '.bLbkbLb.', '.bb...bb.'], k), mapa(['.........', '..bb.bb..', '..bBkBb..', '..bLkLb..', '..bBkBb..', '..bb.bb..', '.........'], k)];
+      // asas com reflexo, ocelo e corpo; os quadros fecham as asas a partir do corpo
+      const B = ['bb..k.k..bb', 'bLb..k..bLb', 'bLBb.k.bBLb', 'bBLBbkbBLBb', '.bBBBkBBBb.', '..bbbkbbb..', '.bBwbkbwBb.', '.bBBbkbBBb.', '..bb.k.bb..'];
+      const k = { b: tom(c, -0.45), B: c, L: tom(c, 0.4), k: '#2a2030', w: '#f6f0dc' };
+      return [1, 0.62, 0.28, 0.62].map((f) => mapa(f === 1 ? B : esmagar(B, f), k));
     }
     if (forma === 'abelha') {
-      const k = { y: c, Y: tom(c, -0.3), k: '#2a2030', w: '#e6f2ff' };
-      return [mapa(['w...w', 'ww.ww', '.yky.', '.YkY.'], k), mapa(['.....', '.w.w.', 'wyky.', '.YkY.'], k)];
+      const k = { y: c, Y: tom(c, -0.3), k: '#2a2030', W: '#bcd2ea', w: '#f4faff' };
+      const corpo = ['..yYy..', '..kyk..', '..yky..', '...k...'];
+      return [mapa(['WW...WW', 'WwW.WwW', '.WWkWW.'].concat(corpo), k), mapa(['.......', '.W...W.', 'WwWkWwW'].concat(corpo), k)];
     }
-    if (forma === 'formiga') {
-      const k = { r: c, R: tom(c, -0.3), k: '#2a1810' };
-      return [mapa(['k..k..k.', '.RRrrRRr', 'k..k..k.'], k), mapa(['.k..k..k', '.RRrrRRr', '.k..k..k'], k)];
-    }
-    if (forma === 'lagartixa') {
-      const k = { l: c, L: tom(c, -0.22), k: '#2a2030' };
-      return [mapa(['..l....l......', '...llllll.....', 'LLLlllllllllk.', '...llllll..ll.', '..l....l......'], k), mapa(['...l....l.....', '...llllll.....', 'LLLlllllllllk.', '...llllll..ll.', '....l....l....'], k)];
-    }
-    if (forma === 'sapo') {
-      const k = { g: tom(c, -0.3), G: c, L: tom(c, 0.25), k: '#1d1a24', y: '#e8d27a' };
-      return [mapa(['.yk....ky.', 'gGGGGGGGGg', 'gGLGGGGLGg', 'gGGGLLGGGg', '.gGGGGGGg.', 'gg.gggg.gg'], k), mapa(['.yk....ky.', 'gGGGGGGGGg', 'gGLGGGGLGg', 'gGGGLLGGGg', '.gGGGGGGg.', '.gg.gg.gg.'], k)];
-    }
+    if (forma === 'formiga') return [sauva(c, 0), sauva(c, 1)];
+    if (forma === 'lagartixa') return [lagartixa(c, 0), lagartixa(c, 1)];
+    if (forma === 'sapo') return [sapo(c, 0), sapo(c, 1)];
     return [mapa(['.oo.', 'oooo', '.oo.'], { o: c }), mapa(['.oo.', 'oooo', '.oo.'], { o: c })];
   }
+
 
   /* ---------- cenário ---------- */
   function arvore(seed, cores) {
@@ -292,10 +343,7 @@ const Pixel = (function () {
   /* ---------- fases de vida em detalhe (Viveiro, replay e visor da BioDex) ---------- */
   // borboleta adulta de cima: as asas "fecham" encolhendo na horizontal a partir do corpo
   const BORB = ['bb....k.k....bb', 'bLBb...k...bBLb', 'bLLBb..k..bBLLb', 'bBLLBb.k.bBLLBb', 'bBBLLBbkbBLLBBb', '.bBBBBBkBBBBBb.', '..bbbbbkbbbbb..', '..bBwBbkbBwBb..', '.bBBBBbkbBBBBb.', '.bBBBb.k.bBBBb.', '..bbb..k..bbb..', '.......k.......'];
-  function esmagar(linhas, f) {
-    const c = (linhas[0].length - 1) / 2;
-    return linhas.map((l) => { let o = ''; for (let x = 0; x < l.length; x++) { if (x === c) { o += l[x]; continue; } const src = c + Math.round((x - c) / f); o += src < 0 || src >= l.length || (src > c) !== (x > c) ? '.' : l[src]; } return o; });
-  }
+
   const FASES = {
     'borboleta-azul:ovo': { cores: { y: '#d8a822', Y: '#f2d24b', w: '#fff8d0' }, quadros: [['..yy..', '.yYYy.', '.yYwy.', 'yYYYYy', 'yYyYYy', 'yYYYYy', '.yYyy.', '..yy..'], ['..yy..', '.yYYy.', '.yYYy.', 'yYwYYy', 'yYyYYy', 'yYYYYy', '.yYyy.', '..yy..']], cena: 'folha' },
     'borboleta-azul:lagarta': { cores: { G: '#5fae3a', g: '#3f7a2a', y: '#f2d24b', h: '#3a5a2a', H: '#4f7a34', k: '#1d1a24', p: '#2a4a1a' }, quadros: [['...GG...GG..hhh.', '..GyGG.GyGG.hHHh', '.GGGGGGGGGGGHkHh', 'gGGGGGGGGGGGHHHh', '.p.p.p.p.p.p.pp.'], ['.GG....GG...hhh.', 'GyGG..GyGG..hHHh', 'GGGGGGGGGGGGHkHh', 'gGGGGGGGGGGGHHHh', 'p.p.p.p.p.p..pp.']], cena: 'folha' },
