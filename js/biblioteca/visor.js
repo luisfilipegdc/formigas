@@ -62,8 +62,8 @@ const Biblioteca = (function () {
   }
 
   // monta um item no palco: centraliza, apoia no chão e enquadra a câmera
-  function montar(info) {
-    const M = info.construir(K);
+  function montar(info, pronto) {
+    const M = pronto || info.construir(K);
     const caixa = new THREE.Box3().setFromObject(M.raiz), c = caixa.getCenter(new THREE.Vector3()), tam = caixa.getSize(new THREE.Vector3());
     M.raiz.position.x -= c.x; M.raiz.position.z -= c.z; M.raiz.position.y -= caixa.min.y;
     const raio = Math.max(tam.x, tam.y, tam.z) * 0.62;
@@ -81,6 +81,33 @@ const Biblioteca = (function () {
     chao.scale.setScalar(Math.max(0.5, M.raio));
   }
 
+  /* ---------- modelo pronto (.glb), feito por artista ou escaneado ----------
+     No item: glb: 'modelos3d/quartzo.glb', glbTamanho (tamanho na cena, padrão 1.6),
+     partes: [{ nome, texto, mais, malhas: ['NomeDaMalha', …] }]  (nomes do arquivo; vale o começo do nome)
+     acoes: [{ rotulo, ico, clipe: 'NomeDaAnimacao' }], parado: 'Idle'  (animações que vêm no arquivo)
+     credito: { autor, licenca, link }  (CC BY exige crédito)
+     Se o arquivo faltar ou falhar, o visor usa o modelo feito em código (construir). */
+  let gltfLoader = null;
+  function carregarGLB(info) {
+    if (!THREE.GLTFLoader) return Promise.reject(new Error('GLTFLoader não carregado'));
+    if (!gltfLoader) { gltfLoader = new THREE.GLTFLoader(); if (window.MeshoptDecoder) gltfLoader.setMeshoptDecoder(window.MeshoptDecoder); }
+    return new Promise((ok, erro) => gltfLoader.load(info.glb, ok, undefined, erro)).then((g) => {
+      const raiz = new THREE.Group(), cena = g.scene; raiz.add(cena);
+      const tam = new THREE.Box3().setFromObject(cena).getSize(new THREE.Vector3());
+      cena.scale.setScalar((info.glbTamanho || 1.6) / Math.max(tam.x, tam.y, tam.z, 1e-6));
+      const porNome = (n) => { const l = []; cena.traverse((o) => { if (o.name && o.name.startsWith(n)) l.push(o); }); return l; };
+      const partes = (info.partes || []).map((p) => ({ nome: p.nome, texto: p.texto, mais: p.mais, malhas: [].concat(p.malhas || []).flatMap(porNome) })).filter((p) => p.malhas.length);
+      const mixer = g.animations.length ? new THREE.AnimationMixer(cena) : null;
+      const clipe = (n) => g.animations.find((a) => a.name === n) || g.animations[0];
+      if (mixer && info.parado) mixer.clipAction(clipe(info.parado)).play();
+      const acoes = (info.acoes || []).filter((a) => a.clipe).map((a) => ({ rotulo: a.rotulo, ico: a.ico, fazer() {
+        if (!mixer) return;
+        const ac = mixer.clipAction(clipe(a.clipe)); ac.reset(); ac.setLoop(THREE.LoopOnce, 1); ac.play();
+      } }));
+      return { raiz, partes, acoes, animar: mixer ? (t, dt) => mixer.update(dt) : null, glb: true };
+    });
+  }
+
   /* ---------- miniaturas: o mesmo modelo, fotografado uma vez ---------- */
   const fotos = {};
   function miniatura(info, tam) {
@@ -96,5 +123,5 @@ const Biblioteca = (function () {
   }
   function descartar(o) { o.traverse((x) => { if (x.geometry) x.geometry.dispose(); if (x.material) [].concat(x.material).forEach((m) => { if (m.map) m.map.dispose(); m.dispose(); }); }); }
 
-  return { item, itens, porId, K, palco, montar, enquadrar, miniatura, descartar, get camera() { return camera; }, get renderer() { return renderer; }, get scene() { return scene; }, get controles() { return controles; } };
+  return { item, itens, porId, K, palco, montar, carregarGLB, enquadrar, miniatura, descartar, get camera() { return camera; }, get renderer() { return renderer; }, get scene() { return scene; }, get controles() { return controles; } };
 })();

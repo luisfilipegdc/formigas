@@ -75,8 +75,11 @@
       const f = Faixa.info(faixa); if (naoLeitor() && typeof Voz !== 'undefined') Voz.falar(faixa === 'bebe' ? 'Oba! Toque num desenho!' : 'Oba! Escolha uma coisa para explorar!');
       if (f) window.scrollTo(0, 0);
     }));
+    const fu = ult && Faixa.info(ult), cont = $('fx-continuar');
+    cont.hidden = !fu;
+    if (fu) { cont.innerHTML = '▶ Continuar com ' + fu.emoji + ' ' + esc(fu.nome) + ' <small>' + esc(fu.idade) + '</small>'; cont.onclick = () => sec.querySelector('.fx-carta[data-f="' + ult + '"]').click(); }
     sec.hidden = false; document.body.classList.add('faixas-aberta');
-    const foco = sec.querySelector('.ultima') || sec.querySelector('.fx-carta'); if (foco) foco.focus();
+    const foco = fu ? cont : sec.querySelector('.fx-carta'); if (foco) foco.focus();
   }
   window.abrirFaixas = abrirFaixas;
   $('faixa-chip').addEventListener('click', abrirFaixas);
@@ -123,20 +126,34 @@
   /* ---------- visor ---------- */
   const canvas = $('tela3d');
   const P = Biblioteca.palco(canvas);
+  let maoT = 0;
+  canvas.addEventListener('pointerdown', () => { clearTimeout(maoT); $('v-mao').hidden = true; });
   let aberto = null, M = null, info = null, parteAtiva = -1, ultimo = 0;
   function tamanho() { const w = innerWidth, h = innerHeight; P.renderer.setSize(w, h, false); P.camera.aspect = w / h; P.camera.updateProjectionMatrix(); }
   function abrir(id) {
     info = Biblioteca.porId[id]; if (!info) return fechar();
-    if (M) { P.scene.remove(M.raiz); Biblioteca.descartar(M.raiz); }
-    M = Biblioteca.montar(info); P.scene.add(M.raiz);
+    if (M) { P.scene.remove(M.raiz); Biblioteca.descartar(M.raiz); M = null; }
     aberto = id; $('visor').hidden = false; document.body.classList.add('visor-aberto');
-    tamanho(); Biblioteca.enquadrar(M, innerWidth, innerHeight); P.controles.autoRotate = true;
+    tamanho();
+    // modelo pronto (.glb) quando existe; se falhar, o feito em código
+    if (info.glb) {
+      $('v-cartao').innerHTML = '<b>' + esc(info.nome) + '</b><p>Carregando o modelo…</p>'; $('v-partes').innerHTML = ''; $('v-acoes').innerHTML = '';
+      Biblioteca.carregarGLB(info).then((m) => mostrarModelo(id, m), (e) => { console.warn('glb:', e); mostrarModelo(id); });
+    } else mostrarModelo(id);
+    if (location.hash !== '#' + id) history.pushState({ id }, '', '#' + id);
+  }
+  function mostrarModelo(id, pronto) {
+    if (aberto !== id) return;
+    if (M) { P.scene.remove(M.raiz); Biblioteca.descartar(M.raiz); }
+    M = Biblioteca.montar(info, pronto); P.scene.add(M.raiz);
+    Biblioteca.enquadrar(M, innerWidth, innerHeight); P.controles.autoRotate = true;
     $('v-nome').textContent = info.nome; $('v-cat').textContent = nomeCat(info.cat) + (info.didatico === false ? ' · forma real' : ' · modelo didático');
     $('v-escala').hidden = !info.escala; $('v-escala').textContent = info.escala ? '🔎 ' + info.escala : '';
     parteAtiva = -1; desenharPartes(); desenharAcoes(); cartao();
     falar(pequenino() ? info.nome + '!' : info.nome + '! ' + info.resumo + ' Toque para descobrir as partes.');
-    if (location.hash !== '#' + id) history.pushState({ id }, '', '#' + id);
     marcarVisto(id); $('v-voltar').focus();
+    clearTimeout(maoT); $('v-mao').hidden = true;
+    if (naoLeitor()) maoT = setTimeout(() => { if (aberto === id) $('v-mao').hidden = false; }, 3500);
   }
   function fechar() {
     if (typeof Voz !== 'undefined') Voz.calar();
@@ -155,7 +172,8 @@
     else {
       const inv = INVESTIGAR[faixa] && INVESTIGAR[faixa][info.cat];
       c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(info.resumo) + '</p>' +
-        (inv ? '<p class="v-investigar"><b>🔎 Para investigar</b>' + esc(inv) + '</p>' : '<p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>');
+        (inv ? '<p class="v-investigar"><b>🔎 Para investigar</b>' + esc(inv) + '</p>' : '<p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>') +
+        (M.glb && info.credito ? '<p class="v-dica">Modelo 3D: ' + esc(info.credito.autor) + ' · ' + esc(info.credito.licenca) + '</p>' : '');
     }
   }
   function desenharPartes() {

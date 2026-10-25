@@ -653,6 +653,9 @@ function iniciar3d(id) {
     $('carregando').classList.add('fora');
     bolso(); curu();
     if (peq()) dizer(oi(), null, true);            // a saudação fica até o primeiro toque
+    // mãozinha "toque aqui" se a criança não tocar no bicho nos primeiros segundos
+    const mao = $('mao'), maoT = setTimeout(() => { if (peq()) mao.hidden = false; }, 4000);
+    renderer.domElement.addEventListener('pointerdown', () => { clearTimeout(maoT); mao.hidden = true; }, { once: true });
     setTimeout(() => Progresso.marcar(A.id, '3d'), 2500);
     let last = performance.now(), visivel = true;
     document.addEventListener('visibilitychange', () => { visivel = !document.hidden; last = performance.now(); });

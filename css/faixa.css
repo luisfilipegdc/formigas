@@ -71,3 +71,13 @@ html[data-faixa="infantil"] .bib-nota, html[data-faixa="infantil"] .bc-selo { di
   html[data-faixa="bebe"] .bib-grade { grid-template-columns: repeat(2, 1fr); }
 }
 .bc-selo.bc-ficha { background: #fff; color: var(--color-nature); }
+
+/* um toque para continuar com a faixa da última vez */
+.fx-continuar { display: block; margin: 14px auto 4px; min-height: 64px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--color-accent); color: var(--text); font: inherit; font-family: var(--font-titulo); font-weight: 600; font-size: 22px; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); }
+.fx-continuar[hidden] { display: none; }
+.fx-continuar small { font-family: var(--font); font-size: 15px; font-weight: 800; opacity: .75; margin-left: 4px; }
+/* mãozinha: "toque aqui" para quem ainda não lê */
+.v-mao { position: absolute; left: 50%; top: 52%; font-size: 72px; pointer-events: none; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .25)); animation: maoToca 1.2s ease-in-out infinite; }
+.v-mao[hidden] { display: none; }
+@keyframes maoToca { 0%, 100% { transform: translate(-30%, 0) scale(1); } 50% { transform: translate(-30%, 18px) scale(.9); } }
+@media (prefers-reduced-motion: reduce) { .v-mao { animation: none; } }

@@ -146,3 +146,7 @@ html[data-faixa="bebe"] .acao[data-id="conversa"], html[data-faixa="bebe"] .modo
 html[data-faixa="bebe"] .acao span { display: none; }
 html[data-faixa="bebe"] .acao { width: 88px; min-height: 88px; border-radius: 50%; }
 html[data-faixa="bebe"] .acao b { font-size: 40px; }
+.mao3d { position: fixed; z-index: 9; left: 50%; top: 55%; font-size: 72px; pointer-events: none; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .25)); animation: maoToca 1.2s ease-in-out infinite; }
+.mao3d[hidden] { display: none; }
+@keyframes maoToca { 0%, 100% { transform: translate(-30%, 0) scale(1); } 50% { transform: translate(-30%, 18px) scale(.9); } }
+@media (prefers-reduced-motion: reduce) { .mao3d { animation: none; } }

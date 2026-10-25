@@ -102,6 +102,10 @@ const Progresso = (function () {
   function anunciar(A, novo, antes) {
     const n = encontrados(), nv = nivel(n);
     if (novo) {
+      // menores de 7 anos (faixas Bebês e Educação Infantil): sem placar, níveis e títulos.
+      // O bicho fica guardado no Meu Bolso, mas a recompensa é o próprio bicho reagir (superjustificação).
+      let fx = null; try { fx = localStorage.getItem('bnb-faixa'); } catch (e) {}
+      if (fx === 'bebe' || fx === 'infantil') return true;
       const subiu = nivel(n - 1).nome !== nv.nome;
       // completou uma coleção com este bicho?
       const col = typeof COLECOES !== 'undefined' && COLECOES.find((C) => C.bichos.indexOf(A.id) >= 0 && C.bichos.every((id) => { const B = ANIMAIS.find((x) => x.id === id); return B && conta(B).feitas > 0; }));
