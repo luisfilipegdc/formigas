@@ -15,10 +15,11 @@
     { id: 'bichos', nome: 'Bichos', emoji: '🐜' }
   ];
   const nomeCat = (id) => (CATS.find((c) => c.id === id) || {}).nome || '';
-  // bichos que já têm tela 3D própria entram como atalho
-  const bichos = (typeof ANIMAIS !== 'undefined' ? ANIMAIS : []).filter((a) => a.pagina).map((a) => ({
-    id: 'bicho-' + a.id, nome: a.nome, cat: 'bichos', emoji: a.emoji, link: a.pagina,
-    foto: a.fotos && a.fotos[0] ? a.fotos[0].arquivo.replace(/\.jpg$/, 'p.jpg') : null, resumo: 'Abre a tela 3D do bicho, com partes, formas e passeio.'
+  // todos os bichos fazem parte da biblioteca: quem tem 3D abre a tela 3D, os outros abrem a ficha (fotos reais)
+  const bichos = (typeof ANIMAIS !== 'undefined' ? ANIMAIS : []).map((a) => ({
+    id: 'bicho-' + a.id, bicho: a.id, nome: a.nome, cat: 'bichos', emoji: a.emoji, link: a.pagina || null, pista: a.pista,
+    foto: a.fotos && a.fotos[0] ? a.fotos[0].arquivo.replace(/\.jpg$/, 'p.jpg') : null,
+    resumo: a.pagina ? 'Abre a tela 3D do bicho, com partes, formas e passeio.' : (a.resumo || a.pista || '')
   }));
   const todos = Biblioteca.itens.concat(bichos);
   let vistos = {}; try { vistos = JSON.parse(localStorage.getItem('bib3d-vistos')) || {}; } catch (e) {}
@@ -90,16 +91,21 @@
     let lista = todos.filter((i) => filtro === 'todos' || i.cat === filtro);
     if (pequenino()) lista = BEBE.map((id) => todos.find((i) => i.id === id)).filter(Boolean);
     else if (naoLeitor() && filtro === 'todos') lista = lista.filter((i) => i.cat === 'bichos').concat(lista.filter((i) => i.cat !== 'bichos'));   // os bichos primeiro
-    $('grade').innerHTML = lista.map((i) => '<li><a class="bib-carta" href="' + (i.link || '#' + i.id) + '" data-id="' + i.id + '">' +
-      '<span class="bc-foto' + (i.foto ? ' foto' : '') + '" data-mini="">' + '<img src="' + (i.foto || 'img/biblioteca/' + i.id + '.png') + '" alt="" loading="lazy" data-id="' + (i.link ? '' : i.id) + '">' + '</span>' +
+    $('grade').innerHTML = lista.map((i) => '<li><a class="bib-carta" href="' + (i.link || (i.bicho ? '#ficha-' + i.bicho : '#' + i.id)) + '" data-id="' + i.id + '">' +
+      '<span class="bc-foto' + (i.foto ? ' foto' : '') + '" data-mini="">' + '<img src="' + (i.foto || 'img/biblioteca/' + i.id + '.png') + '" alt="" loading="lazy" data-id="' + (i.link || i.bicho ? '' : i.id) + '">' + '</span>' +
       '<span class="bc-txt"><small>' + esc(nomeCat(i.cat)) + (i.didatico === false ? ' · forma real' : '') + '</small><b>' + esc(i.nome) + '</b><span>' + esc(i.resumo || '') + '</span></span>' +
-      (vistos[i.id] ? '<span class="bc-visto" aria-label="Já explorado">✓</span>' : '') + (i.link ? '<span class="bc-selo">3D completo →</span>' : '') + '</a></li>').join('');
-    $('grade').querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); abrir(a.dataset.id); }));
+      (vistos[i.id] ? '<span class="bc-visto" aria-label="Já explorado">✓</span>' : '') + (i.link ? '<span class="bc-selo">3D completo →</span>' : i.bicho ? '<span class="bc-selo bc-ficha">📷 Ficha</span>' : '') + '</a></li>').join('');
+    $('grade').querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const it = todos.find((i) => i.id === a.dataset.id);
+      if (it && it.bicho) { marcarVisto(it.id); if (typeof Ficha !== 'undefined') Ficha.abrir(it.bicho); if (naoLeitor() && typeof Voz !== 'undefined') Voz.falar(it.nome + '! ' + (it.pista || '')); return; }
+      abrir(a.dataset.id);
+    }));
     // bicho ainda sem foto: mostra o emoji grande no lugar
     $('grade').querySelectorAll('.bc-foto img:not([data-id]), .bc-foto img[data-id=""]').forEach((im) => im.addEventListener('error', () => { const it = todos.find((i) => i.id === im.closest('a').dataset.id); im.parentNode.classList.remove('foto'); im.parentNode.classList.add('so-emoji'); im.replaceWith(Object.assign(document.createElement('i'), { textContent: (it && it.emoji) || '🐾' })); }, { once: true }));
     $('grade').querySelectorAll('.bib-carta').forEach((a) => a.setAttribute('aria-label', (todos.find((i) => i.id === a.dataset.id) || {}).nome || ''));
     // miniatura pronta em img/biblioteca; se faltar, tira a foto do modelo na hora
-    $('grade').querySelectorAll('.bc-foto img[data-id]').forEach((im) => { if (im.dataset.id) im.addEventListener('error', () => { im.parentNode.dataset.mini = im.dataset.id; im.replaceWith(Object.assign(document.createElement('i'), { textContent: Biblioteca.porId[im.dataset.id].emoji })); miniaturas(); }, { once: true }); });
+    $('grade').querySelectorAll('.bc-foto img[data-id]').forEach((im) => { if (im.dataset.id && Biblioteca.porId[im.dataset.id]) im.addEventListener('error', () => { im.parentNode.dataset.mini = im.dataset.id; im.replaceWith(Object.assign(document.createElement('i'), { textContent: Biblioteca.porId[im.dataset.id].emoji })); miniaturas(); }, { once: true }); });
   }
   // as miniaturas são fotos do próprio modelo, tiradas uma por vez quando o navegador está livre
   function miniaturas() {

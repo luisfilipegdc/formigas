@@ -70,3 +70,4 @@ html[data-faixa="infantil"] .bib-nota, html[data-faixa="infantil"] .bc-selo { di
   html[data-faixa="infantil"] .bc-txt b { font-size: 17px; }
   html[data-faixa="bebe"] .bib-grade { grid-template-columns: repeat(2, 1fr); }
 }
+.bc-selo.bc-ficha { background: #fff; color: var(--color-nature); }
