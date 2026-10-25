@@ -6,6 +6,8 @@
 
 Você vai trabalhar na minha VPS Ubuntu, que publica o projeto **Estudo de Bolso** (antes "Bio no Bolso") em **estudodebolso.com.br**. O repositório é `luisfilipegdc/formigas`, no branch `claude/fervent-ride-ckr2w7`. Antes de começar, leia `CLAUDE.md`, `infra/vps/README.md` e `infra/vps/site/README.md` do repositório.
 
+**Passo 0: pegar o repositório.** Veja se já existe uma cópia do repositório na VPS: procure o caminho dentro do script `site-estudodebolso-atualizar`, com `cat $(which site-estudodebolso-atualizar)`. Se não houver, rode `git clone https://github.com/luisfilipegdc/formigas.git /root/formigas` e depois `git -C /root/formigas checkout claude/fervent-ride-ckr2w7`. Se o repositório for privado e o clone pedir senha, pare e me avise; vamos criar uma deploy key de leitura. Trabalhe sempre com o branch atualizado (`git pull`).
+
 **Como está hoje:**
 - Caddy em `/etc/caddy/Caddyfile`, com a Cloudflare na frente.
 - A raiz `/` é o app Next.js de contas (`web/`, contêiner `bionobolso-web`, porta 127.0.0.1:3100).
