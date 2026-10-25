@@ -139,3 +139,10 @@ body.limpo .fala { display: none; }
 .zoom3d button:active { transform: scale(.92); background: var(--color-accent); }
 body.pequeno .zoom3d button { width: 72px; height: 72px; font-size: 32px; }
 body.limpo .zoom3d { display: none; }
+
+/* 🍼 faixa Bebês (js/faixa.js): só o bicho, as ações dele e o zoom */
+html[data-faixa="bebe"] .acao[data-id="partes"], html[data-faixa="bebe"] .acao[data-id="tam"], html[data-faixa="bebe"] .acao[data-id="cade"],
+html[data-faixa="bebe"] .acao[data-id="conversa"], html[data-faixa="bebe"] .modos, html[data-faixa="bebe"] .base3d .bolso, html[data-faixa="bebe"] .acao-ficha,
+html[data-faixa="bebe"] .acao span { display: none; }
+html[data-faixa="bebe"] .acao { width: 88px; min-height: 88px; border-radius: 50%; }
+html[data-faixa="bebe"] .acao b { font-size: 40px; }

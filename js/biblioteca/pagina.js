@@ -26,6 +26,60 @@
   let idade = 'pequeno'; try { idade = localStorage.getItem('bnb-idade') || 'pequeno'; } catch (e) {}
   if (idade === 'cientista') idade = 'explorador';
 
+  /* ---------- faixa etária: a mesma biblioteca, com dinâmica diferente ----------
+     🍼 bebe     → só imagens grandes, poucos itens, o modelo fala o nome; nada para ler
+     🧸 infantil → imagem + nome, voz em tudo, frases curtas
+     ✏️ iniciais → textos completos (Explorador)
+     🔭 finais / 🧪 medio → textos completos + "Para investigar" (pergunta-problema) */
+  const BEBE = ['bicho-formiga', 'bicho-abelha', 'bicho-lagartixa', 'bicho-cigarra', 'bicho-aranha', 'bicho-escorpiao', 'flor-ipe', 'feijao', 'pequi', 'geodo', 'quartzo', 'joao-de-barro', 'favo', 'concha', 'pena', 'cogumelo'];
+  const INVESTIGAR = {
+    finais: {
+      plantas: 'Do que uma planta precisa para crescer? Teste com feijão no algodão: um no claro e outro no escuro. O que muda?',
+      rochas: 'Como diferenciar uma rocha que veio de lava de outra feita de camadas de areia, só olhando?',
+      ninhos: 'Que materiais o animal usa e por quê? Compare com uma construção humana do seu bairro.',
+      micro: 'Se fungos e bactérias são tão pequenos, como eles mudam a comida, o solo e a nossa saúde?'
+    },
+    medio: {
+      plantas: 'Relacione a abertura dos estômatos com a perda de água e a fotossíntese. O que acontece numa seca no Cerrado?',
+      rochas: 'O que a composição mineral de uma rocha conta sobre o lugar e a temperatura em que ela se formou?',
+      ninhos: 'Que vantagens evolutivas essa construção traz? Que custo de energia ela tem para o animal?',
+      micro: 'Como fungos e bactérias participam dos ciclos do carbono e do nitrogênio? E onde isso encontra a medicina e a indústria?'
+    }
+  };
+  let faixa = (typeof Faixa !== 'undefined' && Faixa.get()) || null;
+  const pequenino = () => faixa === 'bebe';
+  const naoLeitor = () => faixa === 'bebe' || faixa === 'infantil';
+  function aplicarFaixa() {
+    const f = typeof Faixa !== 'undefined' && Faixa.info(faixa);
+    if (f) idade = f.nivel === 'pequeno' ? 'pequeno' : 'explorador';
+    document.documentElement.dataset.faixa = faixa || '';
+    $('faixa-chip').innerHTML = f ? f.emoji + ' <span>' + esc(f.idade) + '</span>' : '👤 <span>Quem explora?</span>';
+    const h = document.querySelector('.bib-topo h1');
+    h.textContent = faixa === 'bebe' ? 'Toque e veja! 👆' : faixa === 'infantil' ? 'Toque para descobrir!' : 'Biblioteca 3D';
+    $('bib-intro').textContent = faixa === 'infantil' ? 'Plantas, pedras, ninhos e bichos para girar, ouvir e brincar.'
+      : faixa === 'finais' || faixa === 'medio' ? 'Modelos 3D com nomes científicos, função de cada parte e perguntas para investigar. Plantas, rochas, ninhos, fungos e o micromundo.'
+      : 'Gire, aproxime e toque em cada parte para descobrir o que é. Plantas, pedras, ninhos, fungos e coisas tão pequenas que só se veem no microscópio.';
+    if (pequenino()) filtro = 'todos';
+  }
+
+  // tela "Quem vai explorar?" (depois da splash, ou pelo botão do cabeçalho)
+  function abrirFaixas() {
+    const sec = $('faixas'), ult = faixa;
+    $('fx-lista').innerHTML = Faixa.LISTA.map((f) => '<button type="button" role="listitem" class="fx-carta' + (f.id === ult ? ' ultima' : '') + '" data-f="' + f.id + '">' +
+      '<span class="fx-emoji">' + f.emoji + '</span><span class="fx-txt"><b>' + esc(f.nome) + '</b><small>' + esc(f.idade) + '</small><span>' + esc(f.sub) + '</span></span>' +
+      (f.id === ult ? '<em>da última vez</em>' : '') + '</button>').join('');
+    $('fx-lista').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+      faixa = b.dataset.f; Faixa.set(faixa); sec.hidden = true; document.body.classList.remove('faixas-aberta');
+      aplicarFaixa(); filtros(); grade();
+      const f = Faixa.info(faixa); if (naoLeitor() && typeof Voz !== 'undefined') Voz.falar(faixa === 'bebe' ? 'Oba! Toque num desenho!' : 'Oba! Escolha uma coisa para explorar!');
+      if (f) window.scrollTo(0, 0);
+    }));
+    sec.hidden = false; document.body.classList.add('faixas-aberta');
+    const foco = sec.querySelector('.ultima') || sec.querySelector('.fx-carta'); if (foco) foco.focus();
+  }
+  window.abrirFaixas = abrirFaixas;
+  $('faixa-chip').addEventListener('click', abrirFaixas);
+
   /* ---------- catálogo ---------- */
   let filtro = 'todos';
   function filtros() {
@@ -33,12 +87,17 @@
     $('filtros').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { filtro = b.dataset.cat; filtros(); grade(); }));
   }
   function grade() {
-    const lista = todos.filter((i) => filtro === 'todos' || i.cat === filtro);
+    let lista = todos.filter((i) => filtro === 'todos' || i.cat === filtro);
+    if (pequenino()) lista = BEBE.map((id) => todos.find((i) => i.id === id)).filter(Boolean);
+    else if (naoLeitor() && filtro === 'todos') lista = lista.filter((i) => i.cat === 'bichos').concat(lista.filter((i) => i.cat !== 'bichos'));   // os bichos primeiro
     $('grade').innerHTML = lista.map((i) => '<li><a class="bib-carta" href="' + (i.link || '#' + i.id) + '" data-id="' + i.id + '">' +
       '<span class="bc-foto' + (i.foto ? ' foto' : '') + '" data-mini="">' + '<img src="' + (i.foto || 'img/biblioteca/' + i.id + '.png') + '" alt="" loading="lazy" data-id="' + (i.link ? '' : i.id) + '">' + '</span>' +
       '<span class="bc-txt"><small>' + esc(nomeCat(i.cat)) + (i.didatico === false ? ' · forma real' : '') + '</small><b>' + esc(i.nome) + '</b><span>' + esc(i.resumo || '') + '</span></span>' +
       (vistos[i.id] ? '<span class="bc-visto" aria-label="Já explorado">✓</span>' : '') + (i.link ? '<span class="bc-selo">3D completo →</span>' : '') + '</a></li>').join('');
     $('grade').querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); abrir(a.dataset.id); }));
+    // bicho ainda sem foto: mostra o emoji grande no lugar
+    $('grade').querySelectorAll('.bc-foto img:not([data-id]), .bc-foto img[data-id=""]').forEach((im) => im.addEventListener('error', () => { const it = todos.find((i) => i.id === im.closest('a').dataset.id); im.parentNode.classList.remove('foto'); im.parentNode.classList.add('so-emoji'); im.replaceWith(Object.assign(document.createElement('i'), { textContent: (it && it.emoji) || '🐾' })); }, { once: true }));
+    $('grade').querySelectorAll('.bib-carta').forEach((a) => a.setAttribute('aria-label', (todos.find((i) => i.id === a.dataset.id) || {}).nome || ''));
     // miniatura pronta em img/biblioteca; se faltar, tira a foto do modelo na hora
     $('grade').querySelectorAll('.bc-foto img[data-id]').forEach((im) => { if (im.dataset.id) im.addEventListener('error', () => { im.parentNode.dataset.mini = im.dataset.id; im.replaceWith(Object.assign(document.createElement('i'), { textContent: Biblioteca.porId[im.dataset.id].emoji })); miniaturas(); }, { once: true }); });
   }
@@ -69,7 +128,7 @@
     $('v-nome').textContent = info.nome; $('v-cat').textContent = nomeCat(info.cat) + (info.didatico === false ? ' · forma real' : ' · modelo didático');
     $('v-escala').hidden = !info.escala; $('v-escala').textContent = info.escala ? '🔎 ' + info.escala : '';
     parteAtiva = -1; desenharPartes(); desenharAcoes(); cartao();
-    falar(info.nome + '! ' + info.resumo + ' Toque para descobrir as partes.');
+    falar(pequenino() ? info.nome + '!' : info.nome + '! ' + info.resumo + ' Toque para descobrir as partes.');
     if (location.hash !== '#' + id) history.pushState({ id }, '', '#' + id);
     marcarVisto(id); $('v-voltar').focus();
   }
@@ -83,10 +142,15 @@
   const txt = (p) => (idade === 'pequeno' ? p.texto : p.mais || p.texto);
   // 🧸 Pequeno: o que aparece escrito também é dito em voz alta (para quem ainda não lê)
   const falar = (t) => { if (idade === 'pequeno' && typeof Voz !== 'undefined') Voz.falar(t); };
+  const nomeFalado = (p) => (pequenino() ? p.nome + '!' : p.nome + '! ' + txt(p));   // bebê: só o nome
   function cartao() {
     const c = $('v-cartao');
-    if (parteAtiva >= 0) { const p = M.partes[parteAtiva]; c.innerHTML = '<b>' + esc(p.nome) + '</b><p>' + esc(txt(p)) + '</p>'; falar(p.nome + '! ' + txt(p)); }
-    else c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(info.resumo) + '</p><p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>';
+    if (parteAtiva >= 0) { const p = M.partes[parteAtiva]; c.innerHTML = '<b>' + esc(p.nome) + '</b><p>' + esc(txt(p)) + '</p>'; falar(nomeFalado(p)); }
+    else {
+      const inv = INVESTIGAR[faixa] && INVESTIGAR[faixa][info.cat];
+      c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(info.resumo) + '</p>' +
+        (inv ? '<p class="v-investigar"><b>🔎 Para investigar</b>' + esc(inv) + '</p>' : '<p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>');
+    }
   }
   function desenharPartes() {
     $('v-partes').innerHTML = M.partes.map((p, i) => '<button type="button" role="listitem" class="' + (i === parteAtiva ? 'on' : '') + '" data-i="' + i + '">' + esc(p.nome) + '</button>').join('');
@@ -105,6 +169,12 @@
       if (parteAtiva < 0) cartao();
     }));
   }
+  // ➕/➖: zoom com um toque (pinça é difícil para os pequenos)
+  let zoomAlvo = 0;
+  document.querySelectorAll('#v-zoom button').forEach((b) => b.addEventListener('click', () => {
+    const d = (zoomAlvo || P.camera.position.distanceTo(P.controles.target)) * (b.dataset.z === '1' ? 0.7 : 1.4);
+    zoomAlvo = THREE.MathUtils.clamp(d, P.controles.minDistance, P.controles.maxDistance); P.controles.autoRotate = false;
+  }));
   function escolher(i) { parteAtiva = parteAtiva === i ? -1 : i; desenharPartes(); cartao(); }
 
   // tocar no modelo: o que está embaixo do dedo é qual parte?
@@ -137,6 +207,10 @@
     const t = now / 1000, dt = Math.min(0.05, (now - ultimo) / 1000 || 0.016); ultimo = now;
     if (M.animar) M.animar(t, dt, M.E);
     destacar(t);
+    if (zoomAlvo) {
+      const off = P.camera.position.clone().sub(P.controles.target), d0 = off.length(), d1 = d0 + (zoomAlvo - d0) * Math.min(1, dt * 6);
+      P.camera.position.copy(P.controles.target).add(off.setLength(d1)); if (Math.abs(d1 - zoomAlvo) < zoomAlvo * 0.01) zoomAlvo = 0;
+    }
     P.controles.update(); P.renderer.render(P.scene, P.camera);
   }
   requestAnimationFrame(quadro);
@@ -150,6 +224,7 @@
   marcarIdade();
 
   window.__bib = { abrir, fechar, Biblioteca, get M() { return M; } };
-  filtros(); grade();
+  aplicarFaixa(); filtros(); grade();
+  if (!faixa && !document.getElementById('splash')) abrirFaixas();   // sem splash (mesma sessão) e ainda sem faixa
   const inicial = location.hash.slice(1); if (inicial && Biblioteca.porId[inicial]) abrir(inicial);
 })();

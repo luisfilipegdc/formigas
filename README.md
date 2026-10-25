@@ -15,6 +15,7 @@ O projeto está sendo ampliado para uma **enciclopédia interativa da natureza**
 - `docs/backlog-3d.md`: experiências 3D planejadas e a validação exigida antes de modelar.
 
 ## Páginas
+- `index.html`: splash → **Quem vai explorar?** (faixa etária: `js/faixa.js`, `css/faixa.css`) → **Biblioteca 3D** adaptada à faixa. Proposta pedagógica em `docs/pedagogia.md`.
 - `index.html`: **página inicial = Biblioteca 3D** (veja `biblioteca.html` abaixo), com a abertura e as boas-vindas. `biblioteca.html` só redireciona para cá, mantendo o item aberto.
 - `bichos.html`: a antiga home dos bichos (só estrutura). Hero com busca, catálogo com categorias, experiências 3D, álbum "Minhas descobertas", missão "Pequenos do jardim" e seção para adultos.
 - **Identidade visual v2:** `docs/identidade-visual.md` (símbolo do bolso com broto em `img/marca/simbolo.svg`, cores, Fredoka + Nunito, ícones do app).

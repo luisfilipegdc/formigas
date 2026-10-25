@@ -42,6 +42,8 @@ function iniciar3d(id) {
   const M = Modelos3D[id];
   if (!A || !M) { $('carregando').textContent = 'Bicho não encontrado.'; return; }
   document.title = A.nome + ' em 3D · Bio no Bolso';
+  // voltar: para a página de onde veio (biblioteca ou bichos), se for deste site
+  if (document.referrer && new URL(document.referrer).origin === location.origin) document.querySelector('.voltar').addEventListener('click', (e) => { if (history.length > 1) { e.preventDefault(); history.back(); } });
   // o cabeçalho muda de altura (1 ou 2 linhas): avisos, cartão e botões ficam sempre abaixo dele
   const topo = document.querySelector('.topo3d');
   const medeTopo = () => document.documentElement.style.setProperty('--topo-h', Math.round(topo.getBoundingClientRect().bottom) + 'px');

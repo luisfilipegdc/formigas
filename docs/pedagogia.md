@@ -56,7 +56,20 @@ Princípios que levamos para o app:
   - Ensino Fundamental: a unidade *Vida e evolução*.
   - Ensino Médio: Ciências da Natureza, com investigação científica (EM13CNT).
 
-## 3. As três trilhas
+## 3. As faixas e as trilhas
+
+A página inicial abre assim: splash → **Quem vai explorar?** → biblioteca. A tela de escolha está em `js/faixa.js`, e cada faixa muda a biblioteca:
+
+| Faixa | Idade | Na biblioteca | Nível nos bichos 3D |
+|---|---|---|---|
+| 🍼 Bebês | 1 a 3 | 16 itens, só imagens grandes e nada para ler. O modelo diz o nome. Botões redondos, sem partes, cartão ou Cadê? | 🧸 Pequeno, mais enxuto |
+| 🧸 Educação Infantil | 4 a 6 (pré-escola e alfabetização) | Imagem com nome e voz em tudo. Os bichos aparecem primeiro | 🧸 Pequeno, com Cadê? e Conversar |
+| ✏️ Anos Iniciais | 7 a 10 | Textos completos | 🧒 Explorador |
+| 🔭 Anos Finais | 11 a 14 | Textos completos e "🔎 Para investigar" | 🔬 Cientista |
+| 🧪 Ensino Médio | 15 a 17 | Textos completos e um "Para investigar" mais técnico | 🔬 Cientista |
+
+A tela de escolha aparece a cada vez que o site é aberto, com a última escolha marcada. Assim, irmãos de idades diferentes trocam com um toque. O botão no cabeçalho também troca a faixa.
+
 
 As trilhas usam o seletor de idade que já existe (`bnb-idade`), e a escolha vale para o app inteiro.
 

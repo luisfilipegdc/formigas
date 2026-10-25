@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="css/marca.css">
 <link rel="stylesheet" href="css/biblioteca.css">
 <link rel="stylesheet" href="css/splash.css">
+<link rel="stylesheet" href="css/faixa.css">
+<script src="js/faixa.js"></script>
 <meta property="og:title" content="Bio no Bolso">
 <meta property="og:description" content="A natureza em 3D, no seu bolso: plantas, pedras, ninhos, fungos, o micromundo e os bichos.">
 </head>
@@ -28,6 +30,15 @@
   </div>
   <span class="splash-pular">toque para pular</span>
 </div>
+<section class="faixas" id="faixas" hidden aria-labelledby="fx-titulo">
+  <div class="fx-in">
+    <img class="fx-marca" src="img/marca/simbolo.svg" alt="" width="72" height="72">
+    <h2 id="fx-titulo">Quem vai explorar?</h2>
+    <p class="fx-sub">Escolha a idade. A biblioteca muda para combinar com ela, e dá para trocar quando quiser.</p>
+    <div class="fx-lista" id="fx-lista" role="list"></div>
+    <nav class="fx-links"><a href="bichos.html#adultos">Sou responsável ou professor</a><a href="bichos.html">Ver os bichos</a></nav>
+  </div>
+</section>
 <script src="js/splash-bichos.js"></script>
 <script src="js/splash.js"></script>
 <header class="cabecalho">
@@ -38,13 +49,14 @@
       <a href="bichos.html">Bichos</a>
       <a href="bichos.html#descobertas" class="so-largo">Meu Bolso</a>
     </nav>
+    <button type="button" class="faixa-chip" id="faixa-chip" aria-label="Trocar a idade"></button>
   </div>
 </header>
 
 <main class="bib">
   <section class="wrap bib-topo">
     <h1>Biblioteca 3D</h1>
-    <p>Gire, aproxime e toque em cada parte para descobrir o que é. Plantas, pedras, ninhos, fungos e coisas tão pequenas que só se veem no microscópio.</p>
+    <p id="bib-intro">Gire, aproxime e toque em cada parte para descobrir o que é. Plantas, pedras, ninhos, fungos e coisas tão pequenas que só se veem no microscópio.</p>
     <div class="chips" id="filtros" role="tablist" aria-label="Categorias"></div>
   </section>
   <section class="wrap">
@@ -72,6 +84,7 @@
     </div>
   </header>
   <p class="v-aviso" id="v-escala" hidden></p>
+  <div class="v-zoom" id="v-zoom"><button type="button" data-z="1" aria-label="Chegar perto">➕</button><button type="button" data-z="-1" aria-label="Afastar">➖</button></div>
   <div class="v-lado" id="v-acoes"></div>
   <div class="v-base">
     <div class="v-cartao" id="v-cartao" aria-live="polite"></div>

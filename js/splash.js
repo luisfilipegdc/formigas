@@ -3,6 +3,7 @@
    • 1º acesso: splash de ~4 s, com bichos passando, e depois "Olá, explorador!".
    • Próximos acessos: splash curta, com saudação e bichos encontrados.
    • Na mesma sessão (voltando de uma tela 3D): sem splash.
+   • Depois da splash vem "Quem vai explorar?" (faixa etária, js/faixa.js).
    Tocar na splash pula. Tudo fica só neste aparelho.
    ===================================================================== */
 (function () {
@@ -36,7 +37,7 @@
     if (fechada) return;
     fechada = true;
     el.classList.add('saindo');
-    setTimeout(() => { el.remove(); if (primeira) boasVindas(); }, 450);
+    setTimeout(() => { el.remove(); if (window.abrirFaixas) window.abrirFaixas(); else if (primeira) boasVindas(); }, 450);
   }
   el.addEventListener('click', fechar);
   setTimeout(fechar, primeira ? 4400 : 1500);
