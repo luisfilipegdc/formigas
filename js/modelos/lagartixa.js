@@ -141,7 +141,8 @@
       corpo.add(boca);
     });
     // língua (para lamber o olho)
-    S.lingua = segGroup(1, 0.75, 0.55, { mat: new THREE.MeshPhysicalMaterial({ color: '#e58a8a', roughness: 0.35, clearcoat: 0.6 }), joint: false });
+    S.mLingua = new THREE.MeshPhysicalMaterial({ color: '#e07f86', roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.2 });
+    S.lingua = shadowy(new THREE.Mesh(new THREE.BufferGeometry(), S.mLingua));
     S.lingua.visible = false; corpo.add(S.lingua);
 
     // patas: dianteiras e traseiras, abertas para os lados
@@ -172,7 +173,7 @@
   function andar(ctx, b) {
     if (S.subir > 0 || S.fuga > 0) return;
     S.andar = S.andar > 0 ? 0 : 0.001;
-    if (!S.andar) { S.lz.position.set(0, 0, 0); S.lz.rotation.set(0, 0, 0); }
+    if (!S.andar) { S.lz.position.set(0, 0, 0); S.lz.rotation.set(0, 0, 0); S.arco = 0; }
     ctx.seguir = S.andar ? S.lz : null;
     if (b) b.classList.toggle('on', S.andar > 0);
   }
@@ -221,11 +222,15 @@
     // andar em círculo e voltar ao lugar
     if (S.andar > 0) {
       S.andar += dt;
-      const a = Math.min(1, S.andar / 11) * Math.PI * 2, R = 22;
+      // corridinha 1,1 s, parada 0,7 s (lagartixa anda aos arranques)
+      const ciclo = S.andar % 1.8, correndo = ciclo < 1.1;
+      passo = correndo ? Math.min(1, ciclo / 0.15, (1.1 - ciclo) / 0.15) : 0;
+      const R = 22, v = 2 * 4 * 9 / Math.PI;                    // mm/s: o pé no chão anda para trás na mesma velocidade
+      S.arco = (S.arco || 0) + passo * v * dt / R;
+      const a = Math.min(S.arco, Math.PI * 2);
       S.lz.position.set(R * Math.sin(a), 0, -R + R * Math.cos(a));
       S.lz.rotation.y = a;
-      passo = S.andar < 11 ? 1 : 0;
-      if (S.andar >= 11) andar(ctx, document.querySelector('.acao[data-id="andar"]'));
+      if (S.arco >= Math.PI * 2) { S.arco = 0; andar(ctx, document.querySelector('.acao[data-id="andar"]')); }
     }
     // subir na parede: vira, anda até a parede, sobe, espera e volta
     if (S.subir > 0) {
@@ -251,7 +256,7 @@
       if (u >= 10) { S.fuga = 0; S.lz.position.set(0, 0, 0); }
     }
     // patas: trote em diagonal; o corpo ondula para os lados
-    S.aPasso += dt * 9 * (passo ? 1 : 0);
+    S.aPasso += dt * 9 * Math.abs(passo);
     const ph = S.aPasso;
     S.corpo.rotation.y = passo ? Math.sin(ph) * 0.09 : 0;
     S.pernas.forEach((l) => {
@@ -286,13 +291,24 @@
     // lamber o olho: a língua sai da boca e passa no olho
     if (S.lamber > 0) {
       S.lamber += dt;
-      const k = Math.sin(Math.min(1, S.lamber / 1.1) * Math.PI);
-      const s = S.olhoLambido, de = new V3(52.5, 4.6, s * 0.8);
-      const ate = new V3(52.5, 4.6, s * 0.8).lerp(new V3(45.2, 8.4, s * 6.4), k);
+      // sai da boca (k sobe), passa duas vezes por cima do olho e volta (k desce)
+      const u = S.lamber, T = 1.8;
+      const k = u < 0.35 ? smooth(u, 0, 0.35) : u < T - 0.35 ? 1 : 1 - smooth(u, T - 0.35, T);
+      const s = S.olhoLambido, w = u < 0.35 ? 0 : Math.sin((u - 0.35) * 9) * 1.4;          // vai e volta em cima do olho
+      const pts = [new V3(52.8, 4.5, s * 0.4), new V3(55.6, 3.9, s * 2.2), new V3(54.2, 5.6, s * 6.4), new V3(49.5, 8.2 + w * 0.3, s * 7.9), new V3(45.6 - w, 9.6, s * 7.2)];
+      const curva = new THREE.CatmullRomCurve3(pts);
+      const n = Math.max(2, Math.round(28 * k));
+      const parte = [];
+      for (let i = 0; i <= n; i++) parte.push(curva.getPoint(k * i / n));
+      S.lingua.geometry.dispose();
+      S.lingua.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(parte), n * 2, 0.62, 10, false);
       S.lingua.visible = k > 0.02;
-      place(S.lingua, de, ate); S.lingua.scale.set(1, Math.max(0.01, de.distanceTo(ate)), 1);
-      if (S.lamber >= 1.1) { S.lamber = 0; S.lingua.visible = false; }
+      if (u >= T) { S.lamber = 0; S.lingua.visible = false; }
     }
+    // parada ela respira e dá umas olhadinhas para os lados
+    const parado = !passo && S.subir <= 0;
+    S.casca.scale.set(1, 1 + Math.sin(t * 2.6) * 0.018, 1 + Math.sin(t * 2.6) * 0.025);
+    S.corpo.rotation.y += parado ? Math.sin(t * 0.45) * 0.06 + (Math.sin(t * 0.17) > 0.85 ? 0.08 : 0) : 0;
     // olhos mexem de leve
     S.olhos.forEach((o, i) => { o.rotation.y = Math.sin(t * 0.7 + i * 2) * 0.12; });
   }
