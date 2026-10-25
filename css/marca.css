@@ -156,3 +156,6 @@ h1, h2, h3 { font-family: var(--font-titulo); font-weight: 600; letter-spacing: 
   .secao { padding-top: 28px; }
   .painel { padding: 16px; border-radius: var(--radius-m); }
 }
+
+.rodape-casa { flex-basis: 100%; margin: 0 0 -6px; font-size: 14px; font-weight: 800; color: var(--text-soft); }
+.rodape-casa a { color: var(--color-nature); }

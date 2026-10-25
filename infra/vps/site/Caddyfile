@@ -41,3 +41,23 @@ estudodebolso.com.br, www.estudodebolso.com.br {
 app.estudodebolso.com.br {
 	redir https://estudodebolso.com.br{uri} 301
 }
+
+# Bio no Bolso, um app do Estudo de Bolso: o mesmo site estático de /explorar/, num endereço próprio.
+# DNS (Cloudflare): registro A "bio" → IP da VPS, com proxy (nuvem laranja).
+bio.estudodebolso.com.br {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	encode zstd gzip
+	@sw path /sw.js
+	header @sw Cache-Control "no-cache"
+	# Para deixar privado (só com senha), descomente e gere a senha com: caddy hash-password
+	# basic_auth {
+	# 	familia COLE_AQUI_O_HASH
+	# }
+	root * /srv/estudodebolso/www
+	file_server
+}

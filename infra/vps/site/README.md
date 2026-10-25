@@ -7,4 +7,5 @@ Desde 09/10/2026 (tarde): **a raiz é o app Next.js** (`web/`, contêiner `biono
 - `app.estudodebolso.com.br` redireciona para o domínio principal.
 - A VPS copia este repositório a cada 5 minutos (`site-estudodebolso-atualizar`, `/etc/cron.d/site-estudodebolso`, log em `/var/log/site-estudodebolso.log`). O app é publicado com `app-bionobolso-publicar`.
 - Pastas internas (`docs`, `design`, `banco`, `infra`, `agentes`, `ferramentas`, `web`) não são copiadas para `/explorar/`.
+- **`bio.estudodebolso.com.br`** (novo): o mesmo site estático na raiz, para o Bio no Bolso como app do Estudo de Bolso. Precisa do registro DNS `bio` na Cloudflare e do bloco no Caddyfile; o passo a passo está em `PROMPT-BIO-SUBDOMINIO.md`. Dá para deixar privado com `basic_auth`.
 - Servidor web: Caddy (`/etc/caddy/Caddyfile`, cópia aqui).
