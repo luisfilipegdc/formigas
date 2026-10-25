@@ -284,7 +284,7 @@ function iniciar3d(id) {
     refs.visible = tamanhoOn;
     $('cartao').hidden = !tamanhoOn;
     $('cartao').classList.toggle('topo', tamanhoOn);
-    if (tamanhoOn) cartao('📏 Tamanho real', 'Grão de arroz, moeda de R$ 1 e régua em centímetros, na mesma escala ' + (A.art === 'o' ? 'do ' : 'da ') + (A.curto || A.nome) + '.' + (A.comp && A.comp.tam ? ' Tamanho: ' + A.comp.tam + '.' : ''));
+    if (tamanhoOn) cartao('📏 Tamanho real', 'Grão de arroz, moeda de R$ 1 e régua em centímetros, na mesma escala ' + (A.art === 'o' ? 'do ' : 'da ') + (A.curto || A.nome) + '.' + (A.comp && A.comp.tam ? ' Tamanho: ' + A.comp.tam + '.' : ''), 'Esse é o meu tamanho de verdade! Olha o grão de arroz e a moeda do meu lado.');
     if (tamanhoOn) { posicionarRefs(); etiqueta('tam', true); controls.autoRotate = false; home(); }   // depois do cartão: enquadra no espaço que sobrou
     else { quadro = null; restaurarNeblina(); etiqueta('tam', false); home(); }
   }
@@ -293,6 +293,7 @@ function iniciar3d(id) {
   let partesOn = false, modo = 'fora', passeioI = -1;
   let idade = 'pequeno'; try { idade = localStorage.getItem('bnb-idade') || 'pequeno'; } catch (e) {}
   ctx.idade = () => idade;
+  const peq = () => idade === 'pequeno';
   // 🔬 Cientista (anos finais, 11+): termo científico e texto mais técnico. Vem de p.cientista ou de
   // M.cientista[nome] (objeto { termo, texto } ou função (ctx) → objeto); passos em M.cientista.passos[i].
   const CI = M.cientista || {};
@@ -317,7 +318,7 @@ function iniciar3d(id) {
       b.className = 'etq'; b.type = 'button'; b.textContent = (idade === 'pequeno' && p.emoji ? p.emoji + ' ' : (p.emoji && passeio ? p.emoji + ' ' : (i + 1) + ' ')) + (idade === 'pequeno' && p.curto ? p.curto : p.nome);
       b.addEventListener('click', () => {
         labels.querySelectorAll('.etq').forEach((x) => x.classList.toggle('on', x === b));
-        passeioI = i; cartao((p.emoji && passeio ? p.emoji + ' ' : '') + titulo(p), txt(p));
+        passeioI = i; cartao((p.emoji && passeio ? p.emoji + ' ' : '') + titulo(p), txt(p), (p.curto || p.nome) + '! ' + txt(p));
         if (p.ir) p.ir(ctx);
       });
       b._p = p; labels.appendChild(b);
@@ -325,11 +326,11 @@ function iniciar3d(id) {
     $('cartao-prox').hidden = !(partesOn && passeio);
     $('cartao').hidden = !partesOn;
     $('cartao').classList.remove('topo');
-    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', idade === 'cientista' && A && A.comp && A.comp.tax ? 'Classificação: ' + A.comp.tax.join(' › ') + (A.cientifico ? ' › ' + A.cientifico : '').replace(/\.$/, '') + '. Toque numa etiqueta para ver o nome científico e a função de cada parte.' : 'Toque numa etiqueta para saber para que serve cada parte.'); }
+    if (partesOn) { controls.autoRotate = false; cartao('🔎 Partes', idade === 'pequeno' ? 'Toque nos desenhos para conhecer o meu corpo!' : idade === 'cientista' && A && A.comp && A.comp.tax ? 'Classificação: ' + A.comp.tax.join(' › ') + (A.cientifico ? ' › ' + A.cientifico : '').replace(/\.$/, '') + '. Toque numa etiqueta para ver o nome científico e a função de cada parte.' : 'Toque numa etiqueta para saber para que serve cada parte.'); }
   }
   const _v = new V3();
   function moverEtiquetas() {
-    if (!partesOn) return;
+    if (!partesOn && !jogo.ativo) return;
     labels.querySelectorAll('.etq').forEach((b) => {
       _v.copy(b._p.ponto(ctx)).project(camera);
       const vis = _v.z < 1 && (!b._p.visivel || b._p.visivel(ctx));
@@ -337,7 +338,12 @@ function iniciar3d(id) {
       b.style.transform = 'translate(' + clamp((_v.x + 1) / 2 * innerWidth, 64, innerWidth - 64) + 'px,' + ((1 - _v.y) / 2 * innerHeight) + 'px) translate(-50%,-50%)';
     });
   }
-  function cartao(t, txt) { $('cartao-t').textContent = t; $('cartao-p').textContent = txt; $('cartao').hidden = false; }
+  function cartao(t, txt, falaTxt) {
+    $('cartao-t').textContent = t; $('cartao-p').textContent = txt; $('cartao').hidden = false;
+    $('cartao-ouvir').hidden = !Voz.existe || peq();
+    if (peq()) Voz.falar(falaTxt || txt);
+  }
+  $('cartao-ouvir').addEventListener('click', () => Voz.falar($('cartao-t').textContent + '. ' + $('cartao-p').textContent, { forcar: true }));
   ctx.cartao = cartao;
   ctx.mostrarPartes = (on) => { if (partesOn !== !!on) partes(); };
   ctx.carregando = (t) => { const el = $('carregando'); if (t) el.textContent = t; el.classList.toggle('fora', !t); };
@@ -358,19 +364,21 @@ function iniciar3d(id) {
     const oc = (formaAtual && formaAtual.ocultar) || [];
     lado.querySelectorAll('.acao').forEach((b) => { b.hidden = oc.indexOf(b.dataset.id) >= 0; });
   }
-  function botao(ico, rotulo, fn, idb) {
+  function botao(ico, rotulo, fn, idb, falaTxt) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'acao'; if (idb) b.dataset.id = idb;
     b.innerHTML = '<b>' + ico + '</b><span>' + rotulo + '</span>';
-    b.addEventListener('click', () => { controls.autoRotate = false; fn(b); });
+    b.addEventListener('click', () => { controls.autoRotate = false; if (jogo.ativo && idb !== 'cade') pararJogo(); if (peq() && falaTxt) dizer(falaTxt); fn(b); });
     lado.appendChild(b); return b;
   }
   function etiqueta(idb, on) { const b = lado.querySelector('[data-id="' + idb + '"]'); if (b) b.classList.toggle('on', on); }
   ctx.marcar = etiqueta;
-  (M.acoes || []).forEach((a) => botao(a.ico, a.rotulo, (b) => a.fn(ctx, b), a.id));
+  (M.acoes || []).forEach((a) => botao(a.ico, a.rotulo, (b) => a.fn(ctx, b), a.id, a.fala || a.rotulo + '!'));
   botao('🔎', 'Partes', () => partes(), 'partes');
   botao('📏', 'Tamanho', () => tamanho(), 'tam');
   botao('🔄', 'Câmera', () => { controls.autoRotate = !M.centroAtual; home(); }, 'cam');
+  botao('🎯', 'Cadê?', () => cade(), 'cade');
+  botao('💬', 'Conversar', () => conversar(), 'conversa');
   botao('👁', 'Só o bicho', () => document.body.classList.add('limpo'), 'limpo');
   $('voltar-ui').addEventListener('click', () => document.body.classList.remove('limpo'));
 
@@ -399,6 +407,7 @@ function iniciar3d(id) {
     $('passos').hidden = false;
     $('passo-t').textContent = M.processo.titulo;
     $('passo-p').textContent = txt(p, proc.i);
+    if (peq()) Voz.falar(txt(p, proc.i));
     $('passo-dots').innerHTML = P.map((_, k) => '<i class="' + (k <= proc.i ? 'on' : '') + '"></i>').join('');
     $('passo-rev').hidden = M.processo.revisado !== false;
     const fim = proc.i === P.length - 1;
@@ -432,6 +441,7 @@ function iniciar3d(id) {
     idade = IDADES[n] ? n : 'pequeno';
     if (!daFicha) { try { localStorage.setItem('bnb-idade', idade); } catch (e) {} document.dispatchEvent(new CustomEvent('idade-mudou', { detail: idade })); }
     pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno');
+    if (!peq()) { if (jogo.ativo) pararJogo(); fala.hidden = true; Voz.calar(); } else if (!daFicha) dizer(oi());
     if (!daFicha) avisoRapido(IDADES[idade][2]);
     if (proc.ativo) mostrarPasso();
     if (partesOn) { partes(); partes(); }
@@ -447,6 +457,8 @@ function iniciar3d(id) {
       b.type = 'button'; b.textContent = f.nome; b.className = i === 0 ? 'on' : '';
       b.addEventListener('click', () => {
         abas.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+        if (jogo.ativo) pararJogo();
+        if (peq()) dizer((f.emoji ? f.emoji + ' ' : '') + f.nome + '!');
         if (partesOn) partes();
         if (modo !== 'fora' && M.dentro && M.dentro.forma && f.id !== M.dentro.forma) setModo('fora');
         if (tamanhoOn) tamanho();
@@ -474,11 +486,117 @@ function iniciar3d(id) {
   // dicas do Curu (só nas primeiras visitas)
   function curu() {
     let n = 0; try { n = +localStorage.getItem('curu-dica-3d') || 0; localStorage.setItem('curu-dica-3d', n + 1); } catch (e) {}
-    if (n > 2) return;
+    if (n > 2 || peq()) return;
     const el = $('curu'), dicas = ['Use um dedo para girar ' + (A.art === 'o' ? 'o ' : 'a ') + (A.curto || 'bicho') + '!', 'Use dois dedos para chegar mais perto!', 'Toque nos botões do lado para explorar!'];
     let i = 0;
     const mostra = () => { if (i >= dicas.length) { el.classList.remove('on'); return; } el.querySelector('span').textContent = dicas[i++]; el.classList.add('on'); setTimeout(mostra, 3600); };
     setTimeout(mostra, 900);
+  }
+
+  /* ---------- o bicho fala com a criança (Pequeno) ----------
+     Para quem ainda não lê: tudo o que aparece escrito também é dito em voz alta,
+     e o próprio bicho convida a tocar, a procurar e a conversar com o adulto. */
+  const fala = $('fala');
+  $('fala-bicho').textContent = A.emoji || '🐾';
+  let falaT = 0;
+  function dizer(t, adulto, fixo) {
+    $('fala-p').textContent = t;
+    $('fala-adulto').hidden = !adulto; $('fala-adulto').textContent = adulto || '';
+    fala.hidden = false; fala.classList.remove('pula'); void fala.offsetWidth; fala.classList.add('pula');
+    Voz.falar(t);
+    clearTimeout(falaT); if (!fixo) falaT = setTimeout(() => { fala.hidden = true; }, 8000);
+  }
+  ctx.dizer = dizer;
+  const eu = () => (A.art === 'o' ? 'o ' : 'a ') + (A.curto || A.nome.toLowerCase());
+  const oi = () => 'Oi! Eu sou ' + eu() + '! Toque em mim!';
+  $('fala-rep').addEventListener('click', () => Voz.falar($('fala-p').textContent, { forcar: true }));
+  // o navegador só deixa falar depois do primeiro toque: se a saudação ficou muda, repete nesse toque
+  document.addEventListener('pointerdown', (e) => { if (peq() && !fala.hidden && e.target === renderer.domElement && $('fala-p').textContent === oi()) Voz.falar(oi()); }, { once: true, capture: true });
+  const bVoz = $('voz');
+  const pintaVoz = () => { bVoz.textContent = Voz.ligada ? '🔊 Voz' : '🔇 Sem voz'; bVoz.setAttribute('aria-pressed', Voz.ligada); };
+  if (Voz.existe) { bVoz.hidden = false; pintaVoz(); bVoz.addEventListener('click', () => { Voz.alternar(); pintaVoz(); if (Voz.ligada && peq()) Voz.falar('Oba! Agora eu falo!'); }); }
+
+  // qual parte está embaixo do dedo? (a etiqueta mais perto do toque, na tela)
+  function listaPartes() { return (modo === 'dentro' && M.dentro && M.dentro.partes) || (M.partesAtuais && M.partesAtuais(ctx)) || M.partes || []; }
+  const corpo = () => listaPartes().filter((p) => !p.ir && (!p.visivel || p.visivel(ctx)));
+  const _pp = new V3();
+  function parteNoPonto(x, y, lista) {
+    let melhor = null, dm = Math.max(70, Math.min(innerWidth, innerHeight) * 0.11);
+    (lista || corpo()).forEach((p) => {
+      _pp.copy(p.ponto(ctx)).project(camera); if (_pp.z > 1) return;
+      const d = Math.hypot((_pp.x + 1) / 2 * innerWidth - x, (1 - _pp.y) / 2 * innerHeight - y);
+      if (d < dm) { dm = d; melhor = p; }
+    });
+    return melhor;
+  }
+  function estrela(x, y, em) {
+    const s = document.createElement('span'); s.className = 'estrela'; s.textContent = em || '⭐';
+    s.style.left = x + 'px'; s.style.top = y + 'px'; document.body.appendChild(s); setTimeout(() => s.remove(), 1200);
+  }
+
+  // 🎯 Cadê? — o bicho pede uma parte e a criança procura no corpo dele.
+  // Sem pontos e sem erro: tocar na parte "errada" só ensina o nome dela.
+  // Depois de alguns segundos aparece uma dica piscando no lugar certo (andaime).
+  const jogo = { ativo: false, fila: [], i: 0, alvo: null, dicaT: 0 };
+  const nomeCom = (p) => {
+    if (p.cade) return p.cade;
+    const n = (p.curto || p.nome).toLowerCase();
+    return (/s$/.test(n) ? (/as$/.test(n) ? 'as ' : 'os ') : (/a$/.test(n) ? 'a ' : 'o ')) + n;
+  };
+  function cade() {
+    if (jogo.ativo) { pararJogo(); dizer('Tchau, brincadeira! Toque em mim quando quiser.'); return; }
+    const l = corpo().filter((p) => p.emoji);
+    if (l.length < 2) { dizer('Aqui não dá para brincar de Cadê. Vamos ver ' + eu() + '!'); return; }
+    if (partesOn) partes();
+    if (tamanhoOn) tamanho();
+    $('cartao').hidden = true;
+    jogo.ativo = true; jogo.i = 0;
+    jogo.fila = l.slice().sort(() => Math.random() - 0.5).slice(0, Math.min(4, l.length));
+    etiqueta('cade', true); controls.autoRotate = false;
+    (M.acoes || []).forEach((a) => { const b = lado.querySelector('.acao.on[data-id="' + a.id + '"]'); if (b && /passear|andar/.test(a.id)) a.fn(ctx, b); });
+    perguntar();
+  }
+  function perguntar() {
+    jogo.alvo = jogo.fila[jogo.i]; labels.innerHTML = '';
+    dizer(jogo.alvo.emoji + ' Cadê ' + nomeCom(jogo.alvo) + '? Toque em mim!', jogo.i === 0 ? 'Para o adulto: deixe a criança procurar. Gire o bicho junto, se precisar.' : null, true);
+    clearTimeout(jogo.dicaT);
+    jogo.dicaT = setTimeout(() => {
+      if (!jogo.ativo) return;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'etq dica'; b.textContent = jogo.alvo.emoji; b._p = jogo.alvo;
+      b.setAttribute('aria-label', 'Dica: ' + jogo.alvo.nome);
+      b.addEventListener('click', () => { const r = b.getBoundingClientRect(); jogo.toque(r.left + r.width / 2, r.top + r.height / 2); });
+      labels.appendChild(b);
+    }, 7000);
+  }
+  function pararJogo() { jogo.ativo = false; clearTimeout(jogo.dicaT); labels.innerHTML = ''; etiqueta('cade', false); fala.hidden = true; Voz.calar(); }
+  jogo.toque = (x, y) => {
+    const p = parteNoPonto(x, y, jogo.fila.concat(corpo()));
+    if (p && p === jogo.alvo) {
+      estrela(x, y, p.emoji); jogo.i++; clearTimeout(jogo.dicaT); labels.innerHTML = '';
+      if (jogo.i >= jogo.fila.length) { pararJogo(); dizer('🎉 Você achou tudo! Vamos brincar de novo?'); estrela(innerWidth / 2, innerHeight / 2, '🎉'); return; }
+      dizer('Isso! Achou ' + nomeCom(p) + '!', null, true);
+      setTimeout(() => { if (jogo.ativo) perguntar(); }, 1900);
+    } else if (p) dizer('Olha, ' + nomeCom(p) + '! E cadê ' + nomeCom(jogo.alvo) + '?', null, true);
+    else dizer('Toque no meu corpo! Cadê ' + nomeCom(jogo.alvo) + '?', null, true);
+  };
+
+  // 💬 Conversar — perguntas que partem do mundo da criança (Paulo Freire: ler o mundo
+  // antes da palavra). O adulto escuta, conta o que sabe e a conversa continua fora da tela.
+  const um = A.art === 'o' ? 'um ' : 'uma ', x = A.curto || A.nome.toLowerCase();
+  const PERGUNTAS = (A.conversa || []).concat([
+    'Você já viu ' + um + x + '? Onde foi?',
+    'Eu sou maior ou menor que a sua mão?',
+    'O que você acha que eu como?',
+    'Onde você acha que eu durmo?',
+    'Vamos imitar ' + eu() + '? Mostre como eu ando!',
+    'Se você fosse ' + um + x + ', o que ia fazer primeiro?'
+  ]);
+  let conversaI = 0; try { conversaI = +sessionStorage.getItem('bnb-conversa-' + A.id) || 0; } catch (e) {}
+  function conversar() {
+    if (jogo.ativo) pararJogo();
+    const q = PERGUNTAS[conversaI++ % PERGUNTAS.length];
+    try { sessionStorage.setItem('bnb-conversa-' + A.id, conversaI); } catch (e) {}
+    dizer('💬 ' + q, 'Para o adulto: escute a resposta e conte o que você sabe. Não existe resposta errada.', true);
   }
 
   // toque no bicho
@@ -490,6 +608,8 @@ function iniciar3d(id) {
     ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
     ray.setFromCamera(ndc, camera);
     const hits = ctx.grupo ? ray.intersectObject(ctx.grupo, true) : [];
+    if (jogo.ativo) { jogo.toque(e.clientX, e.clientY); return; }
+    if (peq() && !proc.ativo) { const p = parteNoPonto(e.clientX, e.clientY); if (p) dizer((p.emoji ? p.emoji + ' ' : '') + (p.curto || p.nome) + '! ' + (p.pequeno || '')); }
     if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits, ray); return; }
     if (M.toqueCena) { M.toqueCena(ctx, ray); return; }
     if (hits.length && M.toque) M.toque(ctx);
@@ -511,6 +631,7 @@ function iniciar3d(id) {
     home();
     $('carregando').classList.add('fora');
     bolso(); curu();
+    if (peq()) dizer(oi(), null, true);            // a saudação fica até o primeiro toque
     setTimeout(() => Progresso.marcar(A.id, '3d'), 2500);
     let last = performance.now(), visivel = true;
     document.addEventListener('visibilitychange', () => { visivel = !document.hidden; last = performance.now(); });

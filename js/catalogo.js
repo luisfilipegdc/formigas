@@ -9,6 +9,7 @@
      ciclo      → etapas da vida (aba "Vida")
      curiosidades
      curto      → nome curto para frases ("Outra joaninha!")
+     conversa   → (opcional) perguntas do botão 💬 Conversar, ligadas à vida da criança
      pista      → dica de "Quem sou eu?" para bichos ainda fora do bolso
      procurar   → onde procurar no mundo real
      som        → (opcional) { arquivo: 'som/x.mp3', autor, lic, fonte } para o botão 🔊
@@ -43,6 +44,7 @@ const ANIMAIS = [
     silencio: 'Formigas quase não fazem som: elas conversam pelo cheiro!',
     curto: 'formiga', pista: 'Eu ando em fila carregando pedacinhos de folha.', procurar: 'Trilhas no chão do jardim ou da calçada.',
     pagina: 'bicho3d.html?id=formiga',
+    conversa: ['Eu moro com muitas irmãs no formigueiro. Quem mora com você?', 'Eu carrego folhas mais pesadas que eu! O que você consegue carregar?', 'Vamos andar em fila, igual às formigas?', 'Você já viu uma fila de formigas? O que elas carregavam?'],
     resumo: 'A cortadeira que planta um jardim de fungo debaixo da terra.',
     fotos: [
       { arquivo: 'img/animais/formiga-1.jpg', autor: 'Juan Cruzado Cortés', lic: 'CC BY-SA', especie: 'Atta mexicana', inat: 2911140 },
@@ -97,6 +99,7 @@ const ANIMAIS = [
     id: 'abelha', nome: 'Abelha-europeia', cientifico: 'Apis mellifera', grupo: 'insetos', emoji: '🐝', cor: '#ffe58a',
     curto: 'abelha', pista: 'Eu visito flores e faço zum-zum.', procurar: 'Perto de flores, nas horas de sol.',
     pagina: 'bicho3d.html?id=abelha', processo: 'como nasce o mel',
+    conversa: ['Eu adoro flores! Qual é a flor que você mais gosta?', 'Você já comeu mel? Quem faz o mel sou eu!', 'Vamos fazer zum-zum juntos?', 'Tem flor perto da sua casa? De que cor ela é?'],
     resumo: 'A abelha do mel, que poliniza flores e vive em colmeias.',
     fotos: [
       { arquivo: 'img/animais/abelha-1.jpg', autor: 'Cole Shoemaker', lic: 'CC BY', especie: 'Apis mellifera', inat: 117869766 },

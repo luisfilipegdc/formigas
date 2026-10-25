@@ -37,13 +37,15 @@
 </section>
 <div class="acoes" id="acoes" role="toolbar" aria-label="Explorar"></div>
 <div class="base3d">
+  <button class="voz-bt" id="voz" type="button" hidden></button>
   <button class="bolso" id="bolso" type="button"></button>
   <button class="acao-ficha" id="ficha" type="button">ℹ️ Ficha</button>
 </div>
 <div id="etiquetas"></div>
-<div class="cartao" id="cartao" hidden><button id="cartao-x" type="button" aria-label="Fechar">✕</button><b id="cartao-t"></b><p id="cartao-p"></p><button class="cartao-prox" id="cartao-prox" type="button" hidden>Próxima ⏭</button></div>
+<div class="cartao" id="cartao" hidden><button id="cartao-x" type="button" aria-label="Fechar">✕</button><button id="cartao-ouvir" type="button" aria-label="Ouvir o texto" hidden>🔊</button><b id="cartao-t"></b><p id="cartao-p"></p><button class="cartao-prox" id="cartao-prox" type="button" hidden>Próxima ⏭</button></div>
 <div class="curu" id="curu" aria-live="polite"><img src="img/mascote/curu-rosto-360.jpg" alt=""><span></span></div>
 <div class="aviso3d" id="aviso" role="status"></div>
+<div class="fala" id="fala" hidden aria-live="polite"><span class="fala-bicho" id="fala-bicho" aria-hidden="true"></span><div><p id="fala-p"></p><small id="fala-adulto" hidden></small></div><button id="fala-rep" type="button" aria-label="Ouvir de novo">🔊</button></div>
 <button class="voltar-ui" id="voltar-ui" type="button">Mostrar botões</button>
 <div class="carregando" id="carregando">Montando…</div>
 
@@ -57,6 +59,7 @@
 <script src="vendor/three/RoomEnvironment.js"></script>
 <script src="vendor/three/MarchingCubes.js"></script>
 <script src="js/core3d.js"></script>
+<script src="js/voz.js"></script>
 <script src="js/bicho3d.js"></script>
 <script src="js/app.js"></script>
 </body>

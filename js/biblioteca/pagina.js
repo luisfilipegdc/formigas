@@ -69,19 +69,23 @@
     $('v-nome').textContent = info.nome; $('v-cat').textContent = nomeCat(info.cat) + (info.didatico === false ? ' · forma real' : ' · modelo didático');
     $('v-escala').hidden = !info.escala; $('v-escala').textContent = info.escala ? '🔎 ' + info.escala : '';
     parteAtiva = -1; desenharPartes(); desenharAcoes(); cartao();
+    falar(info.nome + '! ' + info.resumo + ' Toque para descobrir as partes.');
     if (location.hash !== '#' + id) history.pushState({ id }, '', '#' + id);
     marcarVisto(id); $('v-voltar').focus();
   }
   function fechar() {
+    if (typeof Voz !== 'undefined') Voz.calar();
     aberto = null; $('visor').hidden = true; document.body.classList.remove('visor-aberto');
     if (M) { P.scene.remove(M.raiz); Biblioteca.descartar(M.raiz); M = null; }
     if (location.hash) history.pushState({}, '', location.pathname + location.search);
     grade();
   }
   const txt = (p) => (idade === 'pequeno' ? p.texto : p.mais || p.texto);
+  // 🧸 Pequeno: o que aparece escrito também é dito em voz alta (para quem ainda não lê)
+  const falar = (t) => { if (idade === 'pequeno' && typeof Voz !== 'undefined') Voz.falar(t); };
   function cartao() {
     const c = $('v-cartao');
-    if (parteAtiva >= 0) { const p = M.partes[parteAtiva]; c.innerHTML = '<b>' + esc(p.nome) + '</b><p>' + esc(txt(p)) + '</p>'; }
+    if (parteAtiva >= 0) { const p = M.partes[parteAtiva]; c.innerHTML = '<b>' + esc(p.nome) + '</b><p>' + esc(txt(p)) + '</p>'; falar(p.nome + '! ' + txt(p)); }
     else c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(info.resumo) + '</p><p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>';
   }
   function desenharPartes() {
@@ -97,7 +101,7 @@
       const a = b.dataset.a;
       if (a === 'tam') { parteAtiva = -1; desenharPartes(); $('v-cartao').innerHTML = '<b>📏 Tamanho real</b><p>' + esc(info.tamanho || '') + '</p>' + (info.escala ? '<p class="v-dica">' + esc(info.escala) + '</p>' : ''); return; }
       if (a === 'gira') { P.controles.autoRotate = !P.controles.autoRotate; return; }
-      M.acoes[+a].fazer(M.E); b.classList.remove('pulso'); void b.offsetWidth; b.classList.add('pulso');
+      M.acoes[+a].fazer(M.E); falar(M.acoes[+a].rotulo + '!'); b.classList.remove('pulso'); void b.offsetWidth; b.classList.add('pulso');
       if (parteAtiva < 0) cartao();
     }));
   }

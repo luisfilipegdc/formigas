@@ -105,3 +105,30 @@ body.limpo .modos, body.limpo .passos3d, body.limpo .idade { display: none; }
   .abas { grid-column: 3; grid-row: 1; }
   .idade { grid-column: 4; }
 }
+
+/* ---------- o bicho fala (modo Pequeno): balão + voz, para quem ainda não lê ---------- */
+.fala { position: fixed; z-index: 11; left: max(12px, env(safe-area-inset-left)); top: calc(var(--topo-h) + 10px); max-width: min(440px, calc(100vw - 120px));
+  display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 26px 26px 26px 8px; padding: 10px 10px 10px 12px; box-shadow: var(--shadow-m); }
+.fala[hidden] { display: none; }
+.fala.pula { animation: falaPula .35s cubic-bezier(.25, 1.4, .5, 1); }
+@keyframes falaPula { from { transform: scale(.7); opacity: 0; } }
+.fala-bicho { flex: none; width: 54px; height: 54px; border-radius: 50%; background: var(--color-accent); display: grid; place-items: center; font-size: 32px; }
+.fala > div { flex: 1; min-width: 0; }
+.fala p { margin: 0; font-size: 19px; font-weight: 900; line-height: 1.25; color: var(--color-nature); }
+.fala small { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 700; line-height: 1.3; color: var(--text-soft); }
+#fala-rep { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--bg); font-size: 22px; cursor: pointer; }
+.voz-bt { margin-right: auto; border: 0; border-radius: 999px; min-height: 48px; padding: 0 16px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: var(--shadow-m); background: #fff; color: var(--color-nature); }
+.cartao #cartao-ouvir { position: absolute; top: 8px; right: 50px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--bg); cursor: pointer; }
+.cartao:has(#cartao-ouvir:not([hidden])) b { margin-right: 84px; }
+.estrela { position: fixed; z-index: 15; left: 0; top: 0; font-size: 44px; pointer-events: none; animation: estrela 1.1s ease-out forwards; }
+@keyframes estrela { from { transform: translate(-50%, -50%) scale(.5); opacity: 1; } to { transform: translate(-50%, -160%) scale(1.5); opacity: 0; } }
+.etq.dica { font-size: 26px; padding: 2px 8px; background: var(--color-accent); animation: dica 1s ease-in-out infinite; }
+@keyframes dica { 50% { box-shadow: 0 0 0 12px rgba(255, 197, 61, .35); } }
+/* Pequeno: menos botões, botões maiores; Cadê? e Conversar só aparecem nele */
+body.pequeno .acao[data-id="cam"], body.pequeno .acao[data-id="limpo"] { display: none; }
+body:not(.pequeno) .acao[data-id="cade"], body:not(.pequeno) .acao[data-id="conversa"] { display: none; }
+body.pequeno .acao { width: 84px; min-height: 74px; }
+body.pequeno .acao b { font-size: 30px; }
+body.pequeno .acao span { font-size: 13px; }
+body.limpo .fala { display: none; }
+@media (prefers-reduced-motion: reduce) { .fala.pula, .estrela, .etq.dica { animation: none; } }
