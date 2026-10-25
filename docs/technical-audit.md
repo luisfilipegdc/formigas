@@ -11,7 +11,7 @@
 | Aspecto | Situação |
 |---|---|
 | Tipo de site | Estático: HTML, CSS e JavaScript em scripts clássicos. Sem build, sem npm, sem framework, sem servidor próprio |
-| Publicação | Vercel, a partir do branch `claude/fervent-ride-ckr2w7`. Endereço temporário: `formigas-beta.vercel.app`. `.vercelignore` e `vercel.json` mantêm `docs/` e `design/` fora do site |
+| Publicação | Vercel, a partir do branch `claude/fervent-ride-ckr2w7`. Endereço: `bionobolso.vercel.app` (antes `formigas-beta.vercel.app`). `.vercelignore` e `vercel.json` mantêm `docs/` e `design/` fora do site |
 | Arquivos versionados | 129 (≈ 6,8 MB sem `design/` e `docs/`) |
 | Dependências | Three.js r147 (`vendor/three/`: `three.min.js`, `OrbitControls`, `RoomEnvironment`, `MarchingCubes`) e um gerador de QR (`vendor/qrcode.js`). Tudo dentro do repositório |
 | Serviços externos | Google Fonts (Nunito; Baloo 2 nas páginas antigas), API do iNaturalist e API REST da Wikipédia em português. Nenhum exige chave ou cadastro |

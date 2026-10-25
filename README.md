@@ -4,6 +4,8 @@
 
 Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos são "esculpidos" no próprio navegador ao abrir cada página (leva 1–3 segundos no iPad). Não tem build, nem servidor, nem som.
 
+**Endereço:** https://bionobolso.vercel.app (antes `formigas-beta.vercel.app`). Cópia na VPS: estudodebolso.com.br/explorar/.
+
 ## Direção do projeto (outubro de 2026)
 O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (agora com o nome **Bio no Bolso**, de Biologia; domínio, Vercel e repositório continuam os mesmos). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
 - `docs/product-direction.md`: direção, decisões, hipóteses, pendências e etapas.
@@ -55,7 +57,7 @@ Tudo o que o site precisa está no próprio site: o Three.js e o gerador de QR f
 2. Na Vercel: projeto › **Settings › Domains** › adicione `SEUDOMINIO` e `www.SEUDOMINIO`. A Vercel mostra os registros de DNS que precisa.
 3. No registro.br: domínio › **DNS** › use os valores que a Vercel mostrou (registro A para `SEUDOMINIO` e CNAME para `www`), ou troque os servidores DNS para os da Vercel.
 4. Espere a Vercel mostrar "Valid Configuration" (de minutos a algumas horas). O certificado de segurança é criado sozinho.
-5. Na Vercel, faça `formigas-beta.vercel.app` redirecionar para o domínio novo.
+5. Na Vercel, faça `bionobolso.vercel.app` (e o antigo `formigas-beta.vercel.app`) redirecionar para o domínio novo.
 6. Abra `https://SEUDOMINIO/qr.html` e imprima o QR novo (ele usa o endereço onde a página foi aberta).
 7. Nos iPads: instale de novo o app pelo domínio novo (o app antigo fica preso ao endereço antigo, com as descobertas dele). Peça à TI da escola para liberar `SEUDOMINIO`.
 
