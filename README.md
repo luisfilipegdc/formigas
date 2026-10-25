@@ -1,4 +1,4 @@
-# 🧬 Bio no Bolso (antes Natureza no Bolso e Bicho no Bolso)
+# 📚 Estudo de Bolso (antes Bio no Bolso, Natureza no Bolso e Bicho no Bolso)
 
 **Explore. Descubra. Colecione.** Um catálogo interativo onde crianças exploram animais em 3D, descobrem curiosidades e comparam seus tamanhos.
 
@@ -7,7 +7,7 @@ Formigas e abelhas em 3D realistas, para girar e dar zoom com o dedo. Os corpos 
 **Endereço:** https://bionobolso.vercel.app (antes `formigas-beta.vercel.app`). Cópia na VPS: estudodebolso.com.br/explorar/.
 
 ## Direção do projeto (outubro de 2026)
-O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (agora com o nome **Bio no Bolso**, de Biologia; domínio, Vercel e repositório continuam os mesmos). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
+O projeto está sendo ampliado para uma **enciclopédia interativa da natureza** (agora com o nome **Estudo de Bolso**, de Biologia; domínio, Vercel e repositório continuam os mesmos). As categorias planejadas são animais, plantas, fungos, mundo microscópico, rochas e minerais, e fenômenos naturais. **Hoje o site tem só animais.** Reconhecimento por foto, contas, contribuições e assinatura são **planos**, não recursos prontos.
 - `docs/product-direction.md`: direção, decisões, hipóteses, pendências e etapas.
 - `docs/technical-audit.md`: auditoria técnica do código atual (rotas, dados, armazenamento, PWA, motor 3D).
 - `docs/catalog-model.md`: modelo de catálogo genérico, mapa de telas V2 e adaptações da home, da busca, da ficha e do Meu Bolso.

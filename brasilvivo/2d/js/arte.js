@@ -1,5 +1,5 @@
 /* =====================================================================
-   Bio no Bolso · Brasil Vivo 2D · arte ilustrada (estilo livro infantil)
+   Estudo de Bolso · Brasil Vivo 2D · arte ilustrada (estilo livro infantil)
    Tudo desenhado em vetor no canvas: curvas suaves, contorno macio,
    gradientes de luz vindo de cima à esquerda. Cada desenho é feito em alta
    resolução (RES pixels por unidade) e guarda o tamanho lógico em lw × lh,

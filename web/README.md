@@ -1,4 +1,4 @@
-# App do Bio no Bolso (Next.js)
+# App do Estudo de Bolso (Next.js)
 
 Fase 1 do plano: contas por idade, identidade visual e LGPD. No ar em https://app.estudodebolso.com.br (fora do Google até o lançamento). O site estático da raiz continua em https://estudodebolso.com.br.
 

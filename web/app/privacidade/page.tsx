@@ -50,7 +50,7 @@ export default function Privacidade() {
 
       <section className="space-y-2">
         <h2 className="text-xl font-semibold">Onde os dados ficam</h2>
-        <p>Num servidor no Brasil contratado pelo Bio no Bolso, com cópia de segurança diária.</p>
+        <p>Num servidor no Brasil contratado pelo Estudo de Bolso, com cópia de segurança diária.</p>
       </section>
 
       <section className="space-y-2">

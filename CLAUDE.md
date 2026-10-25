@@ -1,10 +1,10 @@
 # CLAUDE.md — regras do projeto (lidas por qualquer sessão, em qualquer aparelho)
 
-**Bio no Bolso** — um app do **Estudo de Bolso**. Biblioteca/enciclopédia 3D da natureza para crianças de 1 a 17 anos, famílias e escolas. Site estático (sem build), PWA, Three.js r147 em `vendor/three`.
+**Estudo de Bolso** (antes Bio no Bolso). Aprender explorando, no seu bolso. Biblioteca/enciclopédia 3D da natureza para crianças de 1 a 17 anos, famílias e escolas. Site estático (sem build), PWA, Three.js r147 em `vendor/three`.
 
 ## Onde está no ar
 - Vercel: https://bionobolso.vercel.app (publica a cada push no branch `claude/fervent-ride-ckr2w7`, que é o principal)
-- VPS: https://estudodebolso.com.br/explorar/ (copia o repositório a cada 5 min) e, quando o DNS for criado, https://bio.estudodebolso.com.br — veja `infra/vps/`
+- VPS: https://estudodebolso.com.br/explorar/ (copia o repositório a cada 5 min) (a raiz de estudodebolso.com.br é o app Next.js de contas, `web/`) — veja `infra/vps/`
 - Não trocar domínio, projeto da Vercel nem nome do repositório sem o dono pedir.
 
 ## Como trabalhar

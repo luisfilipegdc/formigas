@@ -42,7 +42,7 @@ app.estudodebolso.com.br {
 	redir https://estudodebolso.com.br{uri} 301
 }
 
-# Bio no Bolso, um app do Estudo de Bolso: o mesmo site estático de /explorar/, num endereço próprio.
+# Endereço extra (opcional) para o mesmo site estático de /explorar/, na raiz e com senha opcional.
 # DNS (Cloudflare): registro A "bio" → IP da VPS, com proxy (nuvem laranja).
 bio.estudodebolso.com.br {
 	header {

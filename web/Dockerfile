@@ -1,4 +1,4 @@
-# App Next.js do Bio no Bolso (output standalone).
+# App Next.js do Estudo de Bolso (output standalone).
 FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./

@@ -1,4 +1,4 @@
-# Bio no Bolso · Proposta pedagógica
+# Estudo de Bolso · Proposta pedagógica
 
 > Como o app ensina: de quem tiramos cada ideia e onde ela aparece na tela.
 > Origem: observação de uma criança de 2–3 anos usando a formiga 3D num tablet.
@@ -16,7 +16,7 @@ Freire alfabetizava adultos partindo do **mundo deles**, e não da cartilha. Os 
 
 Princípios que levamos para o app:
 
-| Freire | No Bio no Bolso |
+| Freire | No Estudo de Bolso |
 |---|---|
 | "A leitura do mundo precede a leitura da palavra" | A criança que não lê **explora pelo toque e pela voz**. A palavra escrita aparece junto da imagem e do som, sem cobrança. |
 | Temas geradores, vindos da realidade | Começamos pelos bichos **do quintal**: formiga, lagartixa, abelha, cigarra. As perguntas do 💬 *Conversar* ligam o bicho à vida da criança: "Quem mora com você?" |

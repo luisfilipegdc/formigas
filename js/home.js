@@ -1,5 +1,5 @@
 /* =====================================================================
-   home.js — página inicial do Bio no Bolso
+   home.js — página inicial do Estudo de Bolso
    Monta as experiências 3D, o catálogo (busca + categorias), o álbum de
    descobertas e a missão. Dados em js/catalogo.js; fotos via js/dados.js;
    descobertas via js/progresso.js; ficha via js/ficha.js.
@@ -213,11 +213,11 @@
   }
   $('entrar').addEventListener('click', () => { location.href = Progresso.sessao() ? '/conta' : '/entrar'; });
   document.addEventListener('progresso-sincronizado', () => { botaoConta(); atualizar(); });
-  $('roteiro').addEventListener('click', () => janela('<h2>Uma aula com o Bio no Bolso</h2><p>"Quem vive debaixo da terra?" · 1º ao 3º ano · 45 minutos</p><ol class="roteiro">' +
+  $('roteiro').addEventListener('click', () => janela('<h2>Uma aula com o Estudo de Bolso</h2><p>"Quem vive debaixo da terra?" · 1º ao 3º ano · 45 minutos</p><ol class="roteiro">' +
     '<li><b>5 min</b> Pergunta: o que a formiga come? Anote as hipóteses.</li><li><b>10 min</b> Explorar a operária em 3D: pernas, antenas, mandíbula.</li>' +
     '<li><b>10 min</b> Passeio pelo formigueiro: fungo, berçário, rainha.</li><li><b>5 min</b> Voltar às hipóteses: elas plantam fungo!</li>' +
     '<li><b>10 min</b> Comparar com a abelha: tamanho e parentesco.</li><li><b>5 min</b> Desenho: o formigueiro que eu vi.</li></ol>' +
-    '<p>Funciona nos iPads da escola, até sem Wi-Fi depois de instalado. Quer testar com sua turma? Fale com quem te mostrou o Bio no Bolso.</p>'));
+    '<p>Funciona nos iPads da escola, até sem Wi-Fi depois de instalado. Quer testar com sua turma? Fale com quem te mostrou o Estudo de Bolso.</p>'));
 
   function missao() {
     const M = MISSOES[0];

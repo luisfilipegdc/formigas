@@ -7,10 +7,10 @@ const titulo = Fraunces({ variable: "--fonte-titulo", subsets: ["latin"], displa
 const texto = Inter({ variable: "--fonte-texto", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Bio no Bolso", template: "%s · Bio no Bolso" },
+  title: { default: "Estudo de Bolso", template: "%s · Estudo de Bolso" },
   description: "Enciclopédia interativa da natureza para famílias e escolas: fichas por idade, bichos em 3D e o mapa do que você encontrou.",
   metadataBase: new URL("https://estudodebolso.com.br"),
-  openGraph: { siteName: "Bio no Bolso", locale: "pt_BR", type: "website" },
+  openGraph: { siteName: "Estudo de Bolso", locale: "pt_BR", type: "website" },
 };
 
 export const viewport: Viewport = {
@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 sm:py-12">{children}</main>
         <footer className="border-t border-borda">
           <div className="max-w-5xl mx-auto px-4 py-6 text-sm text-suave flex flex-wrap gap-x-6 gap-y-2">
-            <span>Bio no Bolso</span>
+            <span>Estudo de Bolso</span>
             <a href="/planos" className="hover:text-texto">Planos</a>
             <a href="/privacidade" className="hover:text-texto">Privacidade</a>
             <a href="/termos" className="hover:text-texto">Termos de uso</a>

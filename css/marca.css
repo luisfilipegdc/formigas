@@ -1,10 +1,10 @@
 /* =====================================================================
-   marca.css — identidade visual "Bio no Bolso" (v2, outubro de 2026)
+   marca.css — identidade visual "Estudo de Bolso" (v2, outubro de 2026)
    Variáveis (cores, raios, sombras) e componentes comuns: cabeçalho,
    logo, botões, chips, seções e rodapé. Referência: design/*.png
    ===================================================================== */
 :root {
-  /* cores — paleta Bio no Bolso */
+  /* cores — paleta Estudo de Bolso */
   --color-nature: #12503B;      /* verde floresta: marca, títulos */
   --color-primary: #1E8A5A;     /* verde-folha (escurecido p/ contraste com texto branco): botões, chip ativo */
   --color-leaf: #22A06B;        /* verde-folha original: ícones e enfeites */
@@ -20,7 +20,7 @@
   --text: #22302A;              /* marrom quente */
   --text-soft: #5E6B64;
   --line: #EDE3CF;
-  /* tokens do MIV Bio no Bolso v1.0 (mesmas cores, nomes oficiais) */
+  /* tokens do MIV Estudo de Bolso v1.0 (mesmas cores, nomes oficiais) */
   --forest: #12503B;
   --leaf: #22A06B;
   --lime: #9BD84E;
@@ -157,5 +157,3 @@ h1, h2, h3 { font-family: var(--font-titulo); font-weight: 600; letter-spacing: 
   .painel { padding: 16px; border-radius: var(--radius-m); }
 }
 
-.rodape-casa { flex-basis: 100%; margin: 0 0 -6px; font-size: 14px; font-weight: 800; color: var(--text-soft); }
-.rodape-casa a { color: var(--color-nature); }

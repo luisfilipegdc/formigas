@@ -1,7 +1,7 @@
 {
-  "name": "Bio no Bolso",
-  "short_name": "Bio no Bolso",
-  "description": "Um app do Estudo de Bolso. A natureza em 3D, no seu bolso. Plantas, pedras, ninhos, fungos, o micromundo e os bichos para girar, aproximar e descobrir.",
+  "name": "Estudo de Bolso",
+  "short_name": "Estudo de Bolso",
+  "description": "Aprender explorando, no seu bolso. Plantas, pedras, ninhos, fungos, o micromundo e os bichos para girar, aproximar e descobrir.",
   "lang": "pt-BR",
   "start_url": "./index.html",
   "scope": "./",

@@ -32,7 +32,7 @@ export function FormAdicionarMembro() {
         <Campo nome="pin" rotulo="PIN (4 a 6 números)" tipo="password" inputMode="numeric" maxLength={6} autoComplete="new-password" />
         <label className="flex gap-3 items-start text-sm">
           <input type="checkbox" name="aceite" className="mt-1 h-5 w-5" required />
-          <span>Sou o responsável e autorizo o Bio no Bolso a guardar o apelido, o avatar e o progresso desta conta, como descrito na política de privacidade.</span>
+          <span>Sou o responsável e autorizo o Estudo de Bolso a guardar o apelido, o avatar e o progresso desta conta, como descrito na política de privacidade.</span>
         </label>
         <Mensagem erro={estado?.erro} ok={estado?.ok} />
         <BotaoEnviar>Adicionar</BotaoEnviar>

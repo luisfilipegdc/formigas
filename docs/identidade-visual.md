@@ -1,4 +1,4 @@
-# Bio no Bolso · identidade visual v2 (outubro de 2026)
+# Estudo de Bolso · identidade visual v2 (outubro de 2026)
 
 Substitui as artes antigas com o nome "Bicho no Bolso" e "Encontre um Bicho" (`img/marca/bnb-*`, `design/`), que não usam mais o nome do app.
 
@@ -8,7 +8,7 @@ Substitui as artes antigas com o nome "Bicho no Bolso" e "Encontre um Bicho" (`i
 ## Símbolo e nome
 - `img/marca/simbolo.svg`: símbolo colorido (bolso verde, costura em verde-broto, folhas, sol). Use em cabeçalho, rodapé e abertura.
 - `img/marca/simbolo-icone.svg`: versão de ícone (fundo verde, bolso creme). Gera os ícones do app em `img/icone/` (192, 512, maskable, apple-touch, favicon).
-- O nome é texto, não imagem: `<span class="marca-nome">Bio <i>no</i> Bolso</span>`, em **Fredoka 700**. "Bio" e "Bolso" em verde-floresta, "no" menor, em terra. Sobre fundo verde: nome branco e "no" em sol.
+- O nome é texto, não imagem: `<span class="marca-nome">Estudo <i>de</i> Bolso</span>`, em **Fredoka 700**. "Bio" e "Bolso" em verde-floresta, "no" menor, em terra. Sobre fundo verde: nome branco e "no" em sol.
 - Componente pronto em `css/marca.css`: `<a class="marca"><img src="img/marca/simbolo.svg"><span class="marca-nome">…</span></a>`.
 - Área de respiro: metade da altura do símbolo em volta. Tamanho mínimo do símbolo: 32 px.
 - Não usar: símbolo esticado, sombras pesadas, nome em outra fonte, o "no" do mesmo tamanho.

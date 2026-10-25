@@ -11,7 +11,7 @@ export default function Termos() {
       <h1 className="text-3xl font-semibold">Termos de uso</h1>
 
       <section className="space-y-2">
-        <h2 className="text-xl font-semibold">O que é o Bio no Bolso</h2>
+        <h2 className="text-xl font-semibold">O que é o Estudo de Bolso</h2>
         <p>Uma enciclopédia interativa da natureza para famílias e escolas, com fichas, bichos em 3D e, em breve, identificação por foto e mapa de observações.</p>
       </section>
 

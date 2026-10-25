@@ -1,4 +1,4 @@
-# Bio no Bolso: design comportamental, design para humanos e qualidade 3D
+# Estudo de Bolso: design comportamental, design para humanos e qualidade 3D
 
 > Auditoria feita em outubro de 2026 com o método de design comportamental de Rian Dutra (Enviesados / psicologia.design), somado a teorias de aprendizagem e de design infantil.
 > Complementa `docs/pedagogia.md`.
@@ -96,7 +96,7 @@ Nenhum elemento atual reprova:
 
 ## 3. Teorias para aplicar (mapa)
 
-| Teoria / autor | Ideia em uma linha | No Bio no Bolso |
+| Teoria / autor | Ideia em uma linha | No Estudo de Bolso |
 |---|---|---|
 | **Fogg, B = MAP** | O comportamento acontece quando motivação, capacidade e gatilho se encontram | Aumentar a capacidade: botões grandes, voz, mãozinha |
 | **COM-B** (Michie) | Capacidade, oportunidade, motivação | Separar "não consegue" (gesto) de "não sabe" (sem sinalizador) |

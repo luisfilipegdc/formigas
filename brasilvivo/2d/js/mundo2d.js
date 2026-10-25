@@ -1,5 +1,5 @@
 /* =====================================================================
-   Bio no Bolso · Brasil Vivo 2D · mundo ilustrado, visto de cima
+   Estudo de Bolso · Brasil Vivo 2D · mundo ilustrado, visto de cima
    Mesmas coordenadas do 3D (metros, x para a direita, z para baixo na tela),
    mesmos dados do Registro e a mesma interface (Mundo.M, areaEm, povoar,
    onda, colher…) para o laço do jogo funcionar igual.

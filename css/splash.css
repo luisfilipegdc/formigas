@@ -120,6 +120,3 @@
   .voo { display: none; }
 }
 
-/* assinatura da casa: Bio no Bolso é um app do Estudo de Bolso */
-.splash-casa { margin: 10px 0 0; font-size: 14px; font-weight: 700; letter-spacing: .02em; color: rgba(255, 255, 255, .8); }
-.splash-casa b { font-family: var(--font-titulo); font-weight: 600; color: #fff; }
