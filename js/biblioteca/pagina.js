@@ -32,19 +32,21 @@
      🧸 infantil → imagem + nome, voz em tudo, frases curtas
      ✏️ iniciais → textos completos (Explorador)
      🔭 finais / 🧪 medio → textos completos + "Para investigar" (pergunta-problema) */
-  const BEBE = ['bicho-formiga', 'bicho-abelha', 'bicho-lagartixa', 'bicho-cigarra', 'bicho-aranha', 'bicho-escorpiao', 'flor-ipe', 'feijao', 'pequi', 'geodo', 'quartzo', 'joao-de-barro', 'favo', 'concha', 'pena', 'cogumelo'];
+  const BEBE = ['ciclo-borboleta', 'bicho-formiga', 'bicho-abelha', 'bicho-lagartixa', 'bicho-cigarra', 'bicho-aranha', 'bicho-escorpiao', 'flor-ipe', 'feijao', 'pequi', 'geodo', 'quartzo', 'joao-de-barro', 'favo', 'concha', 'pena', 'cogumelo'];
   const INVESTIGAR = {
     finais: {
       plantas: 'Do que uma planta precisa para crescer? Teste com feijão no algodão: um no claro e outro no escuro. O que muda?',
       rochas: 'Como diferenciar uma rocha que veio de lava de outra feita de camadas de areia, só olhando?',
       ninhos: 'Que materiais o animal usa e por quê? Compare com uma construção humana do seu bairro.',
-      micro: 'Se fungos e bactérias são tão pequenos, como eles mudam a comida, o solo e a nossa saúde?'
+      micro: 'Se fungos e bactérias são tão pequenos, como eles mudam a comida, o solo e a nossa saúde?',
+      bichos: 'Compare a metamorfose completa da borboleta (ovo, lagarta, pupa, adulto) com a incompleta do gafanhoto. Que vantagem tem a lagarta comer algo diferente da borboleta adulta?'
     },
     medio: {
       plantas: 'Relacione a abertura dos estômatos com a perda de água e a fotossíntese. O que acontece numa seca no Cerrado?',
       rochas: 'O que a composição mineral de uma rocha conta sobre o lugar e a temperatura em que ela se formou?',
       ninhos: 'Que vantagens evolutivas essa construção traz? Que custo de energia ela tem para o animal?',
-      micro: 'Como fungos e bactérias participam dos ciclos do carbono e do nitrogênio? E onde isso encontra a medicina e a indústria?'
+      micro: 'Como fungos e bactérias participam dos ciclos do carbono e do nitrogênio? E onde isso encontra a medicina e a indústria?',
+      bichos: 'Na pupa, tecidos da lagarta se desfazem e os discos imaginais formam o corpo adulto. Que hormônios controlam a muda e a metamorfose nos insetos?'
     }
   };
   let faixa = (typeof Faixa !== 'undefined' && Faixa.get()) || null;
@@ -171,7 +173,7 @@
     if (parteAtiva >= 0) { const p = M.partes[parteAtiva]; c.innerHTML = '<b>' + esc(p.nome) + '</b><p>' + esc(txt(p)) + '</p>'; falar(nomeFalado(p)); }
     else {
       const inv = INVESTIGAR[faixa] && INVESTIGAR[faixa][info.cat];
-      c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(info.resumo) + '</p>' +
+      c.innerHTML = '<b>' + esc(info.nome) + (M.etapa ? ' · ' + esc(M.etapa(M.E)) : '') + '</b><p>' + esc(M.narrar ? M.narrar(M.E, idade) : info.resumo) + '</p>' +
         (inv ? '<p class="v-investigar"><b>🔎 Para investigar</b>' + esc(inv) + '</p>' : '<p class="v-dica">👆 Toque numa parte do modelo ou nos botões abaixo.</p>') +
         (M.glb && info.credito ? '<p class="v-dica">Modelo 3D: ' + esc(info.credito.autor) + ' · ' + esc(info.credito.licenca) + '</p>' : '');
     }
@@ -230,6 +232,10 @@
     if (!aberto || !M) return;
     const t = now / 1000, dt = Math.min(0.05, (now - ultimo) / 1000 || 0.016); ultimo = now;
     if (M.animar) M.animar(t, dt, M.E);
+    if (M.narrar) {                                     // ciclo de vida: cada fase nova aparece no cartão e é falada
+      const e = M.etapa(M.E);
+      if (e !== M._etapa) { M._etapa = e; if (parteAtiva < 0) cartao(); falar(M.narrar(M.E, idade)); }
+    }
     destacar(t);
     if (zoomAlvo) {
       const off = P.camera.position.clone().sub(P.controles.target), d0 = off.length(), d1 = d0 + (zoomAlvo - d0) * Math.min(1, dt * 6);

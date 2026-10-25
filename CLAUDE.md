@@ -17,6 +17,8 @@
 
 ## Fluxo do app
 splash → **Quem vai explorar?** (`js/faixa.js`: Bebês 1–3, Educação Infantil 4–6, Anos Iniciais, Anos Finais, Ensino Médio) → **Biblioteca 3D** (`index.html`, `js/biblioteca/*`) adaptada à faixa. Bichos com 3D completo em `bicho3d.html?id=…` (`js/bicho3d.js`, `js/modelos/*`). Voz em `js/voz.js`.
+- Ciclos de vida animados e narrados: `js/biblioteca/ciclos.js` (fases com `etapa`/`narrar`; o visor fala e mostra cada fase).
+- Toque no corpo do bicho: ele fala em 1ª pessoa (`eu` em cada parte; Bebês, Infantil e Anos Iniciais).
 - Modelos prontos `.glb` vão em `modelos3d/` (veja o LEIA-ME); se faltarem, usa o modelo feito em código.
 - Pedagogia: `docs/pedagogia.md`. Design comportamental e plano 3D: `docs/design-comportamental.md`.
 

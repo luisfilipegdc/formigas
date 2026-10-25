@@ -529,6 +529,10 @@ function iniciar3d(id) {
   }
   ctx.dizer = dizer;
   const eu = () => (A.art === 'o' ? 'o ' : 'a ') + (A.curto || A.nome.toLowerCase());
+  // tocar no corpo: o bicho se apresenta em primeira pessoa (Bebês, Educação Infantil e Anos Iniciais)
+  const falante = () => { let f = null; try { f = localStorage.getItem('bnb-faixa'); } catch (e) {} return peq() || f === 'iniciais'; };
+  const noMeu = (p) => { const n = nomeCom(p); return n.replace(/^as /, 'nas minhas ').replace(/^os /, 'nos meus ').replace(/^a /, 'na minha ').replace(/^o /, 'no meu '); };
+  const falaDaParte = (p) => p.eu || 'Você tocou ' + noMeu(p) + '! ' + (peq() ? p.pequeno || '' : p.texto || '');
   const oi = () => 'Oi! Eu sou ' + eu() + '! Toque em mim!';
   $('fala-rep').addEventListener('click', () => Voz.falar($('fala-p').textContent, { forcar: true }));
   // o navegador só deixa falar depois do primeiro toque: se a saudação ficou muda, repete nesse toque
@@ -630,7 +634,7 @@ function iniciar3d(id) {
     ray.setFromCamera(ndc, camera);
     const hits = ctx.grupo ? ray.intersectObject(ctx.grupo, true) : [];
     if (jogo.ativo) { jogo.toque(e.clientX, e.clientY); return; }
-    if (peq() && !proc.ativo) { const p = parteNoPonto(e.clientX, e.clientY); if (p) dizer((p.emoji ? p.emoji + ' ' : '') + (p.curto || p.nome) + '! ' + (p.pequeno || '')); }
+    if (falante() && !proc.ativo) { const p = parteNoPonto(e.clientX, e.clientY); if (p) dizer((p.emoji ? p.emoji + ' ' : '') + falaDaParte(p)); }
     if (proc.ativo && M.processo.toque) { M.processo.toque(ctx, hits, ray); return; }
     if (M.toqueCena) { M.toqueCena(ctx, ray); return; }
     if (hits.length && M.toque) M.toque(ctx);

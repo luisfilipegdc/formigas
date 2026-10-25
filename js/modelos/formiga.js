@@ -1842,9 +1842,20 @@ function partesFormiga() {
     { nome: 'Pernas', emoji: '🦵', ponto: () => { const g = legs.find((k) => k.i === 1 && k.s === 1); return g ? g.tibia.getWorldPosition(new V3()) : ant.position.clone(); }, texto: 'Como todo inseto, a formiga tem 6 pernas. Ela anda apoiada em 3 de cada vez, como um tripé.', pequeno: 'Conte: são 6 pernas!' },
     { nome: 'Gáster', curto: 'Barriga', emoji: '🫃', ponto: noCorpo(CA.gasterX - 1.6, 3.4, 0), texto: 'A parte de trás do corpo. Lá dentro fica o papo, onde ela guarda comida para dividir com as outras formigas.', pequeno: 'Aqui ela guarda comida para dividir!' }
   ];
+  l.unshift({ nome: 'Cabeça', emoji: '🙂', ponto: noCorpo(E.x - 0.6, E.y + 1.7, 0), texto: 'Na cabeça ficam as antenas, os olhos e a boca com as mandíbulas.', pequeno: 'Aqui ficam os olhos, as antenas e a boca!' });
   if (CA.asas) l.push({ nome: 'Asas', emoji: '🪽', ponto: noCorpo(CA.asas.frente.base[0] - 3, CA.asas.frente.base[1] + 0.5, 1.8), texto: 'A rainha e o zangão nascem com asas para o voo nupcial. Depois do voo, a rainha perde as asas e começa um formigueiro novo.', pequeno: 'Asas para o voo do casamento!' });
   return l;
 }
+// o bicho fala em primeira pessoa quando a criança toca nele (Educação Infantil e Anos Iniciais)
+const EU_FORMIGA = {
+  'Cabeça': 'Ei, você tocou na minha cabeça! Aqui ficam meus olhos, minhas antenas e minha boca.',
+  'Antenas': 'Hihi, minhas antenas! Com elas eu sinto cheiros e reconheço minhas irmãs.',
+  'Mandíbulas': 'Cuidado, essa é a minha boca! Minhas mandíbulas cortam folhas como uma tesoura.',
+  'Olhos': 'Você tocou nos meus olhos! Eu enxergo pouquinho: eu me guio pelo cheiro.',
+  'Pernas': 'Essa é a minha patinha! Eu tenho seis. Vamos contar juntos?',
+  'Gáster': 'Hihi! Você tocou no meu bumbum! Aqui dentro eu guardo comida para dividir com as outras formigas.',
+  'Asas': 'Minhas asas! Eu uso para voar no dia do casamento.'
+};
 function partesFormigueiro() {
   const l = [];
   nest.stops.forEach((st, i) => {
@@ -1931,7 +1942,7 @@ Modelos3D.formiga = {
     c.cartao(nest.stops[0].em + ' ' + nest.stops[0].t, nest.stops[0].txt);
     return true;
   },
-  partesAtuais: () => (mode === 'nest' ? partesFormigueiro() : partesFormiga()),
+  partesAtuais: () => (mode === 'nest' ? partesFormigueiro() : partesFormiga().map((p) => Object.assign(p, { eu: EU_FORMIGA[p.nome] }))),
   toqueCena,
   update(dt, t) {
     dt = Math.min(dt, 0.05);
