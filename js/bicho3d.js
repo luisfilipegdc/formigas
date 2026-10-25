@@ -137,6 +137,25 @@ function iniciar3d(id) {
   Object.assign(controls, { enableDamping: true, dampingFactor: 0.08, rotateSpeed: 0.8, screenSpacePanning: true, autoRotate: true, autoRotateSpeed: 0.8 });
   const ctx = { THREE, scene, camera, controls, renderer, A, MOBILE, chao, sol, estado: {}, aviso: avisoRapido, aoVivo: () => proc.ativo };
   let raio = 30, centro = new V3(0, 10, 0);
+  /* ---------- zoom fácil para mãos pequenas ----------
+     Pinça é difícil aos 2–3 anos: botões ➕/➖ grandes, afastar só até um limite
+     (o bicho nunca vira um pontinho na neblina), sem arrastar a cena no Pequeno,
+     e se a criança se perder a câmera volta sozinha para perto do bicho. */
+  let distCasa = 0, zoomAlvo = 0, ultimoToque = performance.now();
+  const _z = new V3();
+  function limitesZoom() {
+    if (!distCasa) return;
+    const pq = idade === 'pequeno';
+    controls.maxDistance = distCasa * (pq ? 1.7 : 3.5);
+    controls.enablePan = !pq;
+  }
+  function zoom(sinal) {
+    const d = (zoomAlvo || camera.position.distanceTo(controls.target)) * (sinal > 0 ? 0.68 : 1.45);
+    zoomAlvo = clamp(d, controls.minDistance, controls.maxDistance);
+    controls.autoRotate = false; ultimoToque = performance.now();
+  }
+  document.querySelectorAll('#zoom button').forEach((b) => b.addEventListener('click', () => zoom(+b.dataset.z)));
+  renderer.domElement.addEventListener('pointerdown', () => { ultimoToque = performance.now(); zoomAlvo = 0; });
   function home(fator) {
     if (M.home && M.home(ctx, fator)) return;
     if (quadro) return enquadrarPontos(quadro.pts);                   // tamanho real: bicho + referências
@@ -147,7 +166,7 @@ function iniciar3d(id) {
     controls.target.copy(centro);
     const dir = M.cena === 'teia' ? new V3(0.35, 0.15, 1) : new V3(0.95, 0.55, 1.05);
     camera.position.copy(centro).add(dir.normalize().multiplyScalar(d));
-    controls.minDistance = raio * 0.5; controls.maxDistance = raio * 12;
+    controls.minDistance = raio * 0.5; distCasa = d; limitesZoom();
     controls.maxPolarAngle = M.cena === 'teia' ? Math.PI * 0.75 : Math.PI * 0.48;
     controls.update();
     sol.position.copy(centro).add(new V3(raio * 2.5, raio * 6, raio * 3));
@@ -440,7 +459,7 @@ function iniciar3d(id) {
   function trocarIdade(n, daFicha) {
     idade = IDADES[n] ? n : 'pequeno';
     if (!daFicha) { try { localStorage.setItem('bnb-idade', idade); } catch (e) {} document.dispatchEvent(new CustomEvent('idade-mudou', { detail: idade })); }
-    pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno');
+    pintaIdade(); document.body.classList.toggle('pequeno', idade === 'pequeno'); limitesZoom();
     if (!peq()) { if (jogo.ativo) pararJogo(); fala.hidden = true; Voz.calar(); } else if (!daFicha) dizer(oi());
     if (!daFicha) avisoRapido(IDADES[idade][2]);
     if (proc.ativo) mostrarPasso();
@@ -643,6 +662,13 @@ function iniciar3d(id) {
         ctx.seguir.getWorldPosition(_seg);
         if (_segAnt) { _segD.subVectors(_seg, _segAnt); controls.target.add(_segD); camera.position.add(_segD); sol.position.add(_segD); sol.target.position.add(_segD); }
         _segAnt = (_segAnt || new V3()).copy(_seg);
+      }
+      if (idade === 'pequeno' && distCasa && !quadro && !zoomAlvo && now - ultimoToque > 7000 && camera.position.distanceTo(controls.target) > distCasa * 1.35) zoomAlvo = distCasa;   // perdeu o bicho? volta sozinha
+      if (zoomAlvo) {
+        _z.subVectors(camera.position, controls.target);
+        const d0 = _z.length(), d1 = d0 + (zoomAlvo - d0) * Math.min(1, dt * 5);
+        camera.position.copy(controls.target).add(_z.setLength(d1));
+        if (Math.abs(d1 - zoomAlvo) < zoomAlvo * 0.01) zoomAlvo = 0;
       }
       controls.update();
       moverEtiquetas();

@@ -132,3 +132,10 @@ body.pequeno .acao b { font-size: 30px; }
 body.pequeno .acao span { font-size: 13px; }
 body.limpo .fala { display: none; }
 @media (prefers-reduced-motion: reduce) { .fala.pula, .estrela, .etq.dica { animation: none; } }
+
+/* zoom com botões (pinça é difícil para crianças pequenas) */
+.zoom3d { position: fixed; z-index: 10; left: max(12px, env(safe-area-inset-left)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+.zoom3d button { width: 60px; height: 60px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .95); box-shadow: var(--shadow-m); font-size: 26px; cursor: pointer; }
+.zoom3d button:active { transform: scale(.92); background: var(--color-accent); }
+body.pequeno .zoom3d button { width: 72px; height: 72px; font-size: 32px; }
+body.limpo .zoom3d { display: none; }
