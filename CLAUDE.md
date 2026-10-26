@@ -3,8 +3,8 @@
 **Estudo de Bolso** (antes Bio no Bolso). Aprender explorando, no seu bolso. Biblioteca/enciclopédia 3D da natureza para crianças de 1 a 17 anos, famílias e escolas. Site estático (sem build), PWA, Three.js r147 em `vendor/three`.
 
 ## Onde está no ar
-- Vercel: https://bionobolso.vercel.app (publica a cada push no branch `claude/fervent-ride-ckr2w7`, que é o principal)
-- VPS: https://estudodebolso.com.br/explorar/ (copia o repositório a cada 5 min) (a raiz de estudodebolso.com.br é o app Next.js de contas, `web/`) — veja `infra/vps/`
+- **Endereço principal: Vercel**, https://bionobolso.vercel.app (decisão do dono, 26/10/2026). Publica a cada push no branch `claude/fervent-ride-ckr2w7`, que é o principal.
+- VPS (secundário, não mexer sem pedido): https://estudodebolso.com.br/explorar/ (copia o repositório a cada 5 min) (a raiz de estudodebolso.com.br é o app Next.js de contas, `web/`) — veja `infra/vps/`
 - Não trocar domínio, projeto da Vercel nem nome do repositório sem o dono pedir.
 
 ## Como trabalhar
