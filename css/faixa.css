@@ -81,3 +81,4 @@ html[data-faixa="infantil"] .bib-nota, html[data-faixa="infantil"] .bc-selo { di
 .v-mao[hidden] { display: none; }
 @keyframes maoToca { 0%, 100% { transform: translate(-30%, 0) scale(1); } 50% { transform: translate(-30%, 18px) scale(.9); } }
 @media (prefers-reduced-motion: reduce) { .v-mao { animation: none; } }
+.fx-lista { max-width: 780px; margin: 0 auto; }   /* 4 opções: 2 x 2 no tablet */

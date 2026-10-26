@@ -62,8 +62,8 @@ A página inicial abre assim: splash → **Quem vai explorar?** → biblioteca. 
 
 | Faixa | Idade | Na biblioteca | Nível nos bichos 3D |
 |---|---|---|---|
-| 🍼 Bebês | 1 a 3 | 16 itens, só imagens grandes e nada para ler. O modelo diz o nome. Botões redondos, sem partes, cartão ou Cadê? | 🧸 Pequeno, mais enxuto |
-| 🧸 Educação Infantil | 4 a 6 (pré-escola e alfabetização) | Imagem com nome e voz em tudo. Os bichos aparecem primeiro | 🧸 Pequeno, com Cadê? e Conversar |
+
+| 🧸 Educação Infantil | 1 a 6 (creche, pré-escola e alfabetização) | Imagem com nome e voz em tudo. Os bichos aparecem primeiro | 🧸 Pequeno, com Cadê? e Conversar |
 | ✏️ Anos Iniciais | 7 a 10 | Textos completos | 🧒 Explorador |
 | 🔭 Anos Finais | 11 a 14 | Textos completos e "🔎 Para investigar" | 🔬 Cientista |
 | 🧪 Ensino Médio | 15 a 17 | Textos completos e um "Para investigar" mais técnico | 🔬 Cientista |
